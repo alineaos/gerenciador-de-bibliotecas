@@ -1,3 +1,24 @@
 spring:
+  config:
+    import: optional:file.env[.properties]
   application:
     name: library-manager-api
+  datasource:
+    url: jdbc:mysql://localhost:3306/library_manager?useTimezone=true&serverTimezone=UTC&createDatabaseIfNotExist=true
+    username: ${ENV_ROOT_USER:root}
+    password: ${ENV_ROOT_PASSWORD:root}
+  jpa:
+    show-sql: true
+    hibernate:
+    ddl-auto: update
+  threads:
+    virtual:
+      enabled: true
+  logging:
+    level:
+      io.github.alineaos: debug
+  server:
+    error:
+      include-stacktrace: on_param
+      include-binding-errors: always
+      include-message: always
