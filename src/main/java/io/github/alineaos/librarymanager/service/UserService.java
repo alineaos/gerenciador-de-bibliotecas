@@ -8,12 +8,15 @@ import io.github.alineaos.librarymanager.dto.response.UserPostResponse;
 import io.github.alineaos.librarymanager.mapper.UserMapper;
 import io.github.alineaos.librarymanager.repository.UserRepository;
 import io.github.alineaos.librarymanager.repository.specification.UserSpecification;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
 @RequiredArgsConstructor
+@Validated
 @Service
 public class UserService {
     private final UserRepository repository;
@@ -28,7 +31,7 @@ public class UserService {
         return mapper.toGetResponseList(users);
     }
 
-    public UserPostResponse save(UserPostRequest userPostRequest){
+    public UserPostResponse save(@Valid UserPostRequest userPostRequest){
         User userToSave = mapper.toUser(userPostRequest);
 
         User savedUser = repository.save(userToSave);
