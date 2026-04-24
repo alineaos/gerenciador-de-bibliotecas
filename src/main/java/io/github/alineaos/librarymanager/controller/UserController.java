@@ -1,16 +1,21 @@
 package io.github.alineaos.librarymanager.controller;
 
+import io.github.alineaos.librarymanager.dto.UserFilter;
 import io.github.alineaos.librarymanager.dto.request.UserPostRequest;
+import io.github.alineaos.librarymanager.dto.response.UserGetResponse;
 import io.github.alineaos.librarymanager.dto.response.UserPostResponse;
 import io.github.alineaos.librarymanager.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,6 +23,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 public class UserController {
     private final UserService service;
+
+    @GetMapping
+    public ResponseEntity<List<UserGetResponse>> findAll(UserFilter filter) {
+        List<UserGetResponse> getResponseList = service.findAll(filter);
+        return ResponseEntity.ok(getResponseList);
+    }
 
     @PostMapping
     public ResponseEntity<UserPostResponse> save(@RequestBody @Valid UserPostRequest postRequest) {
