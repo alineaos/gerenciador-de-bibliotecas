@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 public record UserPostResponse (
         Long id,
-        String fullname,
+        String fullName,
         String email,
         UserRole role,
         LocalDateTime createdAt
