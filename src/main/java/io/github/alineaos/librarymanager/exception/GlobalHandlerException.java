@@ -1,5 +1,6 @@
 package io.github.alineaos.librarymanager.exception;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import io.github.alineaos.librarymanager.dto.error.DefaultMessageError;
 import io.github.alineaos.librarymanager.dto.error.ValidationMessageError;
 import jakarta.validation.ConstraintViolationException;
@@ -71,6 +72,12 @@ public class GlobalHandlerException {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<DefaultMessageError> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         String message = "The JSON could not be read. One or more fields are invalids.";
+
+        if (e.getCause() instanceof InvalidFormatException ex){
+            String invalidValue = ex.getValue().toString();
+            String fieldName = ex.getPath().getFirst().getFieldName();
+            message = "The value '%s' is invalid for the field '%s'.".formatted(invalidValue, fieldName);
+        }
 
         DefaultMessageError error = new DefaultMessageError(HttpStatus.BAD_REQUEST.value(), message, LocalDateTime.now());
 
