@@ -1,0 +1,17 @@
+# Common
+README.md
+compose.yaml
+Dockerfile
+
+# Git
+.git
+.gitattributes
+.gitignore
+
+# Project
+.idea/*
+target/*
+assets/*
+logs/
+*.log
+.mvn/*
