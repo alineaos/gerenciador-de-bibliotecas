@@ -92,6 +92,15 @@ public class GlobalHandlerException {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<DefaultMessageError> handleNotFoundException(NotFoundException e){
+        String message = e.getReason();
+
+        DefaultMessageError error = new DefaultMessageError(HttpStatus.NOT_FOUND.value(), message, LocalDateTime.now());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
 
     private ResponseEntity<ValidationMessageError> buildValidationErrorResponse(String message, List<ValidationMessageError.FieldError> errors) {
         ValidationMessageError error = new ValidationMessageError(HttpStatus.BAD_REQUEST.value(),

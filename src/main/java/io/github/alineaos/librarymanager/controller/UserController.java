@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +29,12 @@ public class UserController {
     public ResponseEntity<List<UserGetResponse>> findAll(UserFilter filter) {
         List<UserGetResponse> getResponseList = service.findAll(filter);
         return ResponseEntity.ok(getResponseList);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserGetResponse> findById(@PathVariable Long id) {
+        UserGetResponse getResponse = service.findByIdOrThrowNotFound(id);
+        return ResponseEntity.ok(getResponse);
     }
 
     @PostMapping

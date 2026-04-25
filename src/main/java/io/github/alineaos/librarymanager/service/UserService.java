@@ -6,6 +6,7 @@ import io.github.alineaos.librarymanager.dto.request.UserPostRequest;
 import io.github.alineaos.librarymanager.dto.response.UserGetResponse;
 import io.github.alineaos.librarymanager.dto.response.UserPostResponse;
 import io.github.alineaos.librarymanager.exception.BussinessException;
+import io.github.alineaos.librarymanager.exception.NotFoundException;
 import io.github.alineaos.librarymanager.mapper.UserMapper;
 import io.github.alineaos.librarymanager.repository.UserRepository;
 import io.github.alineaos.librarymanager.repository.specification.UserSpecification;
@@ -30,6 +31,13 @@ public class UserService {
         );
 
         return mapper.toGetResponseList(users);
+    }
+
+    public UserGetResponse findByIdOrThrowNotFound(Long id){
+        User user = repository.findById(id).orElseThrow(
+                () -> new NotFoundException("User not found."));
+
+        return mapper.toGetResponse(user);
     }
 
     public UserPostResponse save(@Valid UserPostRequest userPostRequest) {

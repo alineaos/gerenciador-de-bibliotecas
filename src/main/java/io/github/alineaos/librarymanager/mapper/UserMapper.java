@@ -16,6 +16,8 @@ public interface UserMapper {
     User toUser(UserPostRequest postRequest);
 
     List<UserGetResponse> toGetResponseList(List<User> userList);
+    UserGetResponse toGetResponse(User user);
+
     UserPostResponse toPostResponse(User user);
 
     @AfterMapping
