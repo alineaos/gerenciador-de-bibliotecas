@@ -9,20 +9,20 @@ import jakarta.validation.constraints.Past;
 import java.time.LocalDate;
 
 public record UserPatchRequest(
-        @NotBlank(message = "O nome completo não pode estar em branco.")
+        @NotBlank(message = "The field 'fullName' is required.")
         String fullName,
 
-        @NotBlank(message = "O e-mail não pode estar em branco.")
-        @Email(regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,10}$", message = "o e-mail não é válido.")
+        @NotBlank(message = "The field 'email' is required.")
+        @Email(regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,10}$", message = "The e-mail is not valid.")
         String email,
 
-        @NotNull(message = "A data de nascimento não pode estar vazio.")
-        @Past(message = "A data de nascimento deve estar no passado.")
+        @NotNull(message = "The field 'birthDate' is required.")
+        @Past(message = "The birth date must be in the past.")
         LocalDate birthDate,
 
-        @NotNull(message = "O cargo não pode estar vazio.")
+        @NotNull(message = "The field 'role' is required.")
         UserRole role,
 
-        @NotBlank(message = "A senha não pode estar em branco.")
+        @NotBlank(message = "The field 'password' is required.")
         String password
 ) {}
