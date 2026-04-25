@@ -63,6 +63,12 @@ public class UserService {
         repository.save(userToUpdate);
     }
 
+    public void delete(Long id){
+        User userToDelete = findByIdOrThrowNotFound(id);
+
+        repository.delete(userToDelete);
+    }
+
     private void assertEmailDoesNotExists(String email) {
         repository.findByEmail(email).ifPresent(this::throwEmailExistsException);
     }
