@@ -1,6 +1,7 @@
 package io.github.alineaos.librarymanager.mapper;
 
 import io.github.alineaos.librarymanager.domain.entity.User;
+import io.github.alineaos.librarymanager.dto.request.UserPatchRequest;
 import io.github.alineaos.librarymanager.dto.request.UserPostRequest;
 import io.github.alineaos.librarymanager.dto.response.UserGetResponse;
 import io.github.alineaos.librarymanager.dto.response.UserPostResponse;
@@ -19,6 +20,8 @@ public interface UserMapper {
     UserGetResponse toGetResponse(User user);
 
     UserPostResponse toPostResponse(User user);
+
+    void mergeRequestToUser(UserPatchRequest patchRequest, @MappingTarget User user);
 
     @AfterMapping
     default void sanitizeCpf(UserPostRequest request, @MappingTarget User user) {

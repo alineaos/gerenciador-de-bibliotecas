@@ -2,6 +2,7 @@ package io.github.alineaos.librarymanager.service;
 
 import io.github.alineaos.librarymanager.domain.entity.User;
 import io.github.alineaos.librarymanager.dto.UserFilter;
+import io.github.alineaos.librarymanager.dto.request.UserPatchRequest;
 import io.github.alineaos.librarymanager.dto.request.UserPostRequest;
 import io.github.alineaos.librarymanager.dto.response.UserGetResponse;
 import io.github.alineaos.librarymanager.dto.response.UserPostResponse;
@@ -33,9 +34,8 @@ public class UserService {
         return mapper.toGetResponseList(users);
     }
 
-    public UserGetResponse findByIdOrThrowNotFound(Long id){
-        User user = repository.findById(id).orElseThrow(
-                () -> new NotFoundException("User not found."));
+    public UserGetResponse findById(Long id){
+        User user = findByIdOrThrowNotFound(id);
 
         return mapper.toGetResponse(user);
     }
@@ -51,6 +51,18 @@ public class UserService {
         return mapper.toPostResponse(savedUser);
     }
 
+    public void update(Long id, @Valid UserPatchRequest userPatchRequest){
+        User userToUpdate = findByIdOrThrowNotFound(id);
+
+        if (userPatchRequest.email() != null){
+            assertEmailDoesNotExists(userPatchRequest.email(), id);
+        }
+
+        mapper.mergeRequestToUser(userPatchRequest, userToUpdate);
+
+        repository.save(userToUpdate);
+    }
+
     private void assertEmailDoesNotExists(String email) {
         repository.findByEmail(email).ifPresent(this::throwEmailExistsException);
     }
@@ -59,11 +71,20 @@ public class UserService {
         repository.findByCpf(cpf).ifPresent(this::throwCpfExistsException);
     }
 
+    private void assertEmailDoesNotExists(String email, Long id) {
+        repository.findByEmailAndIdNot(email, id).ifPresent(this::throwEmailExistsException);
+    }
+
     private void throwEmailExistsException(User user) {
         throw new BussinessException("E-mail '%s' already exists".formatted(user.getEmail()));
     }
 
     private void throwCpfExistsException(User user) {
         throw new BussinessException("CPF '%s' already exists".formatted(user.getCpf()));
+    }
+
+    private User findByIdOrThrowNotFound(Long id){
+        return repository.findById(id).orElseThrow(
+                () -> new NotFoundException("User not found."));
     }
 }
