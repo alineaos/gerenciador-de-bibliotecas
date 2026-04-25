@@ -84,6 +84,15 @@ public class GlobalHandlerException {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
+    @ExceptionHandler(BussinessException.class)
+    public ResponseEntity<DefaultMessageError> handleBussinessException(BussinessException e){
+        String message = e.getMessage();
+
+        DefaultMessageError error = new DefaultMessageError(HttpStatus.BAD_REQUEST.value(), message, LocalDateTime.now());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
     private ResponseEntity<ValidationMessageError> buildValidationErrorResponse(String message, List<ValidationMessageError.FieldError> errors) {
         ValidationMessageError error = new ValidationMessageError(HttpStatus.BAD_REQUEST.value(),
                 message,
