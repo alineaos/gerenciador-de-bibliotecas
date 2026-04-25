@@ -20,31 +20,25 @@ Este projeto consiste em uma API REST desenvolvida com **Spring Boot** para o ge
 ### Geral
 - [x] Configuração inicial do projeto (Spring initializr, dependências)
 - [ ] Finalizar Entidade User
-- [ ] Adicionar Autenticação com Spring Security
-- [ ] Adicionar Criptografia de senhas
 - [ ] Finalizar Entidade Book
 - [ ] Finalizar Entidade Loan
 - [ ] Documentação com Swagger
 
 ### 🧑 Entidade User (Usuário)
 - [x] Criação da Entidade
-- [x] Implementação Repository, Service
-- [ ] Implementação Controller e Endpoints
+- [x] CRUD completo (Criar, Consultar, Atualizar e Excluir)
+- [ ] Adicionar Autenticação com Spring Security
+- [ ] Adicionar Criptografia de senhas
 - [ ] Testes unitários
 
 ### 📚 Entidade Book (Livro)
 - [ ] Criação da Entidade
-- [ ] Implementação Repository, Service
-- [ ] Implementação Controller e Endpoints
-- [ ] CRUD completo
+- [ ] CRUD completo (Criar, Consultar, Atualizar e Excluir)
 - [ ] Testes unitários
 
 ### 🤝 Entidade Loan (Empréstimo)
 - [ ] Criação da Entidade e os seus relacionamentos
-- [ ] Implementação Repository, Service
-- [ ] Exceções e Regras de negócio
-- [ ] Implementação Controller e Endpoints
-- [ ] CRUD completo
+- [ ] Fluxo de Empréstimos (Registrar, Consultar, Renovar, Finalizar)
 - [ ] Testes unitários
 
 
