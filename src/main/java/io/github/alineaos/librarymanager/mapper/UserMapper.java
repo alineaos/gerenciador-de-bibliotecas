@@ -19,6 +19,9 @@ import java.util.List;
 public interface UserMapper {
 
     @Mapping(target = "password", source = "encodedPassword")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     User toUser(UserPostRequest postRequest, String encodedPassword);
 
     List<UserGetResponse> toGetResponseList(List<User> userList);
@@ -28,6 +31,10 @@ public interface UserMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "password", source = "encodedPassword")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "cpf", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     void mergeRequestToUser(UserPatchRequest patchRequest, String encodedPassword, @MappingTarget User user);
 
     @AfterMapping
