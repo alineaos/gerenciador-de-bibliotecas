@@ -27,8 +27,8 @@ Este projeto consiste em uma API REST desenvolvida com **Spring Boot** para o ge
 ### 🧑 Entidade User (Usuário)
 - [x] Criação da Entidade
 - [x] CRUD completo (Criar, Consultar, Atualizar e Excluir)
-- [ ] Adicionar Autenticação com Spring Security
-- [ ] Adicionar Criptografia de senhas
+- [x] Adicionar Autenticação com Spring Security
+- [x] Adicionar Criptografia de senhas
 - [ ] Testes unitários
 
 ### 📚 Entidade Book (Livro)
@@ -77,9 +77,10 @@ datetime updated_at
 │   │   │       ├── exception/                          # Exceções e GlobalHandlerException
 │   │   │       ├── mapper/                             # Mappers
 │   │   │       ├── repository/                         # Comunicação com o banco de dados
+│   │   │       ├── security/                           # Configurações e camadas de segurança da API
 │   │   │       ├── service/                            # Regras de negócio do sistema
 │   │   │       └── LibraryManagerApiApplication.java   # Inicialização da Aplicação
-│   │   └── resources/                                  # Perfis da aplicação
+│   │   └── resources/                                  # Perfis de ambiente e chaves de segurança RSA
 │   └── test                                            # Testes unitários
 ├── compose.yaml                                        # Organização dos containers
 ├── Dockerfile                                          # Criação da imagem da API
