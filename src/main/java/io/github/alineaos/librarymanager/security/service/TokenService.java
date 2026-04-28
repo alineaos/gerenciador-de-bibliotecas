@@ -1,5 +1,6 @@
 package io.github.alineaos.librarymanager.security.service;
 
+import io.github.alineaos.librarymanager.security.domain.UserAuthenticated;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -26,14 +27,17 @@ public class TokenService {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(" "));
 
-        JwtClaimsSet claims = JwtClaimsSet.builder()
+        JwtClaimsSet.Builder claims = JwtClaimsSet.builder()
                 .issuer("library-manager-api")
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(expiresIn))
                 .subject(authentication.getName())
-                .claim("scope", scopes)
-                .build();
+                .claim("scope", scopes);
 
-        return encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+        if (authentication.getPrincipal() instanceof UserAuthenticated user){
+            claims.claim("userId", user.getId());
+        }
+
+        return encoder.encode(JwtEncoderParameters.from(claims.build())).getTokenValue();
     }
 }

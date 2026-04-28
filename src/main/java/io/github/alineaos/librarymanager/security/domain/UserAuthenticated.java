@@ -17,14 +17,18 @@ public class UserAuthenticated implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if(user.getRole() == UserRole.ADMIN){
-            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+            return List.of(new SimpleGrantedAuthority("ADMIN"), new SimpleGrantedAuthority("USER"));
         }
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        return List.of(new SimpleGrantedAuthority("USER"));
     }
 
     @Override
     public String getUsername() {
         return user.getEmail();
+    }
+
+    public Long getId(){
+        return user.getId();
     }
 
     @Override
