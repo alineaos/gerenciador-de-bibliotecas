@@ -8,6 +8,7 @@ import io.github.alineaos.librarymanager.dto.response.UserPostResponse;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
@@ -16,7 +17,9 @@ import java.util.List;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface UserMapper {
-    User toUser(UserPostRequest postRequest);
+
+    @Mapping(target = "password", source = "encodedPassword")
+    User toUser(UserPostRequest postRequest, String encodedPassword);
 
     List<UserGetResponse> toGetResponseList(List<User> userList);
     UserGetResponse toGetResponse(User user);
@@ -24,7 +27,8 @@ public interface UserMapper {
     UserPostResponse toPostResponse(User user);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void mergeRequestToUser(UserPatchRequest patchRequest, @MappingTarget User user);
+    @Mapping(target = "password", source = "encodedPassword")
+    void mergeRequestToUser(UserPatchRequest patchRequest, String encodedPassword, @MappingTarget User user);
 
     @AfterMapping
     default void sanitizeCpf(UserPostRequest request, @MappingTarget User user) {

@@ -13,6 +13,7 @@ import io.github.alineaos.librarymanager.repository.UserRepository;
 import io.github.alineaos.librarymanager.repository.specification.UserSpecification;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -22,6 +23,7 @@ import java.util.List;
 @Validated
 @Service
 public class UserService {
+    private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;
     private final UserMapper mapper;
 
@@ -34,36 +36,42 @@ public class UserService {
         return mapper.toGetResponseList(users);
     }
 
-    public UserGetResponse findById(Long id){
+    public UserGetResponse findById(Long id) {
         User user = findByIdOrThrowNotFound(id);
 
         return mapper.toGetResponse(user);
     }
 
     public UserPostResponse save(@Valid UserPostRequest userPostRequest) {
-        User userToSave = mapper.toUser(userPostRequest);
+        assertEmailDoesNotExists(userPostRequest.email());
+        assertCpfDoesNotExists(userPostRequest.cpf());
 
-        assertEmailDoesNotExists(userToSave.getEmail());
-        assertCpfDoesNotExists(userToSave.getCpf());
+        String encodedPassword = passwordEncoder.encode(userPostRequest.password());
+        User userToSave = mapper.toUser(userPostRequest, encodedPassword);
 
         User savedUser = repository.save(userToSave);
 
         return mapper.toPostResponse(savedUser);
     }
 
-    public void update(Long id, @Valid UserPatchRequest userPatchRequest){
+    public void update(Long id, @Valid UserPatchRequest userPatchRequest) {
         User userToUpdate = findByIdOrThrowNotFound(id);
 
-        if (userPatchRequest.email() != null){
+        if (userPatchRequest.email() != null) {
             assertEmailDoesNotExists(userPatchRequest.email(), id);
         }
 
-        mapper.mergeRequestToUser(userPatchRequest, userToUpdate);
+
+        String encodedPassword = (userPatchRequest.password() != null)
+                ? passwordEncoder.encode(userPatchRequest.password())
+                : userToUpdate.getPassword();
+
+        mapper.mergeRequestToUser(userPatchRequest, encodedPassword, userToUpdate);
 
         repository.save(userToUpdate);
     }
 
-    public void delete(Long id){
+    public void delete(Long id) {
         User userToDelete = findByIdOrThrowNotFound(id);
 
         repository.delete(userToDelete);
@@ -89,7 +97,7 @@ public class UserService {
         throw new BussinessException("CPF '%s' already exists".formatted(user.getCpf()));
     }
 
-    private User findByIdOrThrowNotFound(Long id){
+    private User findByIdOrThrowNotFound(Long id) {
         return repository.findById(id).orElseThrow(
                 () -> new NotFoundException("User not found."));
     }
