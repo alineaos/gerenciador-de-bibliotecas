@@ -11,9 +11,12 @@
 
 Este projeto consiste em uma API REST desenvolvida com **Spring Boot** para o gerenciamento de bibliotecas. O sistema administra desde o cadastro de usuários e livros até as lógicas de empréstimo de livros.
 
-> **🛡️ Aviso sobre privacidade:** Este projeto foi desenvolvido para fins educacionais. Os dados utilizados (como CPFs, e-mails e senhas) são fictícios, não representando informações de pessoas reais.
+### 🚨 Avisos Importantes
+> **🛡️ Privacidade:** Este projeto foi desenvolvido para fins educacionais. Os dados utilizados (como CPFs, e-mails e senhas) são fictícios, não representando informações de pessoas reais.
 
-⚠️ O sistema ainda está em fase de desenvolvimento.
+> **🔒 Segurança:** Este projeto utiliza o algoritmo **RSA** para a assinatura de tokens **JWT**. Para fins de demonstração, as chaves (públicas e privadas) estão inclusas no repositório. Em um cenário de produção real, gere novas chaves e jamais exponha sua chave privada.
+
+> ⚠️ O sistema ainda está em fase de desenvolvimento.
 
 ## 🔨 Roadmap de Desenvolvimento
 
