@@ -84,8 +84,8 @@ public class GlobalHandlerException {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    @ExceptionHandler(BussinessException.class)
-    public ResponseEntity<DefaultMessageError> handleBussinessException(BussinessException e){
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<DefaultMessageError> handleBussinessException(BusinessException e){
         String message = e.getMessage();
 
         DefaultMessageError error = new DefaultMessageError(HttpStatus.BAD_REQUEST.value(), message, LocalDateTime.now());

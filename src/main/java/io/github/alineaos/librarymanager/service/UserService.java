@@ -6,7 +6,7 @@ import io.github.alineaos.librarymanager.dto.request.UserPatchRequest;
 import io.github.alineaos.librarymanager.dto.request.UserPostRequest;
 import io.github.alineaos.librarymanager.dto.response.UserGetResponse;
 import io.github.alineaos.librarymanager.dto.response.UserPostResponse;
-import io.github.alineaos.librarymanager.exception.BussinessException;
+import io.github.alineaos.librarymanager.exception.BusinessException;
 import io.github.alineaos.librarymanager.exception.NotFoundException;
 import io.github.alineaos.librarymanager.mapper.UserMapper;
 import io.github.alineaos.librarymanager.repository.UserRepository;
@@ -90,11 +90,11 @@ public class UserService {
     }
 
     private void throwEmailExistsException(User user) {
-        throw new BussinessException("E-mail '%s' already exists".formatted(user.getEmail()));
+        throw new BusinessException("E-mail '%s' already exists".formatted(user.getEmail()));
     }
 
     private void throwCpfExistsException(User user) {
-        throw new BussinessException("CPF '%s' already exists".formatted(user.getCpf()));
+        throw new BusinessException("CPF '%s' already exists".formatted(user.getCpf()));
     }
 
     private User findByIdOrThrowNotFound(Long id) {
