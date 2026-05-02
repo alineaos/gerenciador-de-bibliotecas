@@ -62,7 +62,7 @@ public class UserService {
         }
 
 
-        String encodedPassword = (userPatchRequest.password() != null)
+        String encodedPassword = (userPatchRequest.password() != null && !userPatchRequest.password().isBlank())
                 ? passwordEncoder.encode(userPatchRequest.password())
                 : userToUpdate.getPassword();
 
