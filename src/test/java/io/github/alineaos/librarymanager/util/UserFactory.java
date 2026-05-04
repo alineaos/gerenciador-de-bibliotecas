@@ -5,6 +5,7 @@ import io.github.alineaos.librarymanager.domain.enums.UserRole;
 import io.github.alineaos.librarymanager.dto.request.UserPatchRequest;
 import io.github.alineaos.librarymanager.dto.request.UserPostRequest;
 import io.github.alineaos.librarymanager.dto.response.UserGetResponse;
+import io.github.alineaos.librarymanager.dto.response.UserPostResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,9 +27,9 @@ public class UserFactory {
                 .build();
 
         User gabriel = User.builder()
-                .id(1L)
+                .id(2L)
                 .fullName("Gabriel Souza")
-                .email("gabriel.Souza@testes.com")
+                .email("gabriel.souza@testes.com")
                 .cpf("12345678922")
                 .birthDate(LocalDate.parse("1992-03-05"))
                 .role(UserRole.USER)
@@ -38,7 +39,7 @@ public class UserFactory {
                 .build();
 
         User ana = User.builder()
-                .id(1L)
+                .id(3L)
                 .fullName("Ana Santana")
                 .email("ana.santana@testes.com")
                 .cpf("12345678933")
@@ -81,6 +82,23 @@ public class UserFactory {
                 user.getUpdatedAt());
     }
 
+    public UserGetResponse newUserGetResponseById(Long id) {
+        User user = newUserList().stream()
+                .filter(u -> u.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Invalid Test: Id Not Found in UserFactory: " + id));
+
+        return new UserGetResponse(
+                user.getId(),
+                user.getFullName(),
+                user.getEmail(),
+                user.getCpf(),
+                user.getBirthDate(),
+                user.getRole(),
+                user.getCreatedAt(),
+                user.getUpdatedAt());
+    }
+
     public UserPostRequest newUserPostRequest() {
         User user = newUserSaved();
 
@@ -91,6 +109,17 @@ public class UserFactory {
                 user.getBirthDate(),
                 user.getRole(),
                 user.getPassword());
+    }
+
+    public UserPostResponse newUserPostResponse() {
+        User user = newUserSaved();
+
+        return new UserPostResponse(
+                user.getId(),
+                user.getFullName(),
+                user.getEmail(),
+                user.getRole(),
+                user.getCreatedAt());
     }
 
     public UserPatchRequest newUserPatchRequest() {

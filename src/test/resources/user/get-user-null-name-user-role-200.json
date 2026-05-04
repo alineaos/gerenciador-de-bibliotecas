@@ -1,0 +1,22 @@
+[
+  {
+    "id": 2,
+    "fullName": "Gabriel Souza",
+    "email": "gabriel.souza@testes.com",
+    "cpf": "123.456.789-22",
+    "birthDate": "1992-03-05",
+    "role": "USER",
+    "createdAt": "2026-04-24T18:01:33",
+    "updatedAt": "2026-04-24T18:01:33"
+  },
+  {
+    "id": 3,
+    "fullName": "Ana Santana",
+    "email": "ana.santana@testes.com",
+    "cpf": "123.456.789-33",
+    "birthDate": "2001-09-28",
+    "role": "USER",
+    "createdAt": "2026-04-24T18:02:33",
+    "updatedAt": "2026-04-24T18:02:33"
+  }
+]
