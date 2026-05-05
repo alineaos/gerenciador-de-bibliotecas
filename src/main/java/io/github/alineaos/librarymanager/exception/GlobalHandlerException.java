@@ -92,6 +92,16 @@ public class GlobalHandlerException {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<DefaultMessageError> handleAccessDeniedException(AccessDeniedException e){
+        String message = e.getReason();
+
+        DefaultMessageError error = new DefaultMessageError(HttpStatus.FORBIDDEN.value(), message, LocalDateTime.now());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<DefaultMessageError> handleNotFoundException(NotFoundException e){
         String message = e.getReason();

@@ -1,11 +1,13 @@
 package io.github.alineaos.librarymanager.service;
 
 import io.github.alineaos.librarymanager.domain.entity.User;
+import io.github.alineaos.librarymanager.domain.enums.UserRole;
 import io.github.alineaos.librarymanager.dto.UserFilter;
 import io.github.alineaos.librarymanager.dto.request.UserPatchRequest;
 import io.github.alineaos.librarymanager.dto.request.UserPostRequest;
 import io.github.alineaos.librarymanager.dto.response.UserGetResponse;
 import io.github.alineaos.librarymanager.dto.response.UserPostResponse;
+import io.github.alineaos.librarymanager.exception.AccessDeniedException;
 import io.github.alineaos.librarymanager.exception.BusinessException;
 import io.github.alineaos.librarymanager.exception.NotFoundException;
 import io.github.alineaos.librarymanager.mapper.UserMapper;
@@ -57,10 +59,13 @@ public class UserService {
     public void update(Long id, @Valid UserPatchRequest userPatchRequest) {
         User userToUpdate = findByIdOrThrowNotFound(id);
 
+        if (userPatchRequest.role() != null && userToUpdate.getRole() != UserRole.ADMIN){
+            throw new AccessDeniedException("Access Denied: Only Admins can update the user role.");
+        }
+
         if (userPatchRequest.email() != null) {
             assertEmailDoesNotExists(userPatchRequest.email(), id);
         }
-
 
         String encodedPassword = (userPatchRequest.password() != null && !userPatchRequest.password().isBlank())
                 ? passwordEncoder.encode(userPatchRequest.password())
