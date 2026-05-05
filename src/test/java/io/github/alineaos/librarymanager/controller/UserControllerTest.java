@@ -11,8 +11,9 @@ import io.github.alineaos.librarymanager.exception.NotFoundException;
 import io.github.alineaos.librarymanager.security.config.SecurityConfig;
 import io.github.alineaos.librarymanager.service.UserService;
 import io.github.alineaos.librarymanager.util.FileUtils;
+import io.github.alineaos.librarymanager.util.UserErrorFactory;
 import io.github.alineaos.librarymanager.util.UserFactory;
-import org.junit.jupiter.api.BeforeEach;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -29,6 +30,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -204,9 +206,31 @@ class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
+    @ParameterizedTest(name = "[{index}] {0} ")
+    @MethodSource("postBadRequestSource")
+    @DisplayName("POST v1/users returns 400 (bad request) when fields are invalid")
+    @Order(9)
+    @WithMockUser(authorities = "SCOPE_ADMIN")
+    void save_ReturnsBadRequest_WhenFieldsAreInvalid(String fileName, List<String> errors) throws Exception {
+        String request = fileUtils.readResourceFile("user/%s".formatted(fileName));
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(URL)
+                        .content(request)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn();
+
+        Exception resolvedException = mvcResult.getResolvedException();
+
+        Assertions.assertThat(resolvedException).isNotNull();
+
+        Assertions.assertThat(resolvedException.getMessage()).contains(errors);
+    }
+
     @Test
     @DisplayName("PATCH v1/users/1 returns 204 (no content) and updates an user with given id when the user is an admin")
-    @Order(9)
+    @Order(10)
     @WithMockUser(authorities = "SCOPE_ADMIN")
     void update_ReturnsNoContentAndUpdatesUserById_WhenUserIsAdmin() throws Exception {
         Long targetUserId = 1L;
@@ -224,7 +248,7 @@ class UserControllerTest {
 
     @Test
     @DisplayName("PATCH v1/users/2 returns 204 (no content) and updates an user with given id when the user is the id owner")
-    @Order(10)
+    @Order(11)
     @WithMockUser(authorities = "SCOPE_USER")
     void update_ReturnsNoContentAndUpdatesUserById_WhenUserIsIdOwner() throws Exception {
         Long targetUserId = 2L;
@@ -243,7 +267,7 @@ class UserControllerTest {
 
     @Test
     @DisplayName("PATCH v1/users/1 returns 403 (forbidden) when the user is not the id owner")
-    @Order(11)
+    @Order(12)
     @WithMockUser(authorities = "SCOPE_USER")
     void update_ReturnsForbidden_WhenUserIsNotIdOwner() throws Exception {
         Long loggedUserId = 2L;
@@ -261,7 +285,7 @@ class UserControllerTest {
 
     @Test
     @DisplayName("PATCH v1/users/999 returns 404 (not found) when the user is not found")
-    @Order(12)
+    @Order(13)
     @WithMockUser(authorities = "SCOPE_ADMIN")
     void update_ReturnsNotFound_WhenUserIsNotFound() throws Exception {
         Long targetUserId = 999L;
@@ -282,8 +306,33 @@ class UserControllerTest {
     }
 
     @Test
+    @DisplayName("PATCH v1/users/2 returns 400 (bad request) when fields are invalid")
+    @Order(14)
+    @WithMockUser(authorities = "SCOPE_ADMIN")
+    void update_ReturnsBadRequest_WhenFieldsAreInvalid() throws Exception {
+        Long targetUserId = 2L;
+
+        String request = fileUtils.readResourceFile("user/patch-request-user-invalid-fields-400.json");
+
+        List<String> errors = UserErrorFactory.emailNotValidAndDateNotPastErrors();
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.patch(URL + "/{id}", targetUserId)
+                        .content(request)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn();
+
+        Exception resolvedException = mvcResult.getResolvedException();
+
+        Assertions.assertThat(resolvedException).isNotNull();
+
+        Assertions.assertThat(resolvedException.getMessage()).contains(errors);
+    }
+
+    @Test
     @DisplayName("DELETE v1/users/2 returns 204 (no content) and deletes an user with given id when the user is an admin")
-    @Order(13)
+    @Order(15)
     @WithMockUser(authorities = "SCOPE_ADMIN")
     void delete_ReturnsNoContentAndDeletesUserById_WhenUserIsAdmin() throws Exception {
         Long targetUserId = 2L;
@@ -297,7 +346,7 @@ class UserControllerTest {
 
     @Test
     @DisplayName("DELETE v1/users/2 returns 403 (forbidden) when the user is not an admin")
-    @Order(14)
+    @Order(16)
     @WithMockUser(authorities = "SCOPE_USER")
     void delete_ReturnsForbidden_WhenUserIsNotAdmin() throws Exception {
         Long targetUserId = 2L;
@@ -342,6 +391,19 @@ class UserControllerTest {
                         new UserFilter("InvalidName", null),
                         List.of()
                 )
+        );
+    }
+
+    private static Stream<Arguments> postBadRequestSource() {
+        List<String> allRequiredAndNotValidErrors = UserErrorFactory.allRequiredErrors();
+        allRequiredAndNotValidErrors.addAll(UserErrorFactory.allNotValidErrors());
+
+        List<String> invalidFieldErrors = UserErrorFactory.emailNotValidAndDateNotPastErrors();
+
+        return Stream.of(
+                Arguments.of("post-request-user-empty-fields-400.json", allRequiredAndNotValidErrors),
+                Arguments.of("post-request-user-blank-fields-400.json", allRequiredAndNotValidErrors),
+                Arguments.of("post-request-user-invalid-fields-400.json", invalidFieldErrors)
         );
     }
 }
