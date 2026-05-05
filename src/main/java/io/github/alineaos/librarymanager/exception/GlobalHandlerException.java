@@ -8,6 +8,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -111,6 +112,14 @@ public class GlobalHandlerException {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<DefaultMessageError> handleBadCredentialsException(BadCredentialsException e){
+        String message = "Invalid credentials";
+
+        DefaultMessageError error = new DefaultMessageError(HttpStatus.UNAUTHORIZED.value(), message, LocalDateTime.now());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
 
     private ResponseEntity<ValidationMessageError> buildValidationErrorResponse(String message, List<ValidationMessageError.FieldError> errors) {
         ValidationMessageError error = new ValidationMessageError(HttpStatus.BAD_REQUEST.value(),
