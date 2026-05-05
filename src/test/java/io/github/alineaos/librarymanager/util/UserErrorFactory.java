@@ -27,4 +27,8 @@ public class UserErrorFactory {
     public static List<String> emailNotValidAndDateNotPastErrors() {
         return new ArrayList<>(List.of(emailNotValidError, birthDateNotPastError));
     }
+
+    public static List<String> allLoginFieldsErrors(){
+        return new ArrayList<>(List.of(emailRequiredError, emailNotValidError,passwordRequiredError));
+    }
 }

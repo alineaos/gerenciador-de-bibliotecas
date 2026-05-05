@@ -1,0 +1,5 @@
+{
+  "accessToken": "access-token-123",
+  "tokenType": "Bearer",
+  "expiresIn": 3600
+}
