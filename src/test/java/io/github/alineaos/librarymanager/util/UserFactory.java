@@ -133,4 +133,14 @@ public class UserFactory {
                 user.getPassword());
     }
 
+    public UserPatchRequest newUserPatchRequestUpdateRole() {
+        User user = newUserList().getLast();
+
+        return new UserPatchRequest(
+                user.getFullName(),
+                user.getEmail(),
+                user.getBirthDate(),
+                UserRole.ADMIN,
+                user.getPassword());
+    }
 }

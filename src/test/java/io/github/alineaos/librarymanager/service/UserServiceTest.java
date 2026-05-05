@@ -7,6 +7,7 @@ import io.github.alineaos.librarymanager.dto.request.UserPatchRequest;
 import io.github.alineaos.librarymanager.dto.request.UserPostRequest;
 import io.github.alineaos.librarymanager.dto.response.UserGetResponse;
 import io.github.alineaos.librarymanager.dto.response.UserPostResponse;
+import io.github.alineaos.librarymanager.exception.AccessDeniedException;
 import io.github.alineaos.librarymanager.exception.BusinessException;
 import io.github.alineaos.librarymanager.mapper.UserMapper;
 import io.github.alineaos.librarymanager.repository.UserRepository;
@@ -241,8 +242,24 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("update throws AccessDeniedException when user is not an admin")
+    @Order(11)
+    void update_ThrowsAccessDeniedException_WhenUserNotAdmin() {
+        User userToUpdate = userList.getLast();
+        UserPatchRequest expectedDto = userFactory.newUserPatchRequestUpdateRole();
+
+        Long id = userToUpdate.getId();
+
+        when(repository.findById(id)).thenReturn(Optional.of(userToUpdate));
+
+        Assertions.assertThatException()
+                .isThrownBy(() -> service.update(id, expectedDto))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
     @DisplayName("delete removes a user")
-    @Order(10)
+    @Order(12)
     void delete_Removes_WhenSuccessful() {
         User userToDelete = userList.getFirst();
 
@@ -255,7 +272,7 @@ class UserServiceTest {
 
     @Test
     @DisplayName("delete throws NotFoundException when user is not found")
-    @Order(11)
+    @Order(13)
     void delete_ThrowsNotFoundException_WhenUserIsNotFound() {
         User userToDelete = userList.getFirst();
 
