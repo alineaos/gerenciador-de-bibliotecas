@@ -7,16 +7,11 @@ import io.github.alineaos.librarymanager.dto.response.UserGetResponse;
 import io.github.alineaos.librarymanager.dto.response.UserPostResponse;
 import io.github.alineaos.librarymanager.security.annotation.IsAdmin;
 import io.github.alineaos.librarymanager.security.annotation.IsAdminOrOwner;
-import io.github.alineaos.librarymanager.security.domain.UserAuthenticated;
 import io.github.alineaos.librarymanager.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -43,12 +38,9 @@ public class UserController {
 
     @GetMapping("/{id}")
     @IsAdminOrOwner
-    public ResponseEntity<UserGetResponse> findById(@PathVariable Long id, Authentication authentication) {
+    public ResponseEntity<UserGetResponse> findById(@PathVariable Long id) {
         UserGetResponse getResponse = service.findById(id);
-        if (authentication.getPrincipal() instanceof Jwt jwt){
-            System.out.println(jwt.getClaims().get("userId"));
-            System.out.println(id);
-        }
+
         return ResponseEntity.ok(getResponse);
     }
 
