@@ -1,6 +1,2 @@
 jwt:
-  public:
-    key: classpath:test.pub
-  private:
-    key: classpath:test.key
   expiration-time: 3600

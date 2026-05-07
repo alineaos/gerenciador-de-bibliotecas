@@ -1,5 +1,6 @@
 package io.github.alineaos.librarymanager.controller;
 
+import io.github.alineaos.librarymanager.config.UnitTestConfig;
 import io.github.alineaos.librarymanager.domain.entity.User;
 import io.github.alineaos.librarymanager.domain.enums.UserRole;
 import io.github.alineaos.librarymanager.dto.UserFilter;
@@ -42,7 +43,9 @@ import java.util.stream.Stream;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -50,7 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @WithMockUser
 @Import({FileUtils.class, UserFactory.class, SecurityConfig.class})
-class UserControllerTest {
+class UserControllerTest extends UnitTestConfig {
     private static final String URL = "/v1/users";
     @Autowired
     private MockMvc mockMvc;

@@ -1,5 +1,6 @@
 package io.github.alineaos.librarymanager.security.auth;
 
+import io.github.alineaos.librarymanager.config.UnitTestConfig;
 import io.github.alineaos.librarymanager.dto.request.UserLoginRequest;
 import io.github.alineaos.librarymanager.security.service.TokenService;
 import io.github.alineaos.librarymanager.util.AuthFactory;
@@ -8,10 +9,8 @@ import io.github.alineaos.librarymanager.util.UserErrorFactory;
 import io.github.alineaos.librarymanager.util.UserFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -42,10 +41,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WebMvcTest(controllers = AuthController.class)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @AutoConfigureMockMvc(addFilters = false)
 @Import({FileUtils.class, UserFactory.class, AuthFactory.class})
-class AuthControllerTest {
+class AuthControllerTest extends UnitTestConfig {
     private static final String LOGIN_URL = "/v1/auth/login";
     @Autowired
     private MockMvc mockMvc;
