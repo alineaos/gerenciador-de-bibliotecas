@@ -22,7 +22,7 @@ Este projeto consiste em uma API REST desenvolvida com **Spring Boot** para o ge
 
 ### Geral
 - [x] Configuração inicial do projeto (Spring initializr, dependências)
-- [ ] Finalizar Entidade User
+- [x] Finalizar Entidade User
 - [ ] Finalizar Entidade Book
 - [ ] Finalizar Entidade Loan
 - [ ] Documentação com Swagger
@@ -32,10 +32,10 @@ Este projeto consiste em uma API REST desenvolvida com **Spring Boot** para o ge
 - [x] CRUD completo (Criar, Consultar, Atualizar e Excluir)
 - [x] Adicionar Autenticação com Spring Security
 - [x] Adicionar Criptografia de senhas
-- [ ] Testes unitários
+- [x] Testes unitários
 
 ### 📚 Entidade Book (Livro)
-- [ ] Criação da Entidade
+- [x] Criação da Entidade
 - [ ] CRUD completo (Criar, Consultar, Atualizar e Excluir)
 - [ ] Testes unitários
 
@@ -45,28 +45,75 @@ Este projeto consiste em uma API REST desenvolvida com **Spring Boot** para o ge
 - [ ] Testes unitários
 
 
-### 🗃️ Arquitetura do banco de dados
+## 🗃️ Arquitetura do banco de dados
+### Diagrama de Definição dos livros
 ```mermaid
 erDiagram
-    USER ||--o{ LOAN : makes
-    BOOK ||--o{ LOAN : is_in
-    
-USER {
-bigint id PK
-date birth_date
-varchar cpf UK
-datetime created_at
-varchar email UK
-varchar full_name
-varchar password
-varchar role
-datetime updated_at
+    BOOK ||--|{ BOOK_GENRE : "has"
+    GENRE ||--o{ BOOK_GENRE : "has"
+
+BOOK {
+    bigint id PK
+    varchar title
+    varchar author
+    varchar publisher
+    year publication_year
+    int edition
+    varchar isbn UK
+    datetime created_at
+    datetime updated_at
 }
+
+GENRE {
+    bigint id PK
+    varchar name UK
+    datetime created_at
+    datetime updated_at
+}
+
+BOOK_GENRE{
+    bigint id PK
+    bigint book_id FK
+    bigint genre_id FK
+    datetime created_at
+    datetime updated_at
+}
+```
+
+### Diagrama do Fluxo de Empréstimos
+```mermaid
+erDiagram
+    USER ||--o{ LOAN : "makes"
+    BOOK ||--o{ LOAN : "is in"
+
+    USER {
+        bigint id PK
+        varchar full_name
+        varchar email UK
+        varchar cpf UK
+        date birth_date
+        varchar role
+        varchar password
+        datetime created_at
+        datetime updated_at
+    }
+
+    BOOK {
+        bigint id PK
+        varchar title
+        varchar author
+        varchar publisher
+        year publication_year
+        int edition
+        varchar isbn UK
+        datetime created_at
+        datetime updated_at
+    }
 ```
 
 (Esta seção será atualizada conforme o desenvolvimento da API)
 
-### 📂 Estrutura do Projeto
+## 📂 Estrutura do Projeto
 ```
 .
 ├── src/
@@ -96,7 +143,7 @@ datetime updated_at
 
 (Esta seção será atualizada conforme o desenvolvimento da API)
 
-### 🛠️ Tecnologias e ferramentas
+## 🛠️ Tecnologias e ferramentas
 
 **Linguagem:** Java 21
 
