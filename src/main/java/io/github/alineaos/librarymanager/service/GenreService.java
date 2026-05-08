@@ -51,7 +51,7 @@ public class GenreService {
 
     public void update(Long id, @Valid GenrePutRequest putRequest){
         Genre genreToUpdate = findByIdOrThrowNotFound(id);
-        assertNameNotExists(putRequest.name());
+        assertNameNotExists(putRequest.name(), id);
 
         mapper.mergeRequestToGenre(putRequest, genreToUpdate);
 
@@ -71,6 +71,10 @@ public class GenreService {
 
     private void assertNameNotExists(String name){
         repository.findByNameIgnoreCase(name).ifPresent(this::throwNameAlreadyExistsException);
+    }
+
+    private void assertNameNotExists(String name, Long id){
+        repository.findByNameIgnoreCaseAndIdNot(name, id).ifPresent(this::throwNameAlreadyExistsException);
     }
 
     private void throwNameAlreadyExistsException(Genre genre){

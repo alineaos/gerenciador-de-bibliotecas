@@ -8,4 +8,6 @@ import java.util.Optional;
 
 public interface GenreRepository extends JpaRepository<Genre, Long>, JpaSpecificationExecutor<Genre> {
     Optional<Genre> findByNameIgnoreCase(String name);
+
+    Optional<Genre> findByNameIgnoreCaseAndIdNot(String name, Long id);
 }
