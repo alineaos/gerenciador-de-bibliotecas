@@ -6,6 +6,7 @@ import io.github.alineaos.librarymanager.dto.request.BookPostRequest;
 import io.github.alineaos.librarymanager.dto.response.BookGetResponse;
 import io.github.alineaos.librarymanager.dto.response.BookPostResponse;
 import io.github.alineaos.librarymanager.exception.BusinessException;
+import io.github.alineaos.librarymanager.exception.NotFoundException;
 import io.github.alineaos.librarymanager.mapper.BookMapper;
 import io.github.alineaos.librarymanager.repository.BookRepository;
 import io.github.alineaos.librarymanager.repository.specification.BookSpecification;
@@ -36,6 +37,12 @@ public class BookService {
         return mapper.toBookGetResponseList(books);
     }
 
+    public BookGetResponse findById(Long id){
+        Book book = findByIdOrThrowNotFound(id);
+
+        return mapper.toBookGetResponse(book);
+    }
+
     public BookPostResponse save(@Valid BookPostRequest postRequest){
         assertIsbnNotExists(postRequest.isbn());
 
@@ -52,5 +59,11 @@ public class BookService {
 
     private void throwIsbnAlreadyExists(Book book){
         throw new BusinessException("Isbn '%s' already exists".formatted(book.getIsbn()));
+    }
+
+    private Book findByIdOrThrowNotFound(Long id){
+        return repository.findById(id).orElseThrow(
+                () -> new NotFoundException("Book not found.")
+        );
     }
 }

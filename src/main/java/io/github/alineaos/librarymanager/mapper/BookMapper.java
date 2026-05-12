@@ -19,6 +19,7 @@ public interface BookMapper {
     Book toBook(BookPostRequest postRequest);
 
     List<BookGetResponse> toBookGetResponseList(List<Book> books);
+    BookGetResponse toBookGetResponse(Book book);
 
     BookPostResponse toBookPostResponse(Book book);
 }
