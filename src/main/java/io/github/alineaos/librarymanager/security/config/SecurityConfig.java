@@ -46,6 +46,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/v1/auth/**").permitAll()
                                 .requestMatchers("/v1/users/**").authenticated()
                                 .requestMatchers("/v1/genres/**").hasAuthority("SCOPE_ADMIN")
+                                .requestMatchers("/v1/books/**").authenticated()
                                 .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer(conf -> conf.jwt(Customizer.withDefaults()))

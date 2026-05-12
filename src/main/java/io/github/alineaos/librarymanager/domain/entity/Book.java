@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
@@ -23,6 +24,7 @@ import java.time.Year;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder
@@ -49,7 +51,7 @@ public class Book {
     private Year year;
 
     @Column(nullable = false)
-    private int edition;
+    private Integer edition;
 
     @Column(nullable = false, unique = true, length = 13)
     private String isbn;
