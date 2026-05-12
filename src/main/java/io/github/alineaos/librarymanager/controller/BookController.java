@@ -1,6 +1,7 @@
 package io.github.alineaos.librarymanager.controller;
 
 import io.github.alineaos.librarymanager.dto.BookFilter;
+import io.github.alineaos.librarymanager.dto.request.BookPatchRequest;
 import io.github.alineaos.librarymanager.dto.request.BookPostRequest;
 import io.github.alineaos.librarymanager.dto.response.BookGetResponse;
 import io.github.alineaos.librarymanager.dto.response.BookPostResponse;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,5 +50,13 @@ public class BookController {
         BookPostResponse postResponse =  service.save(postRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(postResponse);
+    }
+
+    @PatchMapping("/{id}")
+    @IsAdmin
+    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody @Valid BookPatchRequest patchRequest){
+        service.update(id, patchRequest);
+
+        return ResponseEntity.noContent().build();
     }
 }

@@ -2,6 +2,7 @@ package io.github.alineaos.librarymanager.service;
 
 import io.github.alineaos.librarymanager.domain.entity.Book;
 import io.github.alineaos.librarymanager.dto.BookFilter;
+import io.github.alineaos.librarymanager.dto.request.BookPatchRequest;
 import io.github.alineaos.librarymanager.dto.request.BookPostRequest;
 import io.github.alineaos.librarymanager.dto.response.BookGetResponse;
 import io.github.alineaos.librarymanager.dto.response.BookPostResponse;
@@ -24,7 +25,7 @@ public class BookService {
     private final BookRepository repository;
     private final BookMapper mapper;
 
-    public List<BookGetResponse> findAll(BookFilter bookFilter){
+    public List<BookGetResponse> findAll(BookFilter bookFilter) {
         List<Book> books = repository.findAll(
                 BookSpecification.hasTitle(bookFilter.title())
                         .and(BookSpecification.hasAuthor(bookFilter.author()))
@@ -37,14 +38,14 @@ public class BookService {
         return mapper.toBookGetResponseList(books);
     }
 
-    public BookGetResponse findById(Long id){
+    public BookGetResponse findById(Long id) {
         Book book = findByIdOrThrowNotFound(id);
 
         return mapper.toBookGetResponse(book);
     }
 
-    public BookPostResponse save(@Valid BookPostRequest postRequest){
-        assertIsbnNotExists(postRequest.isbn());
+    public BookPostResponse save(@Valid BookPostRequest postRequest) {
+        this.assertIsbnDoesNotExists(postRequest.isbn());
 
         Book bookToSave = mapper.toBook(postRequest);
 
@@ -53,15 +54,31 @@ public class BookService {
         return mapper.toBookPostResponse(bookSaved);
     }
 
-    private void assertIsbnNotExists(String isbn){
+    public void update(Long id, @Valid BookPatchRequest patchRequest) {
+        Book bookToUpdate = findByIdOrThrowNotFound(id);
+
+        if (patchRequest.isbn() != null) {
+            this.assertIsbnDoesNotExists(patchRequest.isbn(), id);
+        }
+
+        mapper.mergeRequestToBook(patchRequest, bookToUpdate);
+
+        repository.save(bookToUpdate);
+    }
+
+    private void assertIsbnDoesNotExists(String isbn) {
         repository.findByIsbn(isbn).ifPresent(this::throwIsbnAlreadyExists);
     }
 
-    private void throwIsbnAlreadyExists(Book book){
+    private void assertIsbnDoesNotExists(String isbn, Long id) {
+        repository.findByIsbnAndIdNot(isbn, id).ifPresent(this::throwIsbnAlreadyExists);
+    }
+
+    private void throwIsbnAlreadyExists(Book book) {
         throw new BusinessException("Isbn '%s' already exists".formatted(book.getIsbn()));
     }
 
-    private Book findByIdOrThrowNotFound(Long id){
+    private Book findByIdOrThrowNotFound(Long id) {
         return repository.findById(id).orElseThrow(
                 () -> new NotFoundException("Book not found.")
         );
