@@ -31,7 +31,7 @@ import java.time.Year;
 @ToString
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(uniqueConstraints = @UniqueConstraint(name = "uk_book_year", columnNames = "publication_year"))
+@Table(uniqueConstraints = @UniqueConstraint(name = "uk_book_isbn", columnNames = "isbn"))
 public class Book {
     @EqualsAndHashCode.Include
     @Id
