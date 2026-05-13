@@ -66,6 +66,12 @@ public class BookService {
         repository.save(bookToUpdate);
     }
 
+    public void delete(Long id){
+        Book book = findByIdOrThrowNotFound(id);
+
+        repository.delete(book);
+    }
+
     private void assertIsbnDoesNotExists(String isbn) {
         repository.findByIsbn(isbn).ifPresent(this::throwIsbnAlreadyExists);
     }
