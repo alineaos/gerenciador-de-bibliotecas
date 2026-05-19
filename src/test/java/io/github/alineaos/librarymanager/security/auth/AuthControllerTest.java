@@ -60,8 +60,8 @@ class AuthControllerTest extends UnitTestConfig {
     @DisplayName("POST v1/auth/login returns 200 (ok) and access token when the credentials are valid")
     @Order(1)
     void login_ReturnsOkAndAccessToken_WhenCredentialsAreValid() throws Exception {
-        String request = fileUtils.readResourceFile("auth/post-login-request-200.json");
-        String response = fileUtils.readResourceFile("auth/post-login-response-200.json");
+        String request = fileUtils.readResourceFile("auth/post-login-request.json");
+        String response = fileUtils.readResourceFile("auth/post-login-response.json");
 
         UserLoginRequest loginRequest = authFactory.newUserLoginRequest();
         String accessToken = "access-token-123";
@@ -84,7 +84,7 @@ class AuthControllerTest extends UnitTestConfig {
     @DisplayName("POST v1/auth/login returns 401 (unauthorized) when the credentials are invalid")
     @Order(2)
     void login_ReturnsUnauthorized_WhenCredentialsAreInvalid() throws Exception {
-        String request = fileUtils.readResourceFile("auth/post-login-request-200.json");
+        String request = fileUtils.readResourceFile("auth/post-login-request.json");
         String errorMessage = "Invalid credentials";
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenThrow(new BadCredentialsException(errorMessage));
 
@@ -128,8 +128,8 @@ class AuthControllerTest extends UnitTestConfig {
         List<String> allLoginFieldsErrors = UserErrorFactory.allLoginFieldsErrors();
 
         return Stream.of(
-                Arguments.of("post-login-request-empty-fields-400.json", allLoginFieldsErrors),
-                Arguments.of("post-login-request-blank-fields-400.json", allLoginFieldsErrors)
+                Arguments.of("post-login-request-empty-fields.json", allLoginFieldsErrors),
+                Arguments.of("post-login-request-blank-fields.json", allLoginFieldsErrors)
         );
     }
 }

@@ -102,7 +102,7 @@ class BookControllerTest extends UnitTestConfig {
 
         when(service.findById(targetBookId)).thenReturn(foundBook);
 
-        String response = fileUtils.readResourceFile("book/get-book-by-id-200.json");
+        String response = fileUtils.readResourceFile("book/get-response-book-by-id.json");
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL + "/{id}", targetBookId))
                 .andDo(MockMvcResultHandlers.print())
@@ -133,8 +133,8 @@ class BookControllerTest extends UnitTestConfig {
     @Order(4)
     @WithMockUser(authorities = "SCOPE_ADMIN")
     void save_ReturnsCreatedAndCreatesBook_WhenUserIsAdminAndFieldsAreValid() throws Exception {
-        String request = fileUtils.readResourceFile("book/post-request-book-201.json");
-        String response = fileUtils.readResourceFile("book/post-response-book-201.json");
+        String request = fileUtils.readResourceFile("book/post-request-book.json");
+        String response = fileUtils.readResourceFile("book/post-response-book.json");
 
         BookPostResponse bookSavedResponse = bookFactory.newBookPostResponse();
 
@@ -154,7 +154,7 @@ class BookControllerTest extends UnitTestConfig {
     @Order(5)
     @WithMockUser(authorities = "SCOPE_USER")
     void save_ReturnsForbidden_WhenUserIsNotAdmin() throws Exception {
-        String request = fileUtils.readResourceFile("book/post-request-book-403.json");
+        String request = fileUtils.readResourceFile("book/post-request-book.json");
 
         mockMvc.perform(MockMvcRequestBuilders.post(URL)
                         .content(request)
@@ -194,7 +194,7 @@ class BookControllerTest extends UnitTestConfig {
 
         doNothing().when(service).update(eq(targetBookId), any(BookPatchRequest.class));
 
-        String request = fileUtils.readResourceFile("book/patch-request-admin-book-204.json");
+        String request = fileUtils.readResourceFile("book/patch-request-book.json");
 
         mockMvc.perform(MockMvcRequestBuilders.patch(URL + "/{id}", targetBookId)
                         .content(request)
@@ -209,7 +209,7 @@ class BookControllerTest extends UnitTestConfig {
     @WithMockUser(authorities = "SCOPE_USER")
     void update_ReturnsForbidden_WhenUserIsNotAdmin() throws Exception {
         Long targetBookId = 1L;
-        String request = fileUtils.readResourceFile("book/patch-request-not-admin-book-403.json");
+        String request = fileUtils.readResourceFile("book/patch-request-book.json");
 
         mockMvc.perform(MockMvcRequestBuilders.patch(URL + "/{id}", targetBookId)
                         .content(request)
@@ -225,7 +225,7 @@ class BookControllerTest extends UnitTestConfig {
     void update_ReturnsNotFound_WhenBookIsNotFound() throws Exception {
         Long targetBookId = 999L;
 
-        String request = fileUtils.readResourceFile("book/patch-request-invalid-id-404.json");
+        String request = fileUtils.readResourceFile("book/patch-request-book-invalid-id.json");
 
         doThrow(new NotFoundException("Book not found.")).when(service).update(eq(targetBookId), any(BookPatchRequest.class));
 
@@ -247,7 +247,7 @@ class BookControllerTest extends UnitTestConfig {
     void update_ReturnsBadRequest_WhenFieldsAreInvalid() throws Exception {
         Long targetBookId = 2L;
 
-        String request = fileUtils.readResourceFile("book/patch-request-book-invalid-fields-400.json");
+        String request = fileUtils.readResourceFile("book/patch-request-book-invalid-fields.json");
 
         List<String> errors = BookErrorFactory.notValidAndYearNotFutureErrors();
 
@@ -297,25 +297,25 @@ class BookControllerTest extends UnitTestConfig {
         String title = "estrela";
         String publisher = "Rocco";
         return Stream.of(
-                Arguments.of("get-book-empty-params-200.json",
+                Arguments.of("get-response-book-empty-params.json",
                         new BookFilter(null, null, null, null, null, null),
                         filteredList),
 
-                Arguments.of("get-book-estrela-title-200.json",
+                Arguments.of("get-response-book-hora-da-estrela.json",
                         new BookFilter(title, null, null, null, null, null),
                         filteredList.stream()
                                 .filter(b -> b.getTitle().contains(title))
                                 .toList()
                 ),
 
-                Arguments.of("get-book-rocco-publisher-200.json",
+                Arguments.of("get-response-book-rocco-publisher.json",
                         new BookFilter(null, null, publisher, null, null, null),
                         filteredList.stream()
                                 .filter(b -> b.getPublisher().contains(publisher))
                                 .toList()
                 ),
 
-                Arguments.of("get-book-estrela-title-rocco-publisher-200.json",
+                Arguments.of("get-response-book-hora-da-estrela.json",
                         new BookFilter(title, null, publisher, null, null, null),
                         filteredList.stream()
                                 .filter(u -> u.getTitle().contains(title))
@@ -323,7 +323,7 @@ class BookControllerTest extends UnitTestConfig {
                                 .toList()
                 ),
 
-                Arguments.of("get-book-invalid-param-200.json",
+                Arguments.of("get-response-book-invalid-param.json",
                         new BookFilter("InvalidTitle", null, null, null, null, null),
                         List.of()
                 )
@@ -337,9 +337,9 @@ class BookControllerTest extends UnitTestConfig {
         List<String> invalidFieldErrors = BookErrorFactory.notValidAndYearNotFutureErrors();
 
         return Stream.of(
-                Arguments.of("post-request-book-empty-fields-400.json", allRequiredAndNotValidErrors),
-                Arguments.of("post-request-book-blank-fields-400.json", allRequiredAndNotValidErrors),
-                Arguments.of("post-request-book-invalid-fields-400.json", invalidFieldErrors)
+                Arguments.of("post-request-book-empty-fields.json", allRequiredAndNotValidErrors),
+                Arguments.of("post-request-book-blank-fields.json", allRequiredAndNotValidErrors),
+                Arguments.of("post-request-book-invalid-fields.json", invalidFieldErrors)
         );
     }
 }

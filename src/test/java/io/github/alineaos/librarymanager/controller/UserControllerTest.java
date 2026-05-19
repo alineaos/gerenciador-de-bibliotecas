@@ -112,7 +112,7 @@ class UserControllerTest extends UnitTestConfig {
 
         when(service.findById(targetUserId)).thenReturn(foundUser);
 
-        String response = fileUtils.readResourceFile("user/get-user-by-id-200.json");
+        String response = fileUtils.readResourceFile("user/get-response-user-by-id.json");
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL + "/{id}", targetUserId))
                 .andDo(MockMvcResultHandlers.print())
@@ -130,7 +130,7 @@ class UserControllerTest extends UnitTestConfig {
 
         when(service.findById(userId)).thenReturn(foundUser);
 
-        String response = fileUtils.readResourceFile("user/get-user-by-id-200.json");
+        String response = fileUtils.readResourceFile("user/get-response-user-by-id.json");
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL + "/{id}", userId)
                         .with(jwt().jwt(builder -> builder.claim("userId", userId))))
@@ -176,8 +176,8 @@ class UserControllerTest extends UnitTestConfig {
     @Order(7)
     @WithMockUser(authorities = "SCOPE_ADMIN")
     void save_ReturnsCreatedAndCreatesUser_WhenUserIsAdminAndFieldsAreValid() throws Exception {
-        String request = fileUtils.readResourceFile("user/post-request-user-201.json");
-        String response = fileUtils.readResourceFile("user/post-response-user-201.json");
+        String request = fileUtils.readResourceFile("user/post-request-user.json");
+        String response = fileUtils.readResourceFile("user/post-response-user.json");
 
         UserPostResponse userSavedResponse = userFactory.newUserPostResponse();
 
@@ -197,7 +197,7 @@ class UserControllerTest extends UnitTestConfig {
     @Order(8)
     @WithMockUser(authorities = "SCOPE_USER")
     void save_ReturnsForbidden_WhenUserIsNotAdmin() throws Exception {
-        String request = fileUtils.readResourceFile("user/post-request-user-403.json");
+        String request = fileUtils.readResourceFile("user/post-request-user.json");
 
         mockMvc.perform(MockMvcRequestBuilders.post(URL)
                         .content(request)
@@ -237,7 +237,7 @@ class UserControllerTest extends UnitTestConfig {
 
         doNothing().when(service).update(eq(targetUserId), any(UserPatchRequest.class));
 
-        String request = fileUtils.readResourceFile("user/patch-request-admin-user-204.json");
+        String request = fileUtils.readResourceFile("user/patch-request-user.json");
 
         mockMvc.perform(MockMvcRequestBuilders.patch(URL + "/{id}", targetUserId)
                         .content(request)
@@ -255,7 +255,7 @@ class UserControllerTest extends UnitTestConfig {
 
         doNothing().when(service).update(eq(targetUserId), any(UserPatchRequest.class));
 
-        String request = fileUtils.readResourceFile("user/patch-request-id-owner-user-204.json");
+        String request = fileUtils.readResourceFile("user/patch-request-user-birth-date.json");
 
         mockMvc.perform(MockMvcRequestBuilders.patch(URL + "/{id}", targetUserId)
                         .with(jwt().jwt(builder -> builder.claim("userId", targetUserId)))
@@ -273,7 +273,7 @@ class UserControllerTest extends UnitTestConfig {
         Long loggedUserId = 2L;
         Long targetUserId = 1L;
 
-        String request = fileUtils.readResourceFile("user/patch-request-not-id-owner-user-403.json");
+        String request = fileUtils.readResourceFile("user/patch-request-user.json");
 
         mockMvc.perform(MockMvcRequestBuilders.patch(URL + "/{id}", targetUserId)
                         .with(jwt().jwt(builder -> builder.claim("userId", loggedUserId)))
@@ -290,7 +290,7 @@ class UserControllerTest extends UnitTestConfig {
     void update_ReturnsNotFound_WhenUserIsNotFound() throws Exception {
         Long targetUserId = 999L;
 
-        String request = fileUtils.readResourceFile("user/patch-request-invalid-id-404.json");
+        String request = fileUtils.readResourceFile("user/patch-request-user-invalid-id.json");
 
         doThrow(new NotFoundException("User not found.")).when(service).update(eq(targetUserId), any(UserPatchRequest.class));
 
@@ -312,7 +312,7 @@ class UserControllerTest extends UnitTestConfig {
     void update_ReturnsBadRequest_WhenFieldsAreInvalid() throws Exception {
         Long targetUserId = 2L;
 
-        String request = fileUtils.readResourceFile("user/patch-request-user-invalid-fields-400.json");
+        String request = fileUtils.readResourceFile("user/patch-request-user-invalid-fields.json");
 
         List<String> errors = UserErrorFactory.emailNotValidAndDateNotPastErrors();
 
@@ -361,11 +361,11 @@ class UserControllerTest extends UnitTestConfig {
         List<User> filteredList = factory.newUserList();
         String name = "Maria";
         return Stream.of(
-                Arguments.of("get-user-null-name-null-role-200.json",
+                Arguments.of("get-response-user-empty-params.json",
                         new UserFilter(null, null),
                         filteredList),
 
-                Arguments.of("get-user-maria-name-admin-role-200.json",
+                Arguments.of("get-response-user-maria.json",
                         new UserFilter(name, UserRole.ADMIN),
                         filteredList.stream()
                                 .filter(u -> u.getFullName().contains(name))
@@ -373,21 +373,21 @@ class UserControllerTest extends UnitTestConfig {
                                 .toList()
                 ),
 
-                Arguments.of("get-user-null-name-user-role-200.json",
+                Arguments.of("get-response-user-with-user-role.json",
                         new UserFilter(null, UserRole.USER),
                         filteredList.stream()
                                 .filter(u -> u.getRole() == UserRole.USER)
                                 .toList()
                 ),
 
-                Arguments.of("get-user-maria-name-null-role-200.json",
+                Arguments.of("get-response-user-maria.json",
                         new UserFilter(name, null),
                         filteredList.stream()
                                 .filter(u -> u.getFullName().contains(name))
                                 .toList()
                 ),
 
-                Arguments.of("get-user-invalid-name-null-role-200.json",
+                Arguments.of("get-response-user-invalid-params.json",
                         new UserFilter("InvalidName", null),
                         List.of()
                 )
@@ -401,9 +401,9 @@ class UserControllerTest extends UnitTestConfig {
         List<String> invalidFieldErrors = UserErrorFactory.emailNotValidAndDateNotPastErrors();
 
         return Stream.of(
-                Arguments.of("post-request-user-empty-fields-400.json", allRequiredAndNotValidErrors),
-                Arguments.of("post-request-user-blank-fields-400.json", allRequiredAndNotValidErrors),
-                Arguments.of("post-request-user-invalid-fields-400.json", invalidFieldErrors)
+                Arguments.of("post-request-user-empty-fields.json", allRequiredAndNotValidErrors),
+                Arguments.of("post-request-user-blank-fields.json", allRequiredAndNotValidErrors),
+                Arguments.of("post-request-user-invalid-fields.json", invalidFieldErrors)
         );
     }
 }

@@ -107,7 +107,7 @@ class GenreControllerTest extends UnitTestConfig {
 
         when(service.findById(targetGenreId)).thenReturn(foundGenre);
 
-        String response = fileUtils.readResourceFile("genre/get-genre-by-id-200.json");
+        String response = fileUtils.readResourceFile("genre/get-response-genre-by-id.json");
 
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL + "/{id}", targetGenreId))
@@ -151,8 +151,8 @@ class GenreControllerTest extends UnitTestConfig {
     @Order(6)
     @WithMockUser(authorities = "SCOPE_ADMIN")
     void save_ReturnsCreatedAndCreatesGenre_WhenUserIsAdminAndFieldsAreValid() throws Exception {
-        String request = fileUtils.readResourceFile("genre/post-request-genre-201.json");
-        String response = fileUtils.readResourceFile("genre/post-response-genre-201.json");
+        String request = fileUtils.readResourceFile("genre/post-request-genre.json");
+        String response = fileUtils.readResourceFile("genre/post-response-genre.json");
 
         GenrePostResponse genreSavedResponse = genreFactory.newGenrePostResponse();
 
@@ -172,7 +172,7 @@ class GenreControllerTest extends UnitTestConfig {
     @Order(7)
     @WithMockUser(authorities = "SCOPE_USER")
     void save_ReturnsForbidden_WhenUserIsNotAdmin() throws Exception {
-        String request = fileUtils.readResourceFile("genre/post-request-genre-403.json");
+        String request = fileUtils.readResourceFile("genre/post-request-genre.json");
 
         mockMvc.perform(MockMvcRequestBuilders.post(URL)
                         .content(request)
@@ -212,7 +212,7 @@ class GenreControllerTest extends UnitTestConfig {
 
         doNothing().when(service).update(eq(targetGenreId), any(GenrePutRequest.class));
 
-        String request = fileUtils.readResourceFile("genre/put-request-genre-204.json");
+        String request = fileUtils.readResourceFile("genre/put-request-genre.json");
 
         mockMvc.perform(MockMvcRequestBuilders.put(URL + "/{id}", targetGenreId)
                         .content(request)
@@ -230,7 +230,7 @@ class GenreControllerTest extends UnitTestConfig {
 
         doNothing().when(service).update(eq(targetGenreId), any(GenrePutRequest.class));
 
-        String request = fileUtils.readResourceFile("genre/post-request-genre-403.json");
+        String request = fileUtils.readResourceFile("genre/post-request-genre.json");
 
         mockMvc.perform(MockMvcRequestBuilders.put(URL+ "/{id}", targetGenreId)
                         .content(request)
@@ -246,7 +246,7 @@ class GenreControllerTest extends UnitTestConfig {
     void update_ReturnsNotFound_WhenGenreIsNotFound() throws Exception {
         Long targetGenreId = 999L;
 
-        String request = fileUtils.readResourceFile("genre/post-request-genre-404.json");
+        String request = fileUtils.readResourceFile("genre/post-request-genre.json");
 
         doThrow(new NotFoundException("Genre not found.")).when(service).update(eq(targetGenreId), any(GenrePutRequest.class));
 
@@ -316,19 +316,19 @@ class GenreControllerTest extends UnitTestConfig {
         List<Genre> filteredList = factory.newGenreList();
         String name = "Romance";
         return Stream.of(
-                Arguments.of("get-genre-null-name-200.json",
+                Arguments.of("get-response-genre-empty-params.json",
                         new GenreFilter(null),
                         filteredList
                 ),
 
-                Arguments.of("get-genre-romance-name-200.json",
+                Arguments.of("get-response-genre-romance-name.json",
                         new GenreFilter(name),
                         filteredList.stream()
                                 .filter(g -> g.getName().equalsIgnoreCase(name))
                                 .toList()
                 ),
 
-                Arguments.of("get-genre-invalid-name-200.json",
+                Arguments.of("get-response-genre-invalid-params.json",
                         new GenreFilter("InvalidName"),
                         List.of()
                 )
@@ -339,8 +339,8 @@ class GenreControllerTest extends UnitTestConfig {
         String nameError = nameRequiredError();
 
         return Stream.of(
-                Arguments.of("post-request-genre-empty-fields-400.json", nameError),
-                Arguments.of("post-request-genre-blank-fields-400.json", nameError)
+                Arguments.of("post-request-genre-empty-fields.json", nameError),
+                Arguments.of("post-request-genre-blank-fields.json", nameError)
         );
     }
 
@@ -348,8 +348,8 @@ class GenreControllerTest extends UnitTestConfig {
         String nameError = nameRequiredError();
 
         return Stream.of(
-                Arguments.of("put-request-genre-empty-fields-400.json", nameError),
-                Arguments.of("put-request-genre-blank-fields-400.json", nameError)
+                Arguments.of("put-request-genre-empty-fields.json", nameError),
+                Arguments.of("put-request-genre-blank-fields.json", nameError)
         );
     }
 
