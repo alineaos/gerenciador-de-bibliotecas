@@ -45,7 +45,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WebMvcTest(controllers = GenreController.class)
-@WithMockUser
 @Import({FileUtils.class, GenreFactory.class, SecurityConfig.class})
 class GenreControllerTest extends UnitTestConfig {
     private static final String URL = "/v1/genres";
@@ -60,10 +59,10 @@ class GenreControllerTest extends UnitTestConfig {
 
     @ParameterizedTest(name = "[{index}] {0}")
     @MethodSource("genreFilterParamsSource")
-    @DisplayName("GET v1/genres returns 200 (ok) and a list with filtered genres when the user is an admin and filters are valid")
+    @DisplayName("GET v1/genres returns 200 (ok) and a list with filtered genres when the user authenticated and filters are valid")
     @Order(1)
-    @WithMockUser(authorities = "SCOPE_ADMIN")
-    void findAll_ReturnsOkAndFilteredGenres_WhenUserIsAdminAndFiltersAreValid(String fileName, GenreFilter filter, List<Genre> expectedGenres) throws Exception {
+    @WithMockUser(authorities = "SCOPE_USER")
+    void findAll_ReturnsOkAndFilteredGenres_WhenUserIsAuthenticatedAndFiltersAreValid(String fileName, GenreFilter filter, List<Genre> expectedGenres) throws Exception {
         String response = fileUtils.readResourceFile("genre/%s".formatted(fileName));
 
         List<GenreGetResponse> expectedDtos = expectedGenres.stream()
@@ -88,20 +87,10 @@ class GenreControllerTest extends UnitTestConfig {
     }
 
     @Test
-    @DisplayName("GET v1/genres returns 403 (forbidden) when the user is not an admin")
+    @DisplayName("GET v1/genres/1 returns 200 (ok) and a genre with given id when the user authenticated")
     @Order(2)
     @WithMockUser(authorities = "SCOPE_USER")
-    void findAll_ReturnsForbidden_WhenUserIsNotAdmin() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(URL))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isForbidden());
-    }
-
-    @Test
-    @DisplayName("GET v1/genres/1 returns 200 (ok) and a genre with given id when the user is an admin")
-    @Order(3)
-    @WithMockUser(authorities = "SCOPE_ADMIN")
-    void findById_ReturnsOkAndGenreById_WhenUserIsAdmin() throws Exception {
+    void findById_ReturnsOkAndGenreById_WhenUserIsAuthenticated() throws Exception {
         Long targetGenreId = 1L;
         GenreGetResponse foundGenre = genreFactory.newGenreGetResponseById(targetGenreId);
 
@@ -117,21 +106,9 @@ class GenreControllerTest extends UnitTestConfig {
     }
 
     @Test
-    @DisplayName("GET v1/genres/1 returns 403 (forbidden) when the user is not an admin")
-    @Order(4)
-    @WithMockUser(authorities = "SCOPE_USER")
-    void findById_ReturnsForbidden_WhenUserIsNotAdmin() throws Exception {
-        Long targetGenreId = 1L;
-
-        mockMvc.perform(MockMvcRequestBuilders.get(URL + "/{id}", targetGenreId))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isForbidden());
-    }
-
-    @Test
     @DisplayName("GET v1/genres/999 returns 404 (not found) when the genre is not found")
-    @Order(5)
-    @WithMockUser(authorities = "SCOPE_ADMIN")
+    @Order(3)
+    @WithMockUser(authorities = "SCOPE_USER")
     void findById_ReturnsNotFound_WhenGenreIsNotFound() throws Exception {
         Long targetGenreId = 999L;
 
@@ -148,7 +125,7 @@ class GenreControllerTest extends UnitTestConfig {
 
     @Test
     @DisplayName("POST v1/genres returns 201 (created) and creates a genre when the user is an admin and fields are valid")
-    @Order(6)
+    @Order(4)
     @WithMockUser(authorities = "SCOPE_ADMIN")
     void save_ReturnsCreatedAndCreatesGenre_WhenUserIsAdminAndFieldsAreValid() throws Exception {
         String request = fileUtils.readResourceFile("genre/post-request-genre.json");
@@ -169,7 +146,7 @@ class GenreControllerTest extends UnitTestConfig {
 
     @Test
     @DisplayName("POST v1/genres returns 403 (forbidden) when the user is not an admin")
-    @Order(7)
+    @Order(5)
     @WithMockUser(authorities = "SCOPE_USER")
     void save_ReturnsForbidden_WhenUserIsNotAdmin() throws Exception {
         String request = fileUtils.readResourceFile("genre/post-request-genre.json");
@@ -184,7 +161,7 @@ class GenreControllerTest extends UnitTestConfig {
     @ParameterizedTest(name = "[{index}] {0} ")
     @MethodSource("postBadRequestSource")
     @DisplayName("POST v1/genres returns 400 (bad request) when field is invalid")
-    @Order(8)
+    @Order(6)
     @WithMockUser(authorities = "SCOPE_ADMIN")
     void save_ReturnsBadRequest_WhenFieldIsInvalid(String fileName, String error) throws Exception {
         String request = fileUtils.readResourceFile("genre/%s".formatted(fileName));
@@ -205,7 +182,7 @@ class GenreControllerTest extends UnitTestConfig {
 
     @Test
     @DisplayName("PUT v1/genre/1 returns 204 (no content) and updates a genre with given id when the user is an admin")
-    @Order(9)
+    @Order(7)
     @WithMockUser(authorities = "SCOPE_ADMIN")
     void update_ReturnsNoContentAndUpdatesGenreById_WhenUserIsAdmin() throws Exception {
         Long targetGenreId = 1L;
@@ -223,7 +200,7 @@ class GenreControllerTest extends UnitTestConfig {
 
     @Test
     @DisplayName("PUT v1/genres/1 returns 403 (forbidden) when the user is not an admin")
-    @Order(10)
+    @Order(8)
     @WithMockUser(authorities = "SCOPE_USER")
     void update_ReturnsForbidden_WhenUserIsNotAdmin() throws Exception {
         Long targetGenreId = 1L;
@@ -241,7 +218,7 @@ class GenreControllerTest extends UnitTestConfig {
 
     @Test
     @DisplayName("PUT v1/genres/999 returns 404 (not found) when the genre is not found")
-    @Order(11)
+    @Order(9)
     @WithMockUser(authorities = "SCOPE_ADMIN")
     void update_ReturnsNotFound_WhenGenreIsNotFound() throws Exception {
         Long targetGenreId = 999L;
@@ -264,7 +241,7 @@ class GenreControllerTest extends UnitTestConfig {
     @ParameterizedTest(name = "[{index}] {0} ")
     @MethodSource("putBadRequestSource")
     @DisplayName("PUT v1/genres/1 returns 400 (bad request) when field is invalid")
-    @Order(12)
+    @Order(10)
     @WithMockUser(authorities = "SCOPE_ADMIN")
     void update_ReturnsBadRequest_WhenFieldIsInvalid(String fileName, String error) throws Exception {
         Long targetGenreId = 1L;
@@ -287,7 +264,7 @@ class GenreControllerTest extends UnitTestConfig {
 
     @Test
     @DisplayName("DELETE v1/genre/1 returns 204 (no content) and updates a genre with given id when the user is an admin")
-    @Order(13)
+    @Order(11)
     @WithMockUser(authorities = "SCOPE_ADMIN")
     void delete_ReturnsNoContentAndDeletesGenreById_WhenUserIsAdmin() throws Exception {
         Long targetGenreId = 1L;
@@ -301,7 +278,7 @@ class GenreControllerTest extends UnitTestConfig {
 
     @Test
     @DisplayName("DELETE v1/genres/1 returns 403 (forbidden) when the user is not an admin")
-    @Order(14)
+    @Order(12)
     @WithMockUser(authorities = "SCOPE_USER")
     void delete_ReturnsForbidden_WhenUserIsNotAdmin() throws Exception {
         Long targetGenreId = 1L;

@@ -6,6 +6,7 @@ import io.github.alineaos.librarymanager.dto.request.GenrePutRequest;
 import io.github.alineaos.librarymanager.dto.response.GenreGetResponse;
 import io.github.alineaos.librarymanager.dto.response.GenrePostResponse;
 import io.github.alineaos.librarymanager.security.annotation.IsAdmin;
+import io.github.alineaos.librarymanager.security.annotation.IsUser;
 import io.github.alineaos.librarymanager.service.GenreService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ import java.util.List;
 public class GenreController {
     private final GenreService service;
 
+    @IsUser
     @GetMapping
     public ResponseEntity<List<GenreGetResponse>> findAll(GenreFilter filter){
         List<GenreGetResponse> getResponseList = service.findAll(filter);
@@ -36,6 +38,7 @@ public class GenreController {
         return ResponseEntity.ok(getResponseList);
     }
 
+    @IsUser
     @GetMapping("/{id}")
     public ResponseEntity<GenreGetResponse> findById(@PathVariable Long id){
         GenreGetResponse getResponse = service.findById(id);
