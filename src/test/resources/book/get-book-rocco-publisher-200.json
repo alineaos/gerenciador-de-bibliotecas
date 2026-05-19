@@ -1,0 +1,24 @@
+[
+  {
+    "id": 2,
+    "title": "Jogos Vorazes",
+    "author": "Suzanne Collins",
+    "publisher": "Rocco",
+    "year": "2022",
+    "edition": 1,
+    "isbn": "9786555321449",
+    "createdAt": "2026-04-24T18:01:33",
+    "updatedAt": "2026-04-24T18:01:33"
+  },
+  {
+    "id": 3,
+    "title": "A hora da estrela",
+    "author": "Clarice Lispector",
+    "publisher": "Rocco",
+    "year": "2020",
+    "edition": 1,
+    "isbn": "9786555320350",
+    "createdAt": "2026-04-24T18:02:33",
+    "updatedAt": "2026-04-24T18:02:33"
+  }
+]
