@@ -16,10 +16,8 @@ import io.github.alineaos.librarymanager.util.UserErrorFactory;
 import io.github.alineaos.librarymanager.util.UserFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -50,7 +48,6 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WebMvcTest(controllers = UserController.class)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @WithMockUser
 @Import({FileUtils.class, UserFactory.class, SecurityConfig.class})
 class UserControllerTest extends UnitTestConfig {
@@ -70,7 +67,7 @@ class UserControllerTest extends UnitTestConfig {
     @Order(1)
     @WithMockUser(authorities = "SCOPE_ADMIN")
     void findAll_ReturnsOkAndFilteredUsers_WhenUserIsAdminAndFiltersAreValid(String fileName, UserFilter filter, List<User> expectedUsers) throws Exception {
-        String response = fileUtils.readResourceFile(fileName);
+        String response = fileUtils.readResourceFile("user/%s".formatted(fileName));
         List<UserGetResponse> expectedDtos = expectedUsers.stream()
                 .map(u -> new UserGetResponse(u.getId(),
                         u.getFullName(),
@@ -364,11 +361,11 @@ class UserControllerTest extends UnitTestConfig {
         List<User> filteredList = factory.newUserList();
         String name = "Maria";
         return Stream.of(
-                Arguments.of("user/get-user-null-name-null-role-200.json",
+                Arguments.of("get-user-null-name-null-role-200.json",
                         new UserFilter(null, null),
                         filteredList),
 
-                Arguments.of("user/get-user-maria-name-admin-role-200.json",
+                Arguments.of("get-user-maria-name-admin-role-200.json",
                         new UserFilter(name, UserRole.ADMIN),
                         filteredList.stream()
                                 .filter(u -> u.getFullName().contains(name))
@@ -376,21 +373,21 @@ class UserControllerTest extends UnitTestConfig {
                                 .toList()
                 ),
 
-                Arguments.of("user/get-user-null-name-user-role-200.json",
+                Arguments.of("get-user-null-name-user-role-200.json",
                         new UserFilter(null, UserRole.USER),
                         filteredList.stream()
                                 .filter(u -> u.getRole() == UserRole.USER)
                                 .toList()
                 ),
 
-                Arguments.of("user/get-user-maria-name-null-role-200.json",
+                Arguments.of("get-user-maria-name-null-role-200.json",
                         new UserFilter(name, null),
                         filteredList.stream()
                                 .filter(u -> u.getFullName().contains(name))
                                 .toList()
                 ),
 
-                Arguments.of("user/get-user-invalid-name-null-role-200.json",
+                Arguments.of("get-user-invalid-name-null-role-200.json",
                         new UserFilter("InvalidName", null),
                         List.of()
                 )

@@ -128,7 +128,7 @@ class UserServiceTest extends UnitTestConfig {
     @MethodSource("uniqueAttributeSource")
     @DisplayName("save throws BusinessException when unique attribute already exists")
     @Order(5)
-    void save_ThrowsBusinessException_WhenEmailAlreadyExists(String field) {
+    void save_ThrowsBusinessException_WhenUniqueAttributeAlreadyExists(String field) {
         User userSaved = userFactory.newUserSaved();
         UserPostRequest expectedDto = userFactory.newUserPostRequest();
 
