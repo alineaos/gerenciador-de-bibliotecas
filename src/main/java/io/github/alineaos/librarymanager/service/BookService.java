@@ -45,7 +45,7 @@ public class BookService {
     }
 
     public BookPostResponse save(@Valid BookPostRequest postRequest) {
-        this.assertIsbnDoesNotExists(postRequest.isbn());
+        assertIsbnDoesNotExists(postRequest.isbn());
 
         Book bookToSave = mapper.toBook(postRequest);
 
@@ -58,7 +58,7 @@ public class BookService {
         Book bookToUpdate = findByIdOrThrowNotFound(id);
 
         if (patchRequest.isbn() != null) {
-            this.assertIsbnDoesNotExists(patchRequest.isbn(), id);
+            assertIsbnDoesNotExists(patchRequest.isbn(), id);
         }
 
         mapper.mergeRequestToBook(patchRequest, bookToUpdate);

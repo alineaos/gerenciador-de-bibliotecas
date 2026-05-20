@@ -249,7 +249,7 @@ class BookControllerTest extends UnitTestConfig {
 
         String request = fileUtils.readResourceFile("book/patch-request-book-invalid-fields.json");
 
-        List<String> errors = BookErrorFactory.notValidAndYearNotFutureErrors();
+        List<String> errors = BookErrorFactory.allInvalidFieldsErrors();
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.patch(URL + "/{id}", targetBookId)
                         .content(request)
@@ -331,14 +331,14 @@ class BookControllerTest extends UnitTestConfig {
     }
 
     private static Stream<Arguments> postBadRequestSource() {
-        List<String> allRequiredAndNotValidErrors = BookErrorFactory.allRequiredErrors();
-        allRequiredAndNotValidErrors.addAll(BookErrorFactory.allNotValidErrors());
+        List<String> allRequiredAndIsbnNotValidErrors = BookErrorFactory.allRequiredErrors();
+        allRequiredAndIsbnNotValidErrors.add(BookErrorFactory.isbnNotValidError);
 
-        List<String> invalidFieldErrors = BookErrorFactory.notValidAndYearNotFutureErrors();
+        List<String> invalidFieldErrors = BookErrorFactory.allInvalidFieldsErrors();
 
         return Stream.of(
-                Arguments.of("post-request-book-empty-fields.json", allRequiredAndNotValidErrors),
-                Arguments.of("post-request-book-blank-fields.json", allRequiredAndNotValidErrors),
+                Arguments.of("post-request-book-empty-fields.json", allRequiredAndIsbnNotValidErrors),
+                Arguments.of("post-request-book-blank-fields.json", allRequiredAndIsbnNotValidErrors),
                 Arguments.of("post-request-book-invalid-fields.json", invalidFieldErrors)
         );
     }
