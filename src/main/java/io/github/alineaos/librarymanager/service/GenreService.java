@@ -25,7 +25,7 @@ public class GenreService {
     private final GenreRepository repository;
     private final GenreMapper mapper;
 
-    public List<GenreGetResponse> findAll(GenreFilter filter){
+    public List<GenreGetResponse> findAll(GenreFilter filter) {
         List<Genre> genres = repository.findAll(
                 GenreSpecification.hasName(filter.name())
         );
@@ -33,13 +33,13 @@ public class GenreService {
         return mapper.toGetResponseList(genres);
     }
 
-    public GenreGetResponse findById(Long id){
+    public GenreGetResponse findById(Long id) {
         Genre genre = findByIdOrThrowNotFound(id);
 
         return mapper.toGetResponse(genre);
     }
 
-    public GenrePostResponse save(@Valid GenrePostRequest postRequest){
+    public GenrePostResponse save(@Valid GenrePostRequest postRequest) {
         assertNameNotExists(postRequest.name());
 
         Genre genreToSave = mapper.toGenre(postRequest);
@@ -49,7 +49,7 @@ public class GenreService {
         return mapper.toPostResponse(savedGenre);
     }
 
-    public void update(Long id, @Valid GenrePutRequest putRequest){
+    public void update(Long id, @Valid GenrePutRequest putRequest) {
         Genre genreToUpdate = findByIdOrThrowNotFound(id);
         assertNameNotExists(putRequest.name(), id);
 
@@ -58,26 +58,34 @@ public class GenreService {
         repository.save(genreToUpdate);
     }
 
-    public void delete(Long id){
+    public void delete(Long id) {
         Genre genreToDelete = findByIdOrThrowNotFound(id);
 
         repository.delete(genreToDelete);
     }
 
-    private Genre findByIdOrThrowNotFound(Long id){
+    public void assertGenreByIdExists(List<Long> genreIds){
+        genreIds.forEach(this::findByIdOrThrowNotFound);
+    }
+
+    public Genre getReferenceById(Long id){
+        return repository.getReferenceById(id);
+    }
+
+    private Genre findByIdOrThrowNotFound(Long id) {
         return repository.findById(id).orElseThrow(
                 () -> new NotFoundException("Genre not found."));
     }
 
-    private void assertNameNotExists(String name){
+    private void assertNameNotExists(String name) {
         repository.findByNameIgnoreCase(name).ifPresent(this::throwNameAlreadyExistsException);
     }
 
-    private void assertNameNotExists(String name, Long id){
+    private void assertNameNotExists(String name, Long id) {
         repository.findByNameIgnoreCaseAndIdNot(name, id).ifPresent(this::throwNameAlreadyExistsException);
     }
 
-    private void throwNameAlreadyExistsException(Genre genre){
-        throw  new BusinessException("Genre with name '%s' already exists".formatted(genre.getName()));
+    private void throwNameAlreadyExistsException(Genre genre) {
+        throw new BusinessException("Genre with name '%s' already exists".formatted(genre.getName()));
     }
 }

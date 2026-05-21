@@ -5,6 +5,7 @@ import io.github.alineaos.librarymanager.dto.request.BookPatchRequest;
 import io.github.alineaos.librarymanager.dto.request.BookPostRequest;
 import io.github.alineaos.librarymanager.dto.response.BookGetResponse;
 import io.github.alineaos.librarymanager.dto.response.BookPostResponse;
+import io.github.alineaos.librarymanager.dto.response.GenreBasicResponse;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -25,7 +26,8 @@ public interface BookMapper {
     List<BookGetResponse> toBookGetResponseList(List<Book> books);
     BookGetResponse toBookGetResponse(Book book);
 
-    BookPostResponse toBookPostResponse(Book book);
+    @Mapping(target = "genres", source = "genreResponses")
+    BookPostResponse toBookPostResponse(Book book, List<GenreBasicResponse> genreResponses);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)

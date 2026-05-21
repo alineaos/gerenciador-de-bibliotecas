@@ -1,12 +1,14 @@
 package io.github.alineaos.librarymanager.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 
 import java.time.Year;
+import java.util.List;
 
 public record BookPostRequest(
         @NotBlank(message = "The field 'title' is required.")
@@ -28,5 +30,8 @@ public record BookPostRequest(
 
         @NotBlank(message = "The field 'isbn' is required.")
         @Pattern(regexp = "^(\\d{10}|\\d{13})$", message = "ISBN must be 10 or 13 digits.")
-        String isbn
+        String isbn,
+
+        @NotEmpty(message = "The field 'genreIds' is required.")
+        List<Long> genreIds
 ) {}

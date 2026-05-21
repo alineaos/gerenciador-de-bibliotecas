@@ -6,6 +6,7 @@ import io.github.alineaos.librarymanager.dto.request.BookPatchRequest;
 import io.github.alineaos.librarymanager.dto.request.BookPostRequest;
 import io.github.alineaos.librarymanager.dto.response.BookGetResponse;
 import io.github.alineaos.librarymanager.dto.response.BookPostResponse;
+import io.github.alineaos.librarymanager.dto.response.GenreBasicResponse;
 import io.github.alineaos.librarymanager.exception.BusinessException;
 import io.github.alineaos.librarymanager.exception.NotFoundException;
 import io.github.alineaos.librarymanager.mapper.BookMapper;
@@ -23,6 +24,8 @@ import java.util.List;
 @Service
 public class BookService {
     private final BookRepository repository;
+    private final BookGenreService bookGenreService;
+    private final GenreService genreService;
     private final BookMapper mapper;
 
     public List<BookGetResponse> findAll(BookFilter bookFilter) {
@@ -45,13 +48,17 @@ public class BookService {
     }
 
     public BookPostResponse save(@Valid BookPostRequest postRequest) {
+        List<Long> genresById = postRequest.genreIds();
         assertIsbnDoesNotExists(postRequest.isbn());
+        genreService.assertGenreByIdExists(genresById);
 
         Book bookToSave = mapper.toBook(postRequest);
 
         Book bookSaved = repository.save(bookToSave);
 
-        return mapper.toBookPostResponse(bookSaved);
+        List<GenreBasicResponse> genreResponses = bookGenreService.addGenresToBook(bookSaved, genresById);
+
+        return mapper.toBookPostResponse(bookSaved, genreResponses);
     }
 
     public void update(Long id, @Valid BookPatchRequest patchRequest) {
@@ -66,7 +73,7 @@ public class BookService {
         repository.save(bookToUpdate);
     }
 
-    public void delete(Long id){
+    public void delete(Long id) {
         Book book = findByIdOrThrowNotFound(id);
 
         repository.delete(book);
