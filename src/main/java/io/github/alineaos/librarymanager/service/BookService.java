@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Validated
@@ -36,15 +37,20 @@ public class BookService {
                         .and(BookSpecification.hasYear(bookFilter.year()))
                         .and(BookSpecification.hasEdition(bookFilter.edition()))
                         .and(BookSpecification.hasIsbn(bookFilter.isbn()))
+                        .and(BookSpecification.hasGenreWithName(bookFilter.genreName()))
         );
 
-        return mapper.toBookGetResponseList(books);
+        List<Long> bookIds = books.stream().map(Book::getId).toList();
+
+        Map<Long, List<GenreBasicResponse>> genresByBookId = bookGenreService.findGenresGroupedByBookIds(bookIds);
+
+        return mapper.toBookGetResponseList(books, genresByBookId);
     }
 
     public BookGetResponse findById(Long id) {
         Book book = findByIdOrThrowNotFound(id);
-
-        return mapper.toBookGetResponse(book);
+        List<GenreBasicResponse> genresByBookId = List.of();
+        return mapper.toBookGetResponse(book, Map.of(book.getId(), genresByBookId));
     }
 
     public BookPostResponse save(@Valid BookPostRequest postRequest) {

@@ -1,5 +1,7 @@
 package io.github.alineaos.librarymanager.dto;
 
+import org.springframework.web.bind.annotation.BindParam;
+
 import java.time.Year;
 
 public record BookFilter (
@@ -8,5 +10,6 @@ public record BookFilter (
         String publisher,
         Year year,
         Integer edition,
-        String isbn
+        String isbn,
+        @BindParam("genre") String genreName
 ){}

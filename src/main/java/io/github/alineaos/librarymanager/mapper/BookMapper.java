@@ -7,6 +7,7 @@ import io.github.alineaos.librarymanager.dto.response.BookGetResponse;
 import io.github.alineaos.librarymanager.dto.response.BookPostResponse;
 import io.github.alineaos.librarymanager.dto.response.GenreBasicResponse;
 import org.mapstruct.BeanMapping;
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
@@ -14,6 +15,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface BookMapper {
@@ -23,8 +25,10 @@ public interface BookMapper {
     @Mapping(target = "updatedAt", ignore = true)
     Book toBook(BookPostRequest postRequest);
 
-    List<BookGetResponse> toBookGetResponseList(List<Book> books);
-    BookGetResponse toBookGetResponse(Book book);
+    @Mapping(target = "genres", expression = "java(genresByBookId.get(book.getId()))")
+    BookGetResponse toBookGetResponse(Book book, @Context Map<Long, List<GenreBasicResponse>> genresByBookId);
+
+    List<BookGetResponse> toBookGetResponseList(List<Book> books, @Context Map<Long, List<GenreBasicResponse>> genresByBookId);
 
     @Mapping(target = "genres", source = "genreResponses")
     BookPostResponse toBookPostResponse(Book book, List<GenreBasicResponse> genreResponses);
