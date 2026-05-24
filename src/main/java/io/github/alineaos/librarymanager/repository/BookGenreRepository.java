@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface BookGenreRepository extends JpaRepository<BookGenre, Long> {
@@ -15,4 +16,6 @@ public interface BookGenreRepository extends JpaRepository<BookGenre, Long> {
 
     @Query("SELECT bg from BookGenre bg JOIN FETCH bg.genre g WHERE bg.book.id = :bookId")
     List<BookGenre> findByBookId(Long bookId);
+
+    void deleteByBookIdAndGenreIdIn(Long bookId, Set<Long> genreIds);
 }

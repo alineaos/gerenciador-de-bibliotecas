@@ -15,6 +15,7 @@ import io.github.alineaos.librarymanager.repository.specification.BookSpecificat
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
@@ -67,11 +68,16 @@ public class BookService {
         return mapper.toBookPostResponse(bookSaved, genreResponses);
     }
 
+    @Transactional
     public void update(Long id, @Valid BookPatchRequest patchRequest) {
         Book bookToUpdate = findByIdOrThrowNotFound(id);
 
         if (patchRequest.isbn() != null) {
             assertIsbnDoesNotExists(patchRequest.isbn(), id);
+        }
+
+        if (patchRequest.genreIds() != null && !patchRequest.genreIds().isEmpty()){
+            bookGenreService.updateGenresByBook(bookToUpdate, patchRequest.genreIds());
         }
 
         mapper.mergeRequestToBook(patchRequest, bookToUpdate);

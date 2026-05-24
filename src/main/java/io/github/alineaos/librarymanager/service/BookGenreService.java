@@ -9,8 +9,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,7 +66,41 @@ public class BookGenreService {
                 .toList();
     }
 
-    private GenreBasicResponse newGenreBasicResponse(Genre genre){
+    public void updateGenresByBook(Book book, List<Long> newGenresId) {
+        Long bookId = book.getId();
+
+        List<Long> savedGenresIds = repository.findByBookId(bookId)
+                .stream()
+                .map(bg -> bg.getGenre().getId())
+                .toList();
+
+        Set<Long> genresToUpdate = new HashSet<>(newGenresId);
+        savedGenresIds.forEach(genresToUpdate::remove);
+
+        Set<Long> genresToDelete = new HashSet<>(savedGenresIds);
+        newGenresId.forEach(genresToDelete::remove);
+
+        if (!genresToDelete.isEmpty()) {
+            repository.deleteByBookIdAndGenreIdIn(bookId, genresToDelete);
+        }
+
+        if (!genresToUpdate.isEmpty()) {
+            List<BookGenre> bookGenres = genresToUpdate.stream()
+                    .map(genreId -> {
+                        Genre genre = genreService.getReferenceById(genreId);
+
+                        return BookGenre.builder()
+                                .book(book)
+                                .genre(genre)
+                                .build();
+                    })
+                    .toList();
+
+            repository.saveAll(bookGenres);
+        }
+    }
+
+    private GenreBasicResponse newGenreBasicResponse(Genre genre) {
         return new GenreBasicResponse(
                 genre.getId(),
                 genre.getName()

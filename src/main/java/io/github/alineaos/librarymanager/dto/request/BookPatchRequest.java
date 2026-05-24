@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 
 import java.time.Year;
+import java.util.List;
 
 public record BookPatchRequest (
         String title,
@@ -20,5 +21,7 @@ public record BookPatchRequest (
         Integer edition,
 
         @Pattern(regexp = "^(\\d{10}|\\d{13})$", message = "ISBN must be 10 or 13 digits.")
-        String isbn
+        String isbn,
+
+        List<Long> genreIds
 ){}
