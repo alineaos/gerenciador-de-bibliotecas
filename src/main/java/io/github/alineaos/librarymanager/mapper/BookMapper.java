@@ -25,6 +25,9 @@ public interface BookMapper {
     @Mapping(target = "updatedAt", ignore = true)
     Book toBook(BookPostRequest postRequest);
 
+    @Mapping(target = "genres", source = "genresByBookId")
+    BookGetResponse toBookGetResponse(Book book, List<GenreBasicResponse> genresByBookId);
+
     @Mapping(target = "genres", expression = "java(genresByBookId.get(book.getId()))")
     BookGetResponse toBookGetResponse(Book book, @Context Map<Long, List<GenreBasicResponse>> genresByBookId);
 

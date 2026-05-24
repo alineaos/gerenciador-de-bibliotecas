@@ -49,8 +49,8 @@ public class BookService {
 
     public BookGetResponse findById(Long id) {
         Book book = findByIdOrThrowNotFound(id);
-        List<GenreBasicResponse> genresByBookId = List.of();
-        return mapper.toBookGetResponse(book, Map.of(book.getId(), genresByBookId));
+        List<GenreBasicResponse> genresByBookId = bookGenreService.findGenresByBookId(id);
+        return mapper.toBookGetResponse(book, genresByBookId);
     }
 
     public BookPostResponse save(@Valid BookPostRequest postRequest) {

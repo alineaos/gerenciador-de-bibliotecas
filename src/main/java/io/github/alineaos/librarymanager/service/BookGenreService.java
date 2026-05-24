@@ -55,6 +55,15 @@ public class BookGenreService {
 
     }
 
+    public List<GenreBasicResponse> findGenresByBookId(Long bookId) {
+        List<BookGenre> bookGenres = repository.findByBookId(bookId);
+
+        return bookGenres.stream()
+                .map(BookGenre::getGenre)
+                .map(this::newGenreBasicResponse)
+                .toList();
+    }
+
     private GenreBasicResponse newGenreBasicResponse(Genre genre){
         return new GenreBasicResponse(
                 genre.getId(),
