@@ -100,6 +100,10 @@ public class BookGenreService {
         }
     }
 
+    public void deleteBookGenreByBook(Book book){
+        repository.deleteByBook(book);
+    }
+
     private GenreBasicResponse newGenreBasicResponse(Genre genre) {
         return new GenreBasicResponse(
                 genre.getId(),

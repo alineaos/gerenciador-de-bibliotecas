@@ -85,9 +85,11 @@ public class BookService {
         repository.save(bookToUpdate);
     }
 
+    @Transactional
     public void delete(Long id) {
         Book book = findByIdOrThrowNotFound(id);
 
+        bookGenreService.deleteBookGenreByBook(book);
         repository.delete(book);
     }
 
