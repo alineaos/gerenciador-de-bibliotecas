@@ -7,12 +7,14 @@ import io.github.alineaos.librarymanager.dto.request.BookPatchRequest;
 import io.github.alineaos.librarymanager.dto.request.BookPostRequest;
 import io.github.alineaos.librarymanager.dto.response.BookGetResponse;
 import io.github.alineaos.librarymanager.dto.response.BookPostResponse;
+import io.github.alineaos.librarymanager.dto.response.GenreBasicResponse;
 import io.github.alineaos.librarymanager.exception.NotFoundException;
 import io.github.alineaos.librarymanager.security.config.SecurityConfig;
 import io.github.alineaos.librarymanager.service.BookService;
 import io.github.alineaos.librarymanager.util.BookErrorFactory;
 import io.github.alineaos.librarymanager.util.BookFactory;
 import io.github.alineaos.librarymanager.util.FileUtils;
+import io.github.alineaos.librarymanager.util.GenreFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
@@ -47,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = BookController.class)
 @WithMockUser
-@Import({FileUtils.class, BookFactory.class, SecurityConfig.class})
+@Import({FileUtils.class, BookFactory.class, SecurityConfig.class, GenreFactory.class})
 class BookControllerTest extends UnitTestConfig {
     private static final String URL = "/v1/books";
     @Autowired
@@ -66,6 +68,7 @@ class BookControllerTest extends UnitTestConfig {
     @WithMockUser(authorities = "SCOPE_USER")
     void findAll_ReturnsOkAndFilteredBooks_WhenUserIsAuthenticatedAndFiltersAreValid(String fileName, BookFilter filter, List<Book> expectedBooks) throws Exception {
         String response = fileUtils.readResourceFile("book/%s".formatted(fileName));
+
         List<BookGetResponse> expectedDtos = expectedBooks.stream()
                 .map(b -> new BookGetResponse(b.getId(),
                         b.getTitle(),
@@ -74,6 +77,7 @@ class BookControllerTest extends UnitTestConfig {
                         b.getYear(),
                         b.getEdition(),
                         b.getIsbn(),
+                        bookFactory.getGenresForBook(b.getId()),
                         b.getCreatedAt(),
                         b.getUpdatedAt()))
                 .toList();
@@ -85,6 +89,7 @@ class BookControllerTest extends UnitTestConfig {
         if (filter.title() != null) requestBuilder.queryParam("title", filter.title());
         if (filter.author() != null) requestBuilder.queryParam("author", filter.author());
         if (filter.publisher() != null) requestBuilder.queryParam("publisher", filter.publisher());
+        if (filter.genreName() != null) requestBuilder.queryParam("genre", filter.genreName());
 
         mockMvc.perform(requestBuilder)
                 .andDo(MockMvcResultHandlers.print())
@@ -292,39 +297,55 @@ class BookControllerTest extends UnitTestConfig {
     }
 
     private static Stream<Arguments> bookFilterParamsSource() {
-        BookFactory factory = new BookFactory();
-        List<Book> filteredList = factory.newBookList();
+        GenreFactory filterGenreFactory = new GenreFactory();
+        BookFactory filterBookFactory = new BookFactory(filterGenreFactory);
+
+        List<Book> filteredList = filterBookFactory.newBookList();
         String title = "estrela";
         String publisher = "Rocco";
+        String genreName = "Nacional";
         return Stream.of(
                 Arguments.of("get-response-book-empty-params.json",
-                        new BookFilter(null, null, null, null, null, null),
-                        filteredList),
+                        new BookFilter(null, null, null, null, null, null, null),
+                        filteredList
+                ),
 
                 Arguments.of("get-response-book-hora-da-estrela.json",
-                        new BookFilter(title, null, null, null, null, null),
+                        new BookFilter(title, null, null, null, null, null, null),
                         filteredList.stream()
                                 .filter(b -> b.getTitle().contains(title))
                                 .toList()
                 ),
 
                 Arguments.of("get-response-book-rocco-publisher.json",
-                        new BookFilter(null, null, publisher, null, null, null),
+                        new BookFilter(null, null, publisher, null, null, null, null),
                         filteredList.stream()
                                 .filter(b -> b.getPublisher().contains(publisher))
                                 .toList()
                 ),
 
                 Arguments.of("get-response-book-hora-da-estrela.json",
-                        new BookFilter(title, null, publisher, null, null, null),
+                        new BookFilter(title, null, publisher, null, null, null, null),
                         filteredList.stream()
                                 .filter(u -> u.getTitle().contains(title))
                                 .filter(b -> b.getPublisher().contains(publisher))
                                 .toList()
                 ),
 
+                Arguments.of("get-response-book-nacional-genre-params.json",
+                        new BookFilter(null, null, null, null, null, null, genreName),
+                        filteredList.stream()
+                                .filter(b -> {
+                                    List<GenreBasicResponse> genres = filterBookFactory.getGenresForBook(b.getId());
+
+                                    return genres.stream()
+                                            .anyMatch(g -> g.name().equalsIgnoreCase(genreName));
+                                })
+                                .toList()
+                ),
+
                 Arguments.of("get-response-book-invalid-param.json",
-                        new BookFilter("InvalidTitle", null, null, null, null, null),
+                        new BookFilter("InvalidTitle", null, null, null, null, null, null),
                         List.of()
                 )
         );
@@ -334,12 +355,13 @@ class BookControllerTest extends UnitTestConfig {
         List<String> allRequiredAndIsbnNotValidErrors = BookErrorFactory.allRequiredErrors();
         allRequiredAndIsbnNotValidErrors.add(BookErrorFactory.isbnNotValidError);
 
-        List<String> invalidFieldErrors = BookErrorFactory.allInvalidFieldsErrors();
+        List<String> invalidFieldAndGenreIdRequiredErrors = BookErrorFactory.allInvalidFieldsErrors();
+        invalidFieldAndGenreIdRequiredErrors.add(BookErrorFactory.genreIdsRequiredError);
 
         return Stream.of(
                 Arguments.of("post-request-book-empty-fields.json", allRequiredAndIsbnNotValidErrors),
                 Arguments.of("post-request-book-blank-fields.json", allRequiredAndIsbnNotValidErrors),
-                Arguments.of("post-request-book-invalid-fields.json", invalidFieldErrors)
+                Arguments.of("post-request-book-invalid-fields.json", invalidFieldAndGenreIdRequiredErrors)
         );
     }
 }

@@ -1,17 +1,26 @@
 package io.github.alineaos.librarymanager.util;
 
 import io.github.alineaos.librarymanager.domain.entity.Book;
+import io.github.alineaos.librarymanager.domain.entity.Genre;
 import io.github.alineaos.librarymanager.dto.request.BookPatchRequest;
 import io.github.alineaos.librarymanager.dto.request.BookPostRequest;
 import io.github.alineaos.librarymanager.dto.response.BookGetResponse;
 import io.github.alineaos.librarymanager.dto.response.BookPostResponse;
+import io.github.alineaos.librarymanager.dto.response.GenreBasicResponse;
 
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class BookFactory {
+    private final GenreFactory genreFactory;
+
+    public BookFactory(GenreFactory genreFactory) {
+        this.genreFactory = genreFactory;
+    }
+
     public List<Book> newBookList() {
         Book capitaesDaAreia = Book.builder()
                 .id(1L)
@@ -25,7 +34,7 @@ public class BookFactory {
                 .updatedAt(LocalDateTime.parse("2026-04-24T18:00:33"))
                 .build();
 
-        Book gabriel = Book.builder()
+        Book jogosVorazes = Book.builder()
                 .id(2L)
                 .title("Jogos Vorazes")
                 .author("Suzanne Collins")
@@ -49,7 +58,7 @@ public class BookFactory {
                 .updatedAt(LocalDateTime.parse("2026-04-24T18:02:33"))
                 .build();
 
-        return new ArrayList<>(List.of(capitaesDaAreia, gabriel, horaDaEstrela));
+        return new ArrayList<>(List.of(capitaesDaAreia, jogosVorazes, horaDaEstrela));
     }
 
     public Book newBookSaved() {
@@ -78,13 +87,14 @@ public class BookFactory {
                 book.getYear(),
                 book.getEdition(),
                 book.getIsbn(),
+                genreNacionalResponseList(),
                 book.getCreatedAt(),
                 book.getUpdatedAt());
     }
 
     public BookGetResponse newBookGetResponseById(Long id) {
         Book book = newBookList().stream()
-                .filter(u -> u.getId().equals(id))
+                .filter(b -> b.getId().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Invalid Test: Id Not Found in BookFactory: " + id));
 
@@ -96,6 +106,7 @@ public class BookFactory {
                 book.getYear(),
                 book.getEdition(),
                 book.getIsbn(),
+                getGenresForBook(book.getId()),
                 book.getCreatedAt(),
                 book.getUpdatedAt());
     }
@@ -109,7 +120,8 @@ public class BookFactory {
                 book.getPublisher(),
                 book.getYear(),
                 book.getEdition(),
-                book.getIsbn());
+                book.getIsbn(),
+                newGenreIdsList());
     }
 
     public BookPostResponse newBookPostResponse() {
@@ -120,6 +132,7 @@ public class BookFactory {
                 book.getTitle(),
                 book.getAuthor(),
                 book.getIsbn(),
+                genreNacionalResponseList(),
                 book.getCreatedAt());
     }
 
@@ -127,11 +140,50 @@ public class BookFactory {
         Book book = newBookList().getFirst();
 
         return new BookPatchRequest(
-               "Mar morto",
+                "Mar morto",
                 book.getAuthor(),
                 book.getPublisher(),
                 book.getYear(),
                 book.getEdition(),
-                "9788535911824");
+                "9788535911824",
+                newGenreIdsList());
+    }
+
+    public List<GenreBasicResponse> genreNacionalResponseList() {
+        Genre nacional = genreFactory.newGenreNacional();
+
+        return Stream.of(nacional)
+                .map(g -> new GenreBasicResponse(g.getId(), g.getName()))
+                .toList();
+    }
+
+    public List<GenreBasicResponse> genreFiccaoResponseList() {
+        Genre ficcao = genreFactory.newGenreFiccao();
+
+        return Stream.of(ficcao)
+                .map(g -> new GenreBasicResponse(g.getId(), g.getName()))
+                .toList();
+    }
+
+    public List<GenreBasicResponse> getGenresForBook(Long bookId) {
+        List<Long> nacionalBookIds = List.of(1L, 3L, 99L);
+        List<Long> ficcaoBookIds = List.of(2L);
+
+        if (nacionalBookIds.contains(bookId)) {
+            return genreNacionalResponseList();
+        }
+
+        if (ficcaoBookIds.contains(bookId)) {
+            return genreFiccaoResponseList();
+        }
+
+        throw new IllegalArgumentException("Invalid Book Id %d. Please, update the genreBasicResponseList() method".formatted(bookId));
+    }
+
+    private List<Long> newGenreIdsList(){
+        return genreNacionalResponseList()
+                .stream()
+                .map(GenreBasicResponse::id)
+                .toList();
     }
 }

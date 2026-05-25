@@ -7,10 +7,12 @@ import io.github.alineaos.librarymanager.dto.request.BookPatchRequest;
 import io.github.alineaos.librarymanager.dto.request.BookPostRequest;
 import io.github.alineaos.librarymanager.dto.response.BookGetResponse;
 import io.github.alineaos.librarymanager.dto.response.BookPostResponse;
+import io.github.alineaos.librarymanager.dto.response.GenreBasicResponse;
 import io.github.alineaos.librarymanager.exception.BusinessException;
 import io.github.alineaos.librarymanager.mapper.BookMapper;
 import io.github.alineaos.librarymanager.repository.BookRepository;
 import io.github.alineaos.librarymanager.util.BookFactory;
+import io.github.alineaos.librarymanager.util.GenreFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,10 +32,13 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -44,9 +49,16 @@ class BookServiceTest extends UnitTestConfig {
     private BookService service;
     @Mock
     private BookRepository repository;
+    @Mock
+    private BookGenreService bookGenreService;
+    @Mock
+    private GenreService genreService;
     @Spy
     private BookMapper mapper = Mappers.getMapper(BookMapper.class);
-    private final BookFactory bookFactory = new BookFactory();
+
+    private final GenreFactory genreFactory = new GenreFactory();
+    private final BookFactory bookFactory = new BookFactory(genreFactory);
+
     private List<Book> bookList;
 
     @BeforeEach
@@ -60,21 +72,34 @@ class BookServiceTest extends UnitTestConfig {
     @Order(1)
     void findAll_ReturnsFilteredBooks_WhenFilterIsValid(BookFilter filter, List<Book> expectedBooks) {
         when(repository.findAll(ArgumentMatchers.<Specification<Book>>any())).thenReturn(expectedBooks);
+
+        Map<Long, List<GenreBasicResponse>> expectedGenresByBook = expectedBooks.stream()
+                .collect(Collectors.toMap(
+                        Book::getId,
+                        b -> bookFactory.getGenresForBook(b.getId())
+                ));
+
+        when(bookGenreService.findGenresGroupedByBookIds(anyList())).thenReturn(expectedGenresByBook);
+
         List<BookGetResponse> expectedDtos = expectedBooks.stream()
-                .map(b -> new BookGetResponse(b.getId(),
-                        b.getTitle(),
-                        b.getAuthor(),
-                        b.getPublisher(),
-                        b.getYear(),
-                        b.getEdition(),
-                        b.getIsbn(),
-                        b.getCreatedAt(),
-                        b.getUpdatedAt()))
+                .map(b ->
+                        new BookGetResponse(b.getId(),
+                                b.getTitle(),
+                                b.getAuthor(),
+                                b.getPublisher(),
+                                b.getYear(),
+                                b.getEdition(),
+                                b.getIsbn(),
+                                bookFactory.getGenresForBook(b.getId()),
+                                b.getCreatedAt(),
+                                b.getUpdatedAt())
+                )
                 .toList();
 
         List<BookGetResponse> result = service.findAll(filter);
 
         Assertions.assertThat(result).isNotNull().hasSize(expectedDtos.size());
+        Assertions.assertThat(result).isNotNull().containsExactlyElementsOf(expectedDtos);
     }
 
     @Test
@@ -83,10 +108,12 @@ class BookServiceTest extends UnitTestConfig {
     void findById_ReturnsBookById_WhenSuccessful() {
         Book expectedBook = bookList.getFirst();
         BookGetResponse expectedDto = bookFactory.newBookGetResponse();
+        Long bookId = expectedDto.id();
 
-        when(repository.findById(expectedBook.getId())).thenReturn(Optional.of(expectedBook));
+        when(repository.findById(bookId)).thenReturn(Optional.of(expectedBook));
+        when(bookGenreService.findGenresByBookId(bookId)).thenReturn(bookFactory.getGenresForBook(bookId));
 
-        BookGetResponse result = service.findById(expectedBook.getId());
+        BookGetResponse result = service.findById(bookId);
 
         Assertions.assertThat(result).isEqualTo(expectedDto);
     }
@@ -109,13 +136,16 @@ class BookServiceTest extends UnitTestConfig {
     @Order(4)
     void save_CreatesBook_WhenSuccessful() {
         Book bookSaved = bookFactory.newBookSaved();
+        List<GenreBasicResponse> expectedGenres = bookFactory.getGenresForBook(bookSaved.getId());
 
         when(repository.findByIsbn(anyString())).thenReturn(Optional.empty());
         when(repository.save(any(Book.class))).thenReturn(bookSaved);
+        when(bookGenreService.addGenresToBook(any(), anyList())).thenReturn(expectedGenres);
 
         BookPostResponse result = service.save(bookFactory.newBookPostRequest());
 
         Assertions.assertThat(result.id()).isEqualTo(bookSaved.getId());
+        Assertions.assertThat(result.genres()).isEqualTo(expectedGenres);
     }
 
     @Test
@@ -203,7 +233,7 @@ class BookServiceTest extends UnitTestConfig {
 
     @Test
     @DisplayName("delete throws NotFoundException when book is not found")
-    @Order(8)
+    @Order(10)
     void delete_ThrowsNotFoundException_WhenBookIsNotFound() {
         Book bookToDelete = bookList.getFirst();
 
@@ -215,34 +245,48 @@ class BookServiceTest extends UnitTestConfig {
     }
 
     private static Stream<Arguments> bookFilterSource() {
-        BookFactory factory = new BookFactory();
-        List<Book> filteredList = factory.newBookList();
+        GenreFactory filterGenreFactory = new GenreFactory();
+        BookFactory filterBookFactory = new BookFactory(filterGenreFactory);
+
+        List<Book> filteredList = filterBookFactory.newBookList();
         String title = "estrela";
         String publisher = "Rocco";
+        String genreName = "Nacional";
         return Stream.of(
-                Arguments.of(new BookFilter(null, null, null, null, null, null),
+                Arguments.of(new BookFilter(null, null, null, null, null, null, null),
                         filteredList),
 
-                Arguments.of(new BookFilter(title, null, null, null, null, null),
+                Arguments.of(new BookFilter(title, null, null, null, null, null, null),
                         filteredList.stream()
                                 .filter(b -> b.getTitle().contains(title))
                                 .toList()
                 ),
 
-                Arguments.of(new BookFilter(null, null, publisher, null, null, null),
+                Arguments.of(new BookFilter(null, null, publisher, null, null, null, null),
                         filteredList.stream()
                                 .filter(b -> b.getPublisher().contains(publisher))
                                 .toList()
                 ),
 
-                Arguments.of(new BookFilter(title, null, publisher, null, null, null),
+                Arguments.of(new BookFilter(title, null, publisher, null, null, null, null),
                         filteredList.stream()
-                                .filter(u -> u.getTitle().contains(title))
+                                .filter(b -> b.getTitle().contains(title))
                                 .filter(b -> b.getPublisher().contains(publisher))
                                 .toList()
                 ),
 
-                Arguments.of(new BookFilter("InvalidTitle", null, null, null, null, null),
+                Arguments.of(new BookFilter(null, null, null, null, null, null, genreName),
+                        filteredList.stream()
+                                .filter(b -> {
+                                    List<GenreBasicResponse> genres = filterBookFactory.getGenresForBook(b.getId());
+
+                                    return genres.stream()
+                                            .anyMatch(g -> g.name().equalsIgnoreCase(genreName));
+                                })
+                                .toList()
+                ),
+
+                Arguments.of(new BookFilter("InvalidTitle", null, null, null, null, null, null),
                         List.of()
                 )
         );

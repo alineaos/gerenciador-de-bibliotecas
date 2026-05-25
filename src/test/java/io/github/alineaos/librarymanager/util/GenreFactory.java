@@ -90,4 +90,22 @@ public class GenreFactory {
         return new GenrePutRequest(
                 "Fantasy");
     }
+
+    public Genre newGenreNacional() {
+       return  Genre.builder()
+                .id(10L)
+                .name("Nacional")
+                .createdAt(LocalDateTime.parse("2026-04-24T18:45:33"))
+                .updatedAt(LocalDateTime.parse("2026-04-24T18:45:33"))
+                .build();
+    }
+
+    public Genre newGenreFiccao() {
+        return  Genre.builder()
+                .id(11L)
+                .name("Ficção")
+                .createdAt(LocalDateTime.parse("2026-04-24T18:46:33"))
+                .updatedAt(LocalDateTime.parse("2026-04-24T18:46:33"))
+                .build();
+    }
 }

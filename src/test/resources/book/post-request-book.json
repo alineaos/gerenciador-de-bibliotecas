@@ -4,5 +4,6 @@
   "publisher": "Principis",
   "year": "2019",
   "edition": 3,
-  "isbn": "9788594318602"
+  "isbn": "9788594318602",
+  "genreIds": [10]
 }

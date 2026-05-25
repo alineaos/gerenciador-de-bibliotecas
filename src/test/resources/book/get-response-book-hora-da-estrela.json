@@ -7,6 +7,12 @@
     "year": "2020",
     "edition": 1,
     "isbn": "9786555320350",
+    "genres": [
+      {
+        "id": 10,
+        "name": "Nacional"
+      }
+    ],
     "createdAt": "2026-04-24T18:02:33",
     "updatedAt": "2026-04-24T18:02:33"
   }

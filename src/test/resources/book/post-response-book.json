@@ -3,5 +3,11 @@
   "title": "Dom Casmurro",
   "author": "Machado de Assis",
   "isbn": "9788594318602",
+  "genres": [
+    {
+      "id": 10,
+      "name": "Nacional"
+    }
+  ],
   "createdAt": "2026-04-24T18:00:33"
 }

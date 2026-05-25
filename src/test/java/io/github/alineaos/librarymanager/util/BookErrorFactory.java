@@ -9,6 +9,7 @@ public class BookErrorFactory {
     public static String yearRequiredError = "The field 'year' is required.";
     public static String editionRequiredError = "The field 'edition' is required.";
     public static String isbnRequiredError = "The field 'isbn' is required.";
+    public static String genreIdsRequiredError = "The field 'genreIds' is required.";
 
     public static String isbnNotValidError = "ISBN must be 10 or 13 digits.";
     public static String editionNotPositiveError = "The edition must be greater than or equal to 1.";
@@ -17,7 +18,8 @@ public class BookErrorFactory {
 
 
     public static List<String> allRequiredErrors() {
-        return new ArrayList<>(List.of(titleRequiredError, authorRequiredError, yearRequiredError, editionRequiredError, isbnRequiredError));
+        return new ArrayList<>(List.of(titleRequiredError, authorRequiredError, yearRequiredError,
+                editionRequiredError, isbnRequiredError, genreIdsRequiredError));
     }
 
     public static List<String> allInvalidFieldsErrors() {
