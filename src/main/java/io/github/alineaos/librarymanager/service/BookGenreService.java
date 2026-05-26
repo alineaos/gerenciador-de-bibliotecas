@@ -21,27 +21,6 @@ public class BookGenreService {
     private final BookGenreRepository repository;
     private final GenreService genreService;
 
-    public List<GenreBasicResponse> addGenresToBook(Book book, List<Long> genreIds) {
-        List<BookGenre> bookGenres = genreIds.stream()
-                .map(genreId -> {
-                            Genre genre = genreService.getReferenceById(genreId);
-
-                            return BookGenre.builder()
-                                    .book(book)
-                                    .genre(genre)
-                                    .build();
-                        }
-                )
-                .toList();
-
-        List<BookGenre> savedBookGenres = repository.saveAll(bookGenres);
-
-        return savedBookGenres.stream()
-                .map(BookGenre::getGenre)
-                .map(this::newGenreBasicResponse)
-                .toList();
-    }
-
     public Map<Long, List<GenreBasicResponse>> findGenresGroupedByBookIds(List<Long> bookIds) {
         if (bookIds == null || bookIds.isEmpty()) return Collections.emptyMap();
 
@@ -61,6 +40,27 @@ public class BookGenreService {
         List<BookGenre> bookGenres = repository.findByBookId(bookId);
 
         return bookGenres.stream()
+                .map(BookGenre::getGenre)
+                .map(this::newGenreBasicResponse)
+                .toList();
+    }
+
+    public List<GenreBasicResponse> addGenresToBook(Book book, List<Long> genreIds) {
+        List<BookGenre> bookGenres = genreIds.stream()
+                .map(genreId -> {
+                            Genre genre = genreService.getReferenceById(genreId);
+
+                            return BookGenre.builder()
+                                    .book(book)
+                                    .genre(genre)
+                                    .build();
+                        }
+                )
+                .toList();
+
+        List<BookGenre> savedBookGenres = repository.saveAll(bookGenres);
+
+        return savedBookGenres.stream()
                 .map(BookGenre::getGenre)
                 .map(this::newGenreBasicResponse)
                 .toList();
@@ -104,6 +104,9 @@ public class BookGenreService {
         repository.deleteByBook(book);
     }
 
+    public void deleteBookGenreByGenre(Genre genre){
+        repository.deleteByGenre(genre);
+    }
     private GenreBasicResponse newGenreBasicResponse(Genre genre) {
         return new GenreBasicResponse(
                 genre.getId(),

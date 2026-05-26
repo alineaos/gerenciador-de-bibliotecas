@@ -43,6 +43,8 @@ class GenreServiceTest extends UnitTestConfig {
     private GenreService service;
     @Mock
     private GenreRepository repository;
+    @Mock
+    private BookGenreService bookGenreService;
     @Spy
     private GenreMapper mapper = Mappers.getMapper(GenreMapper.class);
     private final GenreFactory genreFactory = new GenreFactory();
@@ -51,6 +53,7 @@ class GenreServiceTest extends UnitTestConfig {
     @BeforeEach
     void init() {
         genreList = genreFactory.newGenreList();
+        service.setBookGenreService(bookGenreService);
     }
 
     @ParameterizedTest(name = "[{index}] {0}")

@@ -13,7 +13,10 @@ import io.github.alineaos.librarymanager.repository.GenreRepository;
 import io.github.alineaos.librarymanager.repository.specification.GenreSpecification;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
@@ -24,6 +27,12 @@ import java.util.List;
 public class GenreService {
     private final GenreRepository repository;
     private final GenreMapper mapper;
+    private BookGenreService bookGenreService;
+
+    @Autowired(required = false)
+    public void setBookGenreService(@Lazy BookGenreService bookGenreService) {
+        this.bookGenreService = bookGenreService;
+    }
 
     public List<GenreGetResponse> findAll(GenreFilter filter) {
         List<Genre> genres = repository.findAll(
@@ -58,9 +67,11 @@ public class GenreService {
         repository.save(genreToUpdate);
     }
 
+    @Transactional
     public void delete(Long id) {
         Genre genreToDelete = findByIdOrThrowNotFound(id);
 
+        bookGenreService.deleteBookGenreByGenre(genreToDelete);
         repository.delete(genreToDelete);
     }
 

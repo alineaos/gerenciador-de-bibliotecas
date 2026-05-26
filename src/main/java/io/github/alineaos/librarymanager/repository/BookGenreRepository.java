@@ -2,6 +2,7 @@ package io.github.alineaos.librarymanager.repository;
 
 import io.github.alineaos.librarymanager.domain.entity.Book;
 import io.github.alineaos.librarymanager.domain.entity.BookGenre;
+import io.github.alineaos.librarymanager.domain.entity.Genre;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -21,4 +22,6 @@ public interface BookGenreRepository extends JpaRepository<BookGenre, Long> {
     void deleteByBookIdAndGenreIdIn(Long bookId, Set<Long> genreIds);
 
     void deleteByBook(Book book);
+
+    void deleteByGenre(Genre genre);
 }
