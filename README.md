@@ -23,7 +23,7 @@ Este projeto consiste em uma API REST desenvolvida com **Spring Boot** para o ge
 ### Geral
 - [x] Configuração inicial do projeto (Spring initializr, dependências)
 - [x] Finalizar Entidade User
-- [ ] Finalizar Entidade Book
+- [x] Finalizar Entidade Book
 - [ ] Finalizar Entidade Loan
 - [ ] Documentação com Swagger
 
@@ -36,11 +36,11 @@ Este projeto consiste em uma API REST desenvolvida com **Spring Boot** para o ge
 
 ### 📚 Entidade Book (Livro)
 - [x] Criação da Entidade
-- [ ] CRUD completo (Criar, Consultar, Atualizar e Excluir)
-- [ ] Testes unitários
+- [x] CRUD completo (Criar, Consultar, Atualizar e Excluir)
+- [x] Testes unitários
 
 ### 🤝 Entidade Loan (Empréstimo)
-- [ ] Criação da Entidade e os seus relacionamentos
+- [x] Criação da Entidade e os seus relacionamentos
 - [ ] Fluxo de Empréstimos (Registrar, Consultar, Renovar, Finalizar)
 - [ ] Testes unitários
 
@@ -106,6 +106,19 @@ erDiagram
         year publication_year
         int edition
         varchar isbn UK
+        datetime created_at
+        datetime updated_at
+    }
+
+    LOAN{
+        bigint id PK
+        bigint user_id FK
+        bigint book_id FK
+        varchar status
+        boolean renewed
+        date borrowed_at
+        date due_at
+        date returned_at
         datetime created_at
         datetime updated_at
     }
