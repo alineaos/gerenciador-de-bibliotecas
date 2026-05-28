@@ -93,6 +93,14 @@ public class BookService {
         repository.delete(book);
     }
 
+    public Book getReferenceById(Long id){
+        return repository.getReferenceById(id);
+    }
+
+    public Book getBookByIdOrThrowNotFound(Long id){
+        return findByIdOrThrowNotFound(id);
+    }
+
     private void assertIsbnDoesNotExists(String isbn) {
         repository.findByIsbn(isbn).ifPresent(this::throwIsbnAlreadyExists);
     }

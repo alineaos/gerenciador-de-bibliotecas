@@ -47,6 +47,7 @@ public class SecurityConfig {
                                 .requestMatchers("/v1/users/**").authenticated()
                                 .requestMatchers("/v1/genres/**").authenticated()
                                 .requestMatchers("/v1/books/**").authenticated()
+                                .requestMatchers("/v1/loans/**").authenticated()
                                 .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer(conf -> conf.jwt(Customizer.withDefaults()))

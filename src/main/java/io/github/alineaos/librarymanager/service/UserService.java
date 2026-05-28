@@ -82,6 +82,13 @@ public class UserService {
         repository.delete(userToDelete);
     }
 
+    public User getReferenceById(Long id){
+        return repository.getReferenceById(id);
+    }
+
+    public User getUserByIdOrThrowNotFound(Long id){
+        return findByIdOrThrowNotFound(id);
+    }
     private void assertEmailDoesNotExists(String email) {
         repository.findByEmail(email).ifPresent(this::throwEmailExistsException);
     }
