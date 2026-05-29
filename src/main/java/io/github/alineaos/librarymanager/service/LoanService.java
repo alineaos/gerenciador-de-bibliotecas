@@ -11,6 +11,7 @@ import io.github.alineaos.librarymanager.dto.response.LoanGetResponse;
 import io.github.alineaos.librarymanager.dto.response.LoanPostResponse;
 import io.github.alineaos.librarymanager.dto.response.UserBasicResponse;
 import io.github.alineaos.librarymanager.exception.BusinessException;
+import io.github.alineaos.librarymanager.exception.NotFoundException;
 import io.github.alineaos.librarymanager.mapper.LoanMapper;
 import io.github.alineaos.librarymanager.repository.LoanRepository;
 import io.github.alineaos.librarymanager.repository.specification.LoanSpecification;
@@ -47,6 +48,12 @@ public class LoanService {
         );
 
         return mapper.toLoanGetResponseList(loans);
+    }
+
+    public LoanGetResponse findById(Long id) {
+        Loan loan = findByIdOrThrowNotFound(id);
+
+        return mapper.toLoanGetResponse(loan);
     }
 
     public LoanPostResponse save(@Valid LoanPostRequest postRequest) {
@@ -104,4 +111,11 @@ public class LoanService {
     private void throwBookIsNotAvailable(Book book) {
         throw new BusinessException("The book '%s' is not available.".formatted(book.getTitle()));
     }
+
+    private Loan findByIdOrThrowNotFound(Long id) {
+        return repository.findByIdWithRelationships(id).orElseThrow(
+                () -> new NotFoundException("Loan not found.")
+        );
+    }
+
 }
