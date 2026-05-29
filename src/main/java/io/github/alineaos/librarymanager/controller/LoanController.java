@@ -3,13 +3,17 @@ package io.github.alineaos.librarymanager.controller;
 import io.github.alineaos.librarymanager.dto.LoanFilter;
 import io.github.alineaos.librarymanager.dto.request.LoanPostRequest;
 import io.github.alineaos.librarymanager.dto.response.LoanGetResponse;
+import io.github.alineaos.librarymanager.dto.response.LoanHistoryResponse;
 import io.github.alineaos.librarymanager.dto.response.LoanPostResponse;
 import io.github.alineaos.librarymanager.security.annotation.IsAdmin;
+import io.github.alineaos.librarymanager.security.annotation.IsAuthenticatedUser;
 import io.github.alineaos.librarymanager.service.LoanService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,6 +42,16 @@ public class LoanController {
         LoanGetResponse getResponse = service.findById(id);
 
         return ResponseEntity.ok(getResponse);
+    }
+
+    @GetMapping("/my-history")
+    @IsAuthenticatedUser
+    public ResponseEntity<List<LoanHistoryResponse>> findMyHistory(@AuthenticationPrincipal Jwt jwt) {
+        Long loggedUserId = jwt.getClaim("userId");
+
+        List<LoanHistoryResponse> historyResponseList = service.findMyHistory(loggedUserId);
+
+        return ResponseEntity.ok(historyResponseList);
     }
 
     @PostMapping

@@ -4,6 +4,7 @@ import io.github.alineaos.librarymanager.domain.entity.Loan;
 import io.github.alineaos.librarymanager.dto.request.LoanPostRequest;
 import io.github.alineaos.librarymanager.dto.response.BookBasicResponse;
 import io.github.alineaos.librarymanager.dto.response.LoanGetResponse;
+import io.github.alineaos.librarymanager.dto.response.LoanHistoryResponse;
 import io.github.alineaos.librarymanager.dto.response.LoanPostResponse;
 import io.github.alineaos.librarymanager.dto.response.UserBasicResponse;
 import org.mapstruct.Mapper;
@@ -30,4 +31,6 @@ public interface LoanMapper {
     LoanGetResponse toLoanGetResponse(Loan loan);
 
     List<LoanGetResponse> toLoanGetResponseList(List<Loan> loans);
+
+    List<LoanHistoryResponse> toLoanHistoryResponse(List<Loan> loans);
 }

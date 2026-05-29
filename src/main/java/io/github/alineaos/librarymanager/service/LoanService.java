@@ -8,6 +8,7 @@ import io.github.alineaos.librarymanager.dto.LoanFilter;
 import io.github.alineaos.librarymanager.dto.request.LoanPostRequest;
 import io.github.alineaos.librarymanager.dto.response.BookBasicResponse;
 import io.github.alineaos.librarymanager.dto.response.LoanGetResponse;
+import io.github.alineaos.librarymanager.dto.response.LoanHistoryResponse;
 import io.github.alineaos.librarymanager.dto.response.LoanPostResponse;
 import io.github.alineaos.librarymanager.dto.response.UserBasicResponse;
 import io.github.alineaos.librarymanager.exception.BusinessException;
@@ -54,6 +55,12 @@ public class LoanService {
         Loan loan = findByIdOrThrowNotFound(id);
 
         return mapper.toLoanGetResponse(loan);
+    }
+
+    public List<LoanHistoryResponse> findMyHistory(Long id) {
+        List<Loan> loans = repository.findByUserIdIn(id);
+
+        return mapper.toLoanHistoryResponse(loans);
     }
 
     public LoanPostResponse save(@Valid LoanPostRequest postRequest) {
