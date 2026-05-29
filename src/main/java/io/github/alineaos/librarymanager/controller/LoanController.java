@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -59,5 +60,12 @@ public class LoanController {
         LoanPostResponse postResponse = service.save(postRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(postResponse);
+    }
+
+    @PatchMapping("/{id}/renew")
+    public ResponseEntity<Void> renew(@PathVariable Long id){
+        service.renew(id);
+
+        return ResponseEntity.noContent().build();
     }
 }

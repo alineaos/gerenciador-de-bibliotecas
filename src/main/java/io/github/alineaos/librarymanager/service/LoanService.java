@@ -85,6 +85,20 @@ public class LoanService {
         return mapper.toLoanPostResponse(savedLoan, newUserBasicResponse(user), newBookBasicResponse(book));
     }
 
+    public void renew(Long id) {
+        Loan loan = findByIdOrThrowNotFound(id);
+
+        assertLoanHasNeverBeenRenewed(loan);
+
+        LocalDate newDueAt = loan.getDueAt().plusDays(14);
+
+        loan.setStatus(LoanStatus.RENEWED);
+        loan.setRenewed(true);
+        loan.setDueAt(newDueAt);
+
+        repository.save(loan);
+    }
+
     private UserBasicResponse newUserBasicResponse(User user) {
         return new UserBasicResponse(
                 user.getId(),
@@ -125,4 +139,7 @@ public class LoanService {
         );
     }
 
+    private void assertLoanHasNeverBeenRenewed(Loan loan) {
+        if (loan.isRenewed()) throw new BusinessException("A Loan can be renewed only once.");
+    }
 }
