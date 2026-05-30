@@ -2,6 +2,7 @@ package io.github.alineaos.librarymanager.controller;
 
 import io.github.alineaos.librarymanager.dto.LoanFilter;
 import io.github.alineaos.librarymanager.dto.request.LoanPostRequest;
+import io.github.alineaos.librarymanager.dto.request.LoanReturnRequest;
 import io.github.alineaos.librarymanager.dto.response.LoanGetResponse;
 import io.github.alineaos.librarymanager.dto.response.LoanHistoryResponse;
 import io.github.alineaos.librarymanager.dto.response.LoanPostResponse;
@@ -65,6 +66,13 @@ public class LoanController {
     @PatchMapping("/{id}/renew")
     public ResponseEntity<Void> renew(@PathVariable Long id){
         service.renew(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/return")
+    public ResponseEntity<Void> finalize(@PathVariable Long id, @RequestBody @Valid LoanReturnRequest returnRequest){
+        service.finalize(id, returnRequest);
 
         return ResponseEntity.noContent().build();
     }

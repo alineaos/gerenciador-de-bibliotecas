@@ -6,6 +6,7 @@ import io.github.alineaos.librarymanager.domain.entity.User;
 import io.github.alineaos.librarymanager.domain.enums.LoanStatus;
 import io.github.alineaos.librarymanager.dto.LoanFilter;
 import io.github.alineaos.librarymanager.dto.request.LoanPostRequest;
+import io.github.alineaos.librarymanager.dto.request.LoanReturnRequest;
 import io.github.alineaos.librarymanager.dto.response.BookBasicResponse;
 import io.github.alineaos.librarymanager.dto.response.LoanGetResponse;
 import io.github.alineaos.librarymanager.dto.response.LoanHistoryResponse;
@@ -99,6 +100,23 @@ public class LoanService {
         repository.save(loan);
     }
 
+    public void finalize(Long id, @Valid LoanReturnRequest returnRequest) {
+        Loan loan = findByIdOrThrowNotFound(id);
+
+        assertLoanIsNotFinalized(loan);
+
+        if (returnRequest.returnedAt() != null){
+            assertReturnDateIsAfterLoanDate(loan, returnRequest.returnedAt());
+        }
+
+        LocalDate returnedDate = returnRequest.returnedAt() == null ? LocalDate.now() : returnRequest.returnedAt();
+
+        loan.setStatus(LoanStatus.RETURNED);
+        loan.setReturnedAt(returnedDate);
+
+        repository.save(loan);
+    }
+
     private UserBasicResponse newUserBasicResponse(User user) {
         return new UserBasicResponse(
                 user.getId(),
@@ -141,5 +159,19 @@ public class LoanService {
 
     private void assertLoanHasNeverBeenRenewed(Loan loan) {
         if (loan.isRenewed()) throw new BusinessException("A Loan can be renewed only once.");
+    }
+
+    private void assertLoanIsNotFinalized(Loan loan) {
+        LoanStatus status = loan.getStatus();
+
+        if (status == LoanStatus.RETURNED || status == LoanStatus.CANCELLED) {
+            throw new BusinessException("The Loan has already been finalized");
+        }
+    }
+
+    private void assertReturnDateIsAfterLoanDate(Loan loan, LocalDate returnDate){
+        if (returnDate.isBefore(loan.getBorrowedAt())) {
+            throw new BusinessException("The return date cannot be before the loan date");
+        }
     }
 }
