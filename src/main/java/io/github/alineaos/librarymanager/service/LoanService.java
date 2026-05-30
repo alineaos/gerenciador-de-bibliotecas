@@ -117,6 +117,16 @@ public class LoanService {
         repository.save(loan);
     }
 
+    public void lost(Long id) {
+        Loan loan = findByIdOrThrowNotFound(id);
+
+        assertLoanIsNotFinalized(loan);
+
+        loan.setStatus(LoanStatus.LOST);
+
+        repository.save(loan);
+    }
+
     private UserBasicResponse newUserBasicResponse(User user) {
         return new UserBasicResponse(
                 user.getId(),

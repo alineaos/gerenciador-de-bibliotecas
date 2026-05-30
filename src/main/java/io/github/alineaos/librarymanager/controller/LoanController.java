@@ -76,4 +76,11 @@ public class LoanController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/lost")
+    public ResponseEntity<Void> lost(@PathVariable Long id){
+        service.lost(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }
