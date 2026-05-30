@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -22,4 +23,7 @@ public interface LoanRepository extends JpaRepository<Loan, Long>, JpaSpecificat
 
     @Query("SELECT l FROM Loan l JOIN FETCH l.book WHERE l.user.id IN :userId")
     List<Loan> findByUserIdIn(Long userId);
+
+    @Query("SELECT l FROM Loan l JOIN FETCH l.user JOIN FETCH l.book WHERE l.status IN :activeStatus AND l.dueAt < :today")
+    List<Loan> findOverdueLoansWithRelationships(Set<LoanStatus> activeStatus, LocalDate today);
 }

@@ -14,3 +14,6 @@ jwt:
   private:
     key: classpath:app.key
   expiration-time: 3600
+scheduling:
+  initial-delay: 10000
+  fixed-delay: 3600000
