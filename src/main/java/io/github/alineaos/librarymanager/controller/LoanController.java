@@ -83,4 +83,12 @@ public class LoanController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancel(@PathVariable Long id){
+        service.cancel(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
 }

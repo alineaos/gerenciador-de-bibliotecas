@@ -127,6 +127,16 @@ public class LoanService {
         repository.save(loan);
     }
 
+    public void cancel(Long id) {
+        Loan loan = findByIdOrThrowNotFound(id);
+
+        assertLoanIsNotFinalized(loan);
+
+        loan.setStatus(LoanStatus.CANCELLED);
+
+        repository.save(loan);
+    }
+
     private UserBasicResponse newUserBasicResponse(User user) {
         return new UserBasicResponse(
                 user.getId(),
