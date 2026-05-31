@@ -24,7 +24,7 @@ Este projeto consiste em uma API REST desenvolvida com **Spring Boot** para o ge
 - [x] Configuração inicial do projeto (Spring initializr, dependências)
 - [x] Finalizar Entidade User
 - [x] Finalizar Entidade Book
-- [ ] Finalizar Entidade Loan
+- [x] Finalizar Entidade Loan
 - [ ] Documentação com Swagger
 
 ### 🧑 Entidade User (Usuário)
@@ -41,8 +41,8 @@ Este projeto consiste em uma API REST desenvolvida com **Spring Boot** para o ge
 
 ### 🤝 Entidade Loan (Empréstimo)
 - [x] Criação da Entidade e os seus relacionamentos
-- [ ] Fluxo de Empréstimos (Registrar, Consultar, Renovar, Finalizar)
-- [ ] Testes unitários
+- [x] Fluxo de Empréstimos (Registrar, Consultar, Renovar, Finalizar)
+- [x] Testes unitários
 
 
 ## 🗃️ Arquitetura do banco de dados
