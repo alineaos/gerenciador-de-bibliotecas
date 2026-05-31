@@ -1,0 +1,22 @@
+[
+  {
+    "id": 3,
+    "user": {
+      "id": 3,
+      "fullName": "Ana Santana",
+      "email": "ana.santana@testes.com"
+    },
+    "book": {
+      "id": 3,
+      "title": "A hora da estrela",
+      "author": "Clarice Lispector"
+    },
+    "status": "RENEWED",
+    "renewed": true,
+    "borrowedAt": "2026-05-31",
+    "dueAt": "2026-06-28",
+    "returnedAt": null,
+    "createdAt": "2026-04-24T18:02:33",
+    "updatedAt": "2026-04-24T18:02:33"
+  }
+]

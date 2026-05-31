@@ -1,0 +1,22 @@
+[
+  {
+    "id": 2,
+    "user": {
+      "id": 2,
+      "fullName": "Gabriel Souza",
+      "email": "gabriel.souza@testes.com"
+    },
+    "book": {
+      "id": 2,
+      "title": "Jogos Vorazes",
+      "author": "Suzanne Collins"
+    },
+    "status": "BORROWED",
+    "renewed": false,
+    "borrowedAt": "2026-05-31",
+    "dueAt": "2026-06-14",
+    "returnedAt": null,
+    "createdAt": "2026-04-24T18:01:33",
+    "updatedAt": "2026-04-24T18:01:33"
+  }
+]

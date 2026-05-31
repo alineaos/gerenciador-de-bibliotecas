@@ -1,0 +1,15 @@
+[
+  {
+    "id": 1,
+    "book": {
+      "id": 1,
+      "title": "Capitães da Areia",
+      "author": "Jorge Amado"
+    },
+    "status": "BORROWED",
+    "renewed": false,
+    "borrowedAt": "2026-05-31",
+    "dueAt": "2026-06-14",
+    "returnedAt": null
+  }
+]

@@ -8,6 +8,8 @@ import io.github.alineaos.librarymanager.dto.request.LoanPostRequest;
 import io.github.alineaos.librarymanager.dto.request.LoanReturnRequest;
 import io.github.alineaos.librarymanager.dto.response.BookBasicResponse;
 import io.github.alineaos.librarymanager.dto.response.LoanGetResponse;
+import io.github.alineaos.librarymanager.dto.response.LoanHistoryResponse;
+import io.github.alineaos.librarymanager.dto.response.LoanPostResponse;
 import io.github.alineaos.librarymanager.dto.response.UserBasicResponse;
 
 import java.time.LocalDate;
@@ -89,7 +91,7 @@ public class LoanFactory {
         LocalDate dueDate = loanDate.plusDays(14);
 
         return Loan.builder()
-                .id(1L)
+                .id(99L)
                 .user(userSaved)
                 .book(bookSaved)
                 .status(LoanStatus.BORROWED)
@@ -112,6 +114,20 @@ public class LoanFactory {
         );
     }
 
+    public LoanPostResponse newLoanPostResponse(){
+        Loan loan = newLoanSaved();
+
+        return new LoanPostResponse(
+                loan.getId(),
+                newUserBasicResponse(loan.getUser()),
+                newBookBasicResponse(loan.getBook()),
+                loan.getStatus(),
+                loan.getBorrowedAt(),
+                loan.getDueAt(),
+                loan.getCreatedAt()
+        );
+    }
+
     public LoanGetResponse newLoanGetResponse(){
         Loan loan = newLoanList().getFirst();
 
@@ -127,6 +143,22 @@ public class LoanFactory {
                 loan.getCreatedAt(),
                 loan.getUpdatedAt()
         );
+    }
+
+    public List<LoanHistoryResponse> newLoanHistoryResponse(){
+        Loan loan = newLoanList().getFirst();
+        Book book = loan.getBook();
+        LoanHistoryResponse loanHistoryResponse = new LoanHistoryResponse(
+                loan.getId(),
+                newBookBasicResponse(book),
+                loan.getStatus(),
+                loan.isRenewed(),
+                loan.getBorrowedAt(),
+                loan.getDueAt(),
+                loan.getReturnedAt()
+        );
+
+        return List.of(loanHistoryResponse);
     }
 
     public LoanReturnRequest newLoanReturnRequest(){

@@ -1,0 +1,17 @@
+{
+  "id": 99,
+  "user": {
+    "id": 99,
+    "fullName": "Lucas Castro",
+    "email": "lucas.castro@testes.com"
+  },
+  "book": {
+    "id": 99,
+    "title": "Dom Casmurro",
+    "author": "Machado de Assis"
+  },
+  "status": "BORROWED",
+  "borrowedAt": "2026-05-31",
+  "dueAt": "2026-06-14",
+  "createdAt": "2026-04-24T18:00:33"
+}
