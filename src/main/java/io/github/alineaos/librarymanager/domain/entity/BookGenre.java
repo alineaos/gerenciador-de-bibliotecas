@@ -7,8 +7,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedAttributeNode;
-import jakarta.persistence.NamedEntityGraph;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -31,8 +29,6 @@ import java.time.LocalDateTime;
 @ToString
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@NamedEntityGraph(name = "BookGenre.fullDetails",
-        attributeNodes = {@NamedAttributeNode("book"), @NamedAttributeNode("genre")})
 public class BookGenre {
     @EqualsAndHashCode.Include
     @Id

@@ -16,7 +16,6 @@ public enum LoanStatus {
     private final String status;
 
     private final static Set<LoanStatus> ACTIVE_STATUS = Set.of(BORROWED, RENEWED, OVERDUE);
-    private final static Set<LoanStatus> FINALIZED_STATUS = Set.of(RETURNED, LOST, CANCELLED);
 
     LoanStatus(String status) {
         this.status = status;
@@ -24,9 +23,5 @@ public enum LoanStatus {
 
     public static Set<LoanStatus> getActiveStatus(){
         return ACTIVE_STATUS;
-    }
-
-    public static Set<LoanStatus> getFinalizedStatus(){
-        return FINALIZED_STATUS;
     }
 }

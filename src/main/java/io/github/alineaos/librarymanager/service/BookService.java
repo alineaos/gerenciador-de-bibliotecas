@@ -93,10 +93,6 @@ public class BookService {
         repository.delete(book);
     }
 
-    public Book getReferenceById(Long id){
-        return repository.getReferenceById(id);
-    }
-
     public Book getBookByIdOrThrowNotFound(Long id){
         return findByIdOrThrowNotFound(id);
     }
