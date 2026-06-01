@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
@@ -29,5 +30,6 @@ public record UserPostRequest(
         UserRole role,
 
         @NotBlank(message = "The field 'password' is required.")
+        @Size(min = 8, message = "The password must have a minimum of 8 characters.")
         String password
 ) {}

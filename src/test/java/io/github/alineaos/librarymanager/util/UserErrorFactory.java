@@ -13,6 +13,7 @@ public class UserErrorFactory {
     public static String cpfNotValidError = "The CPF is not valid.";
     public static String emailNotValidError = "The e-mail is not valid.";
 
+    public static String passwordMinimumLengthError = "The password must have a minimum of 8 characters.";
     public static String birthDateNotPastError = "The birth date must be in the past.";
 
 
@@ -24,8 +25,8 @@ public class UserErrorFactory {
         return new ArrayList<>(List.of(cpfNotValidError, emailNotValidError));
     }
 
-    public static List<String> emailNotValidAndDateNotPastErrors() {
-        return new ArrayList<>(List.of(emailNotValidError, birthDateNotPastError));
+    public static List<String> invalidFieldErrors() {
+        return new ArrayList<>(List.of(emailNotValidError, birthDateNotPastError, passwordMinimumLengthError));
     }
 
     public static List<String> allLoginFieldsErrors(){

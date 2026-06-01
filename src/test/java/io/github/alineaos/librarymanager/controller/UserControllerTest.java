@@ -314,7 +314,7 @@ class UserControllerTest extends UnitTestConfig {
 
         String request = fileUtils.readResourceFile("user/patch-request-user-invalid-fields.json");
 
-        List<String> errors = UserErrorFactory.emailNotValidAndDateNotPastErrors();
+        List<String> errors = UserErrorFactory.invalidFieldErrors();
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.patch(URL + "/{id}", targetUserId)
                         .content(request)
@@ -398,7 +398,7 @@ class UserControllerTest extends UnitTestConfig {
         List<String> allRequiredAndNotValidErrors = UserErrorFactory.allRequiredErrors();
         allRequiredAndNotValidErrors.addAll(UserErrorFactory.allNotValidErrors());
 
-        List<String> invalidFieldErrors = UserErrorFactory.emailNotValidAndDateNotPastErrors();
+        List<String> invalidFieldErrors = UserErrorFactory.invalidFieldErrors();
 
         return Stream.of(
                 Arguments.of("post-request-user-empty-fields.json", allRequiredAndNotValidErrors),

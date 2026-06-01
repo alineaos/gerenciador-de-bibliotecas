@@ -3,6 +3,7 @@ package io.github.alineaos.librarymanager.dto.request;
 import io.github.alineaos.librarymanager.domain.enums.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
@@ -17,5 +18,6 @@ public record UserPatchRequest(
 
         UserRole role,
 
+        @Size(min = 8, message = "The password must have a minimum of 8 characters.")
         String password
 ) {}

@@ -21,7 +21,7 @@ public class UserFactory {
                 .cpf("12345678911")
                 .birthDate(LocalDate.parse("1989-02-08"))
                 .role(UserRole.ADMIN)
-                .password("$2a$12$TpZk9KErD6NhBv/rxeG7NOt6jI8Km0J3JicF6.rvp38qhsfhlIHmW")
+                .password("$2a$12$e2OOOy5iYEkbotlXCK1lueTIoyNdj/NT.fbSVJFrvHqYV3oxk9L7q")
                 .createdAt(LocalDateTime.parse("2026-04-24T18:00:33"))
                 .updatedAt(LocalDateTime.parse("2026-04-24T18:00:33"))
                 .build();
@@ -33,7 +33,7 @@ public class UserFactory {
                 .cpf("12345678922")
                 .birthDate(LocalDate.parse("1992-03-05"))
                 .role(UserRole.USER)
-                .password("$2a$12$TpZk9KErD6NhBv/rxeG7NOt6jI8Km0J3JicF6.rvp38qhsfhlIHmW")
+                .password("$2a$12$e2OOOy5iYEkbotlXCK1lueTIoyNdj/NT.fbSVJFrvHqYV3oxk9L7q")
                 .createdAt(LocalDateTime.parse("2026-04-24T18:01:33"))
                 .updatedAt(LocalDateTime.parse("2026-04-24T18:01:33"))
                 .build();
@@ -45,7 +45,7 @@ public class UserFactory {
                 .cpf("12345678933")
                 .birthDate(LocalDate.parse("2001-09-28"))
                 .role(UserRole.USER)
-                .password("$2a$12$TpZk9KErD6NhBv/rxeG7NOt6jI8Km0J3JicF6.rvp38qhsfhlIHmW")
+                .password("$2a$12$e2OOOy5iYEkbotlXCK1lueTIoyNdj/NT.fbSVJFrvHqYV3oxk9L7q")
                 .createdAt(LocalDateTime.parse("2026-04-24T18:02:33"))
                 .updatedAt(LocalDateTime.parse("2026-04-24T18:02:33"))
                 .build();
@@ -62,7 +62,7 @@ public class UserFactory {
                 .cpf("12345678944")
                 .birthDate(LocalDate.parse("1998-11-25"))
                 .role(UserRole.USER)
-                .password("$2a$12$TpZk9KErD6NhBv/rxeG7NOt6jI8Km0J3JicF6.rvp38qhsfhlIHmW")
+                .password("$2a$12$e2OOOy5iYEkbotlXCK1lueTIoyNdj/NT.fbSVJFrvHqYV3oxk9L7q")
                 .createdAt(LocalDateTime.parse("2026-04-24T18:44:33"))
                 .updatedAt(LocalDateTime.parse("2026-04-24T18:44:33"))
                 .build();
