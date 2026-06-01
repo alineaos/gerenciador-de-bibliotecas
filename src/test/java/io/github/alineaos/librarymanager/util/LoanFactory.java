@@ -38,7 +38,7 @@ public class LoanFactory {
         Book jogosVorazes = bookList.get(1);
         Book horaDaEstrela = bookList.get(2);
 
-        LocalDate loanDate = LocalDate.now();
+        LocalDate loanDate = LocalDate.parse("2026-05-31");
         LocalDate dueDate = loanDate.plusDays(14);
 
         Loan mariaCapitaesDaAreia = Loan.builder()
@@ -87,7 +87,7 @@ public class LoanFactory {
         User userSaved = userFactory.newUserSaved();
         Book bookSaved = bookFactory.newBookSaved();
 
-        LocalDate loanDate = LocalDate.now();
+        LocalDate loanDate = LocalDate.parse("2026-05-31");
         LocalDate dueDate = loanDate.plusDays(14);
 
         return Loan.builder()
