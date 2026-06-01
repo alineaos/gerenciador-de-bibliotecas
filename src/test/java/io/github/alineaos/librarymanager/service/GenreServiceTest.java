@@ -2,11 +2,11 @@ package io.github.alineaos.librarymanager.service;
 
 import io.github.alineaos.librarymanager.config.UnitTestConfig;
 import io.github.alineaos.librarymanager.domain.entity.Genre;
-import io.github.alineaos.librarymanager.dto.GenreFilter;
-import io.github.alineaos.librarymanager.dto.request.GenrePostRequest;
-import io.github.alineaos.librarymanager.dto.request.GenrePutRequest;
-import io.github.alineaos.librarymanager.dto.response.GenreGetResponse;
-import io.github.alineaos.librarymanager.dto.response.GenrePostResponse;
+import io.github.alineaos.librarymanager.dto.genres.GenreFilter;
+import io.github.alineaos.librarymanager.dto.genres.GenreCreateRequest;
+import io.github.alineaos.librarymanager.dto.genres.GenreUpdateRequest;
+import io.github.alineaos.librarymanager.dto.genres.GenreInfoResponse;
+import io.github.alineaos.librarymanager.dto.genres.GenreCreateResponse;
 import io.github.alineaos.librarymanager.exception.BusinessException;
 import io.github.alineaos.librarymanager.mapper.GenreMapper;
 import io.github.alineaos.librarymanager.repository.GenreRepository;
@@ -63,8 +63,8 @@ class GenreServiceTest extends UnitTestConfig {
     void findAll_ReturnsFilteredGenres_WhenFilterIsValid(GenreFilter filter, List<Genre> expectedGenres) {
         when(repository.findAll(ArgumentMatchers.<Specification<Genre>>any())).thenReturn(expectedGenres);
 
-        List<GenreGetResponse> expectedDtos = expectedGenres.stream()
-                .map(g -> new GenreGetResponse(
+        List<GenreInfoResponse> expectedDtos = expectedGenres.stream()
+                .map(g -> new GenreInfoResponse(
                         g.getId(),
                         g.getName(),
                         g.getCreatedAt(),
@@ -72,7 +72,7 @@ class GenreServiceTest extends UnitTestConfig {
                 ))
                 .toList();
 
-        List<GenreGetResponse> result = service.findAll(filter);
+        List<GenreInfoResponse> result = service.findAll(filter);
 
         Assertions.assertThat(result).isNotNull().hasSize(expectedDtos.size());
     }
@@ -82,11 +82,11 @@ class GenreServiceTest extends UnitTestConfig {
     @Order(2)
     void findById_ReturnsGenreById_WhenSuccessful() {
         Genre expectedGenre = genreList.getFirst();
-        GenreGetResponse expectedDto = genreFactory.newGenreGetResponse();
+        GenreInfoResponse expectedDto = genreFactory.newGenreInfoResponse();
         Long id = expectedGenre.getId();
         when(repository.findById(id)).thenReturn(Optional.of(expectedGenre));
 
-        GenreGetResponse result = service.findById(id);
+        GenreInfoResponse result = service.findById(id);
 
         Assertions.assertThat(result).isEqualTo(expectedDto);
     }
@@ -110,12 +110,12 @@ class GenreServiceTest extends UnitTestConfig {
     @Order(4)
     void save_CreatesGenre_WhenSuccessful() {
         Genre genreSaved = genreFactory.newGenreSaved();
-        GenrePostRequest expectedDto = genreFactory.newGenrePostRequest();
+        GenreCreateRequest expectedDto = genreFactory.newGenreCreateRequest();
 
         when(repository.findByNameIgnoreCase(genreSaved.getName())).thenReturn(Optional.empty());
         when(repository.save(any(Genre.class))).thenReturn(genreSaved);
 
-        GenrePostResponse result = service.save(expectedDto);
+        GenreCreateResponse result = service.save(expectedDto);
 
         Assertions.assertThat(result.id()).isEqualTo(genreSaved.getId());
     }
@@ -125,7 +125,7 @@ class GenreServiceTest extends UnitTestConfig {
     @Order(5)
     void save_ThrowsBusinessException_WhenNameAlreadyExists() {
         Genre genreSaved = genreFactory.newGenreSaved();
-        GenrePostRequest expectedDto = genreFactory.newGenrePostRequest();
+        GenreCreateRequest expectedDto = genreFactory.newGenreCreateRequest();
 
         when(repository.findByNameIgnoreCase(genreSaved.getName())).thenReturn(Optional.of(genreSaved));
 
@@ -139,7 +139,7 @@ class GenreServiceTest extends UnitTestConfig {
     @Order(6)
     void update_UpdatesGenre_WhenSuccessful() {
         Genre genreToUpdate = genreList.getFirst();
-        GenrePutRequest expectedDto = genreFactory.newGenrePutRequest();
+        GenreUpdateRequest expectedDto = genreFactory.newGenreUpdateRequest();
         Long id = genreToUpdate.getId();
 
         when(repository.findById(id)).thenReturn(Optional.of(genreToUpdate));
@@ -156,7 +156,7 @@ class GenreServiceTest extends UnitTestConfig {
     @Order(7)
     void update_ThrowsNotFoundException_WhenGenreIsNotFound() {
         Genre genreToUpdate = genreList.getFirst();
-        GenrePutRequest expectedDto = genreFactory.newGenrePutRequest();
+        GenreUpdateRequest expectedDto = genreFactory.newGenreUpdateRequest();
         Long id = genreToUpdate.getId();
 
         when(repository.findById(id)).thenReturn(Optional.empty());
@@ -171,7 +171,7 @@ class GenreServiceTest extends UnitTestConfig {
     @Order(8)
     void update_ThrowsBusinessException_WhenNameAlreadyExists() {
         Genre genreToUpdate = genreList.getFirst();
-        GenrePutRequest expectedDto = genreFactory.newGenrePutRequest();
+        GenreUpdateRequest expectedDto = genreFactory.newGenreUpdateRequest();
         Long id = genreToUpdate.getId();
 
         Genre genreFromDb = genreFactory.newGenreSaved();

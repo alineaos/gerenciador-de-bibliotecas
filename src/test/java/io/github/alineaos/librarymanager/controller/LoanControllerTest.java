@@ -3,12 +3,12 @@ package io.github.alineaos.librarymanager.controller;
 import io.github.alineaos.librarymanager.config.UnitTestConfig;
 import io.github.alineaos.librarymanager.domain.entity.Loan;
 import io.github.alineaos.librarymanager.domain.enums.LoanStatus;
-import io.github.alineaos.librarymanager.dto.LoanFilter;
-import io.github.alineaos.librarymanager.dto.request.LoanPostRequest;
-import io.github.alineaos.librarymanager.dto.request.LoanReturnRequest;
-import io.github.alineaos.librarymanager.dto.response.LoanGetResponse;
-import io.github.alineaos.librarymanager.dto.response.LoanHistoryResponse;
-import io.github.alineaos.librarymanager.dto.response.LoanPostResponse;
+import io.github.alineaos.librarymanager.dto.loans.LoanFilter;
+import io.github.alineaos.librarymanager.dto.loans.LoanCreateRequest;
+import io.github.alineaos.librarymanager.dto.loans.LoanReturnRequest;
+import io.github.alineaos.librarymanager.dto.loans.LoanInfoResponse;
+import io.github.alineaos.librarymanager.dto.loans.LoanHistoryResponse;
+import io.github.alineaos.librarymanager.dto.loans.LoanCreateResponse;
 import io.github.alineaos.librarymanager.exception.BusinessException;
 import io.github.alineaos.librarymanager.exception.NotFoundException;
 import io.github.alineaos.librarymanager.security.config.SecurityConfig;
@@ -75,8 +75,8 @@ class LoanControllerTest extends UnitTestConfig {
     void findAll_ReturnsOkAndFilteredLoans_WhenUserIsAdminAndFiltersAreValid(String fileName, LoanFilter filter, List<Loan> expectedLoans) throws Exception {
         String response = fileUtils.readResourceFile("loan/%s".formatted(fileName));
 
-        List<LoanGetResponse> expectedDtos = expectedLoans.stream()
-                .map(l -> new LoanGetResponse(l.getId(),
+        List<LoanInfoResponse> expectedDtos = expectedLoans.stream()
+                .map(l -> new LoanInfoResponse(l.getId(),
                         loanFactory.newUserBasicResponse(l.getUser()),
                         loanFactory.newBookBasicResponse(l.getBook()),
                         l.getStatus(),
@@ -118,7 +118,7 @@ class LoanControllerTest extends UnitTestConfig {
     @WithMockUser(authorities = "SCOPE_ADMIN")
     void findById_ReturnsOkAndLoanById_WhenUserIsAdmin() throws Exception {
         Long targetLoanId = 1L;
-        LoanGetResponse foundLoan = loanFactory.newLoanGetResponse();
+        LoanInfoResponse foundLoan = loanFactory.newLoanInfoResponse();
 
         when(service.findById(targetLoanId)).thenReturn(foundLoan);
 
@@ -187,9 +187,9 @@ class LoanControllerTest extends UnitTestConfig {
         String request = fileUtils.readResourceFile("loan/post-request-loan.json");
         String response = fileUtils.readResourceFile("loan/post-response-loan.json");
 
-        LoanPostResponse loanSavedResponse = loanFactory.newLoanPostResponse();
+        LoanCreateResponse loanSavedResponse = loanFactory.newLoanCreateResponse();
 
-        when(service.save(any(LoanPostRequest.class))).thenReturn(loanSavedResponse);
+        when(service.save(any(LoanCreateRequest.class))).thenReturn(loanSavedResponse);
 
         mockMvc.perform(MockMvcRequestBuilders.post(URL)
                         .content(request)
@@ -246,7 +246,7 @@ class LoanControllerTest extends UnitTestConfig {
 
         String errorMessage = exception.getMessage();
 
-        when(service.save(any(LoanPostRequest.class))).thenThrow(exception);
+        when(service.save(any(LoanCreateRequest.class))).thenThrow(exception);
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(URL)
                         .content(request)
@@ -272,7 +272,7 @@ class LoanControllerTest extends UnitTestConfig {
 
         String errorMessage = exception.getMessage();
 
-        when(service.save(any(LoanPostRequest.class))).thenThrow(exception);
+        when(service.save(any(LoanCreateRequest.class))).thenThrow(exception);
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(URL)
                         .content(request)
@@ -366,7 +366,7 @@ class LoanControllerTest extends UnitTestConfig {
     @WithMockUser(authorities = "SCOPE_ADMIN")
     void finalize_ReturnsNoContentAndFinalizesLoan_WhenUserIsAdmin() throws Exception {
         Long loanId = 1L;
-        LoanReturnRequest returnRequest = new LoanReturnRequest(LocalDate.parse("2026-05-31"));
+        LoanReturnRequest loanReturnRequest = new LoanReturnRequest(LocalDate.parse("2026-05-31"));
         String request = fileUtils.readResourceFile("loan/patch-request-loan-finalize.json");
 
         mockMvc.perform(MockMvcRequestBuilders.patch(URL + "/{id}/return", loanId)
@@ -375,7 +375,7 @@ class LoanControllerTest extends UnitTestConfig {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
 
-        verify(service, times(1)).finalize(loanId, returnRequest);
+        verify(service, times(1)).finalize(loanId, loanReturnRequest);
     }
 
     @Test
@@ -384,7 +384,7 @@ class LoanControllerTest extends UnitTestConfig {
     @WithMockUser(authorities = "SCOPE_USER")
     void finalize_ReturnsForbidden_WhenUserIsNotAdmin() throws Exception {
         Long loanId = 1L;
-        LoanReturnRequest returnRequest = new LoanReturnRequest(LocalDate.parse("2026-05-31"));
+        LoanReturnRequest loanReturnRequest = new LoanReturnRequest(LocalDate.parse("2026-05-31"));
         String request = fileUtils.readResourceFile("loan/patch-request-loan-finalize.json");
 
         mockMvc.perform(MockMvcRequestBuilders.patch(URL + "/{id}/return", loanId)
@@ -393,7 +393,7 @@ class LoanControllerTest extends UnitTestConfig {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
 
-        verify(service, times(0)).finalize(loanId, returnRequest);
+        verify(service, times(0)).finalize(loanId, loanReturnRequest);
     }
 
     @Test
@@ -402,11 +402,11 @@ class LoanControllerTest extends UnitTestConfig {
     @WithMockUser(authorities = "SCOPE_ADMIN")
     void finalize_ReturnsNotFound_WhenServiceThrowsNotFoundException() throws Exception {
         Long loanId = 1L;
-        LoanReturnRequest returnRequest = new LoanReturnRequest(LocalDate.parse("2026-05-31"));
+        LoanReturnRequest loanReturnRequest = new LoanReturnRequest(LocalDate.parse("2026-05-31"));
         String request = fileUtils.readResourceFile("loan/patch-request-loan-finalize.json");
         String errorMessage = "Loan not found.";
 
-        doThrow(new NotFoundException(errorMessage)).when(service).finalize(loanId, returnRequest);
+        doThrow(new NotFoundException(errorMessage)).when(service).finalize(loanId, loanReturnRequest);
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.patch(URL + "/{id}/return", loanId)
                         .content(request)
@@ -429,12 +429,12 @@ class LoanControllerTest extends UnitTestConfig {
     @WithMockUser(authorities = "SCOPE_ADMIN")
     void finalize_ReturnsBadRequest_WhenServiceThrowsBusinessException(BusinessException exception) throws Exception {
         Long loanId = 1L;
-        LoanReturnRequest returnRequest = new LoanReturnRequest(LocalDate.parse("2026-05-31"));
+        LoanReturnRequest loanReturnRequest = new LoanReturnRequest(LocalDate.parse("2026-05-31"));
         String request = fileUtils.readResourceFile("loan/patch-request-loan-finalize.json");
 
         String errorMessage = exception.getMessage();
 
-        doThrow(new BusinessException(errorMessage)).when(service).finalize(loanId, returnRequest);
+        doThrow(new BusinessException(errorMessage)).when(service).finalize(loanId, loanReturnRequest);
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.patch(URL + "/{id}/return", loanId)
                         .content(request)

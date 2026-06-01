@@ -1,10 +1,10 @@
 package io.github.alineaos.librarymanager.util;
 
 import io.github.alineaos.librarymanager.domain.entity.Genre;
-import io.github.alineaos.librarymanager.dto.request.GenrePostRequest;
-import io.github.alineaos.librarymanager.dto.request.GenrePutRequest;
-import io.github.alineaos.librarymanager.dto.response.GenreGetResponse;
-import io.github.alineaos.librarymanager.dto.response.GenrePostResponse;
+import io.github.alineaos.librarymanager.dto.genres.GenreCreateRequest;
+import io.github.alineaos.librarymanager.dto.genres.GenreUpdateRequest;
+import io.github.alineaos.librarymanager.dto.genres.GenreInfoResponse;
+import io.github.alineaos.librarymanager.dto.genres.GenreCreateResponse;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -46,48 +46,48 @@ public class GenreFactory {
                 .build();
     }
 
-    public GenreGetResponse newGenreGetResponse() {
+    public GenreInfoResponse newGenreInfoResponse() {
         Genre genre = newGenreList().getFirst();
 
-        return new GenreGetResponse(
+        return new GenreInfoResponse(
                 genre.getId(),
                 genre.getName(),
                 genre.getCreatedAt(),
                 genre.getUpdatedAt());
     }
 
-    public GenreGetResponse newGenreGetResponseById(Long id) {
+    public GenreInfoResponse newGenreInfoResponseById(Long id) {
         Genre genre = newGenreList().stream()
                 .filter(u -> u.getId().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Invalid Test: Id Not Found in GenreFactory: " + id));
 
-        return new GenreGetResponse(
+        return new GenreInfoResponse(
                 genre.getId(),
                 genre.getName(),
                 genre.getCreatedAt(),
                 genre.getUpdatedAt());
     }
 
-    public GenrePostRequest newGenrePostRequest() {
+    public GenreCreateRequest newGenreCreateRequest() {
         Genre genre = newGenreSaved();
 
-        return new GenrePostRequest(
+        return new GenreCreateRequest(
                 genre.getName()
         );
     }
 
-    public GenrePostResponse newGenrePostResponse() {
+    public GenreCreateResponse newGenreCreateResponse() {
         Genre genre = newGenreSaved();
 
-        return new GenrePostResponse(
+        return new GenreCreateResponse(
                 genre.getId(),
                 genre.getName(),
                 genre.getCreatedAt());
     }
 
-    public GenrePutRequest newGenrePutRequest() {
-        return new GenrePutRequest(
+    public GenreUpdateRequest newGenreUpdateRequest() {
+        return new GenreUpdateRequest(
                 "Fantasy");
     }
 

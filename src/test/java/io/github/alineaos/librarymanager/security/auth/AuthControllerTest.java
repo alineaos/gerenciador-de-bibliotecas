@@ -1,7 +1,7 @@
 package io.github.alineaos.librarymanager.security.auth;
 
 import io.github.alineaos.librarymanager.config.UnitTestConfig;
-import io.github.alineaos.librarymanager.dto.request.UserLoginRequest;
+import io.github.alineaos.librarymanager.dto.users.UserLoginRequest;
 import io.github.alineaos.librarymanager.security.service.TokenService;
 import io.github.alineaos.librarymanager.util.AuthFactory;
 import io.github.alineaos.librarymanager.util.FileUtils;

@@ -1,10 +1,10 @@
 package io.github.alineaos.librarymanager.mapper;
 
 import io.github.alineaos.librarymanager.domain.entity.User;
-import io.github.alineaos.librarymanager.dto.request.UserPatchRequest;
-import io.github.alineaos.librarymanager.dto.request.UserPostRequest;
-import io.github.alineaos.librarymanager.dto.response.UserGetResponse;
-import io.github.alineaos.librarymanager.dto.response.UserPostResponse;
+import io.github.alineaos.librarymanager.dto.users.UserUpdateRequest;
+import io.github.alineaos.librarymanager.dto.users.UserCreateRequest;
+import io.github.alineaos.librarymanager.dto.users.UserInfoResponse;
+import io.github.alineaos.librarymanager.dto.users.UserCreateResponse;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -22,12 +22,12 @@ public interface UserMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    User toUser(UserPostRequest postRequest, String encodedPassword);
+    User toUser(UserCreateRequest request, String encodedPassword);
 
-    List<UserGetResponse> toGetResponseList(List<User> userList);
-    UserGetResponse toGetResponse(User user);
+    UserCreateResponse toUserCreateResponse(User user);
 
-    UserPostResponse toPostResponse(User user);
+    UserInfoResponse toUserInfoResponse(User user);
+    List<UserInfoResponse> toUserInfoResponseList(List<User> users);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "password", source = "encodedPassword")
@@ -35,10 +35,10 @@ public interface UserMapper {
     @Mapping(target = "cpf", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    void mergeRequestToUser(UserPatchRequest patchRequest, String encodedPassword, @MappingTarget User user);
+    void mergeRequestToUser(UserUpdateRequest request, String encodedPassword, @MappingTarget User user);
 
     @AfterMapping
-    default void sanitizeCpf(UserPostRequest request, @MappingTarget User user) {
+    default void sanitizeCpf(UserCreateRequest request, @MappingTarget User user) {
         if (request.cpf() != null) {
             user.setCpf(request.cpf().replaceAll("\\D", ""));
         }

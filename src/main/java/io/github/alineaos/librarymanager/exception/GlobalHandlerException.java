@@ -1,8 +1,8 @@
 package io.github.alineaos.librarymanager.exception;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import io.github.alineaos.librarymanager.dto.error.DefaultMessageError;
-import io.github.alineaos.librarymanager.dto.error.ValidationMessageError;
+import io.github.alineaos.librarymanager.dto.errors.DefaultMessageError;
+import io.github.alineaos.librarymanager.dto.errors.ValidationMessageError;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;

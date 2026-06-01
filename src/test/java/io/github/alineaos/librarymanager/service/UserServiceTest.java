@@ -3,11 +3,11 @@ package io.github.alineaos.librarymanager.service;
 import io.github.alineaos.librarymanager.config.UnitTestConfig;
 import io.github.alineaos.librarymanager.domain.entity.User;
 import io.github.alineaos.librarymanager.domain.enums.UserRole;
-import io.github.alineaos.librarymanager.dto.UserFilter;
-import io.github.alineaos.librarymanager.dto.request.UserPatchRequest;
-import io.github.alineaos.librarymanager.dto.request.UserPostRequest;
-import io.github.alineaos.librarymanager.dto.response.UserGetResponse;
-import io.github.alineaos.librarymanager.dto.response.UserPostResponse;
+import io.github.alineaos.librarymanager.dto.users.UserFilter;
+import io.github.alineaos.librarymanager.dto.users.UserUpdateRequest;
+import io.github.alineaos.librarymanager.dto.users.UserCreateRequest;
+import io.github.alineaos.librarymanager.dto.users.UserInfoResponse;
+import io.github.alineaos.librarymanager.dto.users.UserCreateResponse;
 import io.github.alineaos.librarymanager.exception.AccessDeniedException;
 import io.github.alineaos.librarymanager.exception.BusinessException;
 import io.github.alineaos.librarymanager.mapper.UserMapper;
@@ -65,8 +65,8 @@ class UserServiceTest extends UnitTestConfig {
     @Order(1)
     void findAll_ReturnsFilteredUsers_WhenFilterIsValid(UserFilter filter, List<User> expectedUsers) {
         when(repository.findAll(ArgumentMatchers.<Specification<User>>any())).thenReturn(expectedUsers);
-        List<UserGetResponse> expectedDtos = expectedUsers.stream()
-                .map(u -> new UserGetResponse(u.getId(),
+        List<UserInfoResponse> expectedDtos = expectedUsers.stream()
+                .map(u -> new UserInfoResponse(u.getId(),
                         u.getFullName(),
                         u.getEmail(),
                         u.getCpf(),
@@ -76,7 +76,7 @@ class UserServiceTest extends UnitTestConfig {
                         u.getUpdatedAt()))
                 .toList();
 
-        List<UserGetResponse> result = service.findAll(filter);
+        List<UserInfoResponse> result = service.findAll(filter);
 
         Assertions.assertThat(result).isNotNull().hasSize(expectedDtos.size());
     }
@@ -86,11 +86,11 @@ class UserServiceTest extends UnitTestConfig {
     @Order(2)
     void findById_ReturnsUserById_WhenSuccessful() {
         User expectedUser = userList.getFirst();
-        UserGetResponse expectedDto = userFactory.newUserGetResponse();
+        UserInfoResponse expectedDto = userFactory.newUserInfoResponse();
 
         when(repository.findById(expectedUser.getId())).thenReturn(Optional.of(expectedUser));
 
-        UserGetResponse result = service.findById(expectedUser.getId());
+        UserInfoResponse result = service.findById(expectedUser.getId());
 
         Assertions.assertThat(result).isEqualTo(expectedDto);
     }
@@ -119,7 +119,7 @@ class UserServiceTest extends UnitTestConfig {
         when(passwordEncoder.encode(anyString())).thenReturn(userSaved.getPassword());
         when(repository.save(any(User.class))).thenReturn(userSaved);
 
-        UserPostResponse result = service.save(userFactory.newUserPostRequest());
+        UserCreateResponse result = service.save(userFactory.newUserCreateRequest());
 
         Assertions.assertThat(result.id()).isEqualTo(userSaved.getId());
     }
@@ -130,7 +130,7 @@ class UserServiceTest extends UnitTestConfig {
     @Order(5)
     void save_ThrowsBusinessException_WhenUniqueAttributeAlreadyExists(String field) {
         User userSaved = userFactory.newUserSaved();
-        UserPostRequest expectedDto = userFactory.newUserPostRequest();
+        UserCreateRequest expectedDto = userFactory.newUserCreateRequest();
 
         if (field.equalsIgnoreCase("Email")) {
             when(repository.findByEmail(expectedDto.email())).thenReturn(Optional.of(userSaved));
@@ -150,7 +150,7 @@ class UserServiceTest extends UnitTestConfig {
     @Order(6)
     void update_UpdatesUser_WhenSuccessful() {
         User userToUpdate = userList.getFirst();
-        UserPatchRequest expectedDto = userFactory.newUserPatchRequest();
+        UserUpdateRequest expectedDto = userFactory.newUserUpdateRequest();
 
         Long id = userToUpdate.getId();
         String email = expectedDto.email();
@@ -171,7 +171,7 @@ class UserServiceTest extends UnitTestConfig {
     @Order(7)
     void update_UpdatesUserPassword_WhenPasswordIsNotNull() {
         User userToUpdate = userList.getFirst();
-        UserPatchRequest expectedDto = new UserPatchRequest(null, null, null, null, "newPassword");
+        UserUpdateRequest expectedDto = new UserUpdateRequest(null, null, null, null, "newPassword");
 
         Long id = userToUpdate.getId();
         String encodedPassword = "encodedPassword";
@@ -191,7 +191,7 @@ class UserServiceTest extends UnitTestConfig {
     @Order(8)
     void update_MustKeepOldPassword_WhenPasswordIsInvalid(String invalidPassword) {
         User userToUpdate = userList.getFirst();
-        UserPatchRequest expectedDto = new UserPatchRequest(null, null, null, null, invalidPassword);
+        UserUpdateRequest expectedDto = new UserUpdateRequest(null, null, null, null, invalidPassword);
 
         Long id = userToUpdate.getId();
         String originalPassword = userToUpdate.getPassword();
@@ -209,7 +209,7 @@ class UserServiceTest extends UnitTestConfig {
     @Order(9)
     void update_ThrowsNotFoundException_WhenUserIsNotFound() {
         User userToUpdate = userList.getFirst();
-        UserPatchRequest expectedDto = userFactory.newUserPatchRequest();
+        UserUpdateRequest expectedDto = userFactory.newUserUpdateRequest();
 
         Long id = userToUpdate.getId();
 
@@ -225,7 +225,7 @@ class UserServiceTest extends UnitTestConfig {
     @Order(10)
     void update_ThrowsBusinessException_WhenEmailAlreadyExists() {
         User userToUpdate = userList.getFirst();
-        UserPatchRequest expectedDto = userFactory.newUserPatchRequest();
+        UserUpdateRequest expectedDto = userFactory.newUserUpdateRequest();
 
         Long id = userToUpdate.getId();
         String email = expectedDto.email();
@@ -244,7 +244,7 @@ class UserServiceTest extends UnitTestConfig {
     @Order(11)
     void update_ThrowsAccessDeniedException_WhenUserNotAdmin() {
         User userToUpdate = userList.getLast();
-        UserPatchRequest expectedDto = userFactory.newUserPatchRequestUpdateRole();
+        UserUpdateRequest expectedDto = userFactory.newUserUpdateRequestUpdateRole();
 
         Long id = userToUpdate.getId();
 

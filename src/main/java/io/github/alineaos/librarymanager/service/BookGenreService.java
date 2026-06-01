@@ -3,7 +3,7 @@ package io.github.alineaos.librarymanager.service;
 import io.github.alineaos.librarymanager.domain.entity.Book;
 import io.github.alineaos.librarymanager.domain.entity.BookGenre;
 import io.github.alineaos.librarymanager.domain.entity.Genre;
-import io.github.alineaos.librarymanager.dto.response.GenreBasicResponse;
+import io.github.alineaos.librarymanager.dto.genres.GenreBasicResponse;
 import io.github.alineaos.librarymanager.repository.BookGenreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

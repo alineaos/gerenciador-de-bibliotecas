@@ -2,11 +2,11 @@ package io.github.alineaos.librarymanager.controller;
 
 import io.github.alineaos.librarymanager.config.UnitTestConfig;
 import io.github.alineaos.librarymanager.domain.entity.Genre;
-import io.github.alineaos.librarymanager.dto.GenreFilter;
-import io.github.alineaos.librarymanager.dto.request.GenrePostRequest;
-import io.github.alineaos.librarymanager.dto.request.GenrePutRequest;
-import io.github.alineaos.librarymanager.dto.response.GenreGetResponse;
-import io.github.alineaos.librarymanager.dto.response.GenrePostResponse;
+import io.github.alineaos.librarymanager.dto.genres.GenreFilter;
+import io.github.alineaos.librarymanager.dto.genres.GenreCreateRequest;
+import io.github.alineaos.librarymanager.dto.genres.GenreUpdateRequest;
+import io.github.alineaos.librarymanager.dto.genres.GenreInfoResponse;
+import io.github.alineaos.librarymanager.dto.genres.GenreCreateResponse;
 import io.github.alineaos.librarymanager.exception.NotFoundException;
 import io.github.alineaos.librarymanager.security.config.SecurityConfig;
 import io.github.alineaos.librarymanager.service.GenreService;
@@ -65,8 +65,8 @@ class GenreControllerTest extends UnitTestConfig {
     void findAll_ReturnsOkAndFilteredGenres_WhenUserIsAuthenticatedAndFiltersAreValid(String fileName, GenreFilter filter, List<Genre> expectedGenres) throws Exception {
         String response = fileUtils.readResourceFile("genre/%s".formatted(fileName));
 
-        List<GenreGetResponse> expectedDtos = expectedGenres.stream()
-                .map(g -> new GenreGetResponse(
+        List<GenreInfoResponse> expectedDtos = expectedGenres.stream()
+                .map(g -> new GenreInfoResponse(
                         g.getId(),
                         g.getName(),
                         g.getCreatedAt(),
@@ -92,7 +92,7 @@ class GenreControllerTest extends UnitTestConfig {
     @WithMockUser(authorities = "SCOPE_USER")
     void findById_ReturnsOkAndGenreById_WhenUserIsAuthenticated() throws Exception {
         Long targetGenreId = 1L;
-        GenreGetResponse foundGenre = genreFactory.newGenreGetResponseById(targetGenreId);
+        GenreInfoResponse foundGenre = genreFactory.newGenreInfoResponseById(targetGenreId);
 
         when(service.findById(targetGenreId)).thenReturn(foundGenre);
 
@@ -131,9 +131,9 @@ class GenreControllerTest extends UnitTestConfig {
         String request = fileUtils.readResourceFile("genre/post-request-genre.json");
         String response = fileUtils.readResourceFile("genre/post-response-genre.json");
 
-        GenrePostResponse genreSavedResponse = genreFactory.newGenrePostResponse();
+        GenreCreateResponse genreSavedResponse = genreFactory.newGenreCreateResponse();
 
-        when(service.save(any(GenrePostRequest.class))).thenReturn(genreSavedResponse);
+        when(service.save(any(GenreCreateRequest.class))).thenReturn(genreSavedResponse);
 
         mockMvc.perform(MockMvcRequestBuilders.post(URL)
                         .content(request)
@@ -187,7 +187,7 @@ class GenreControllerTest extends UnitTestConfig {
     void update_ReturnsNoContentAndUpdatesGenreById_WhenUserIsAdmin() throws Exception {
         Long targetGenreId = 1L;
 
-        doNothing().when(service).update(eq(targetGenreId), any(GenrePutRequest.class));
+        doNothing().when(service).update(eq(targetGenreId), any(GenreUpdateRequest.class));
 
         String request = fileUtils.readResourceFile("genre/put-request-genre.json");
 
@@ -205,7 +205,7 @@ class GenreControllerTest extends UnitTestConfig {
     void update_ReturnsForbidden_WhenUserIsNotAdmin() throws Exception {
         Long targetGenreId = 1L;
 
-        doNothing().when(service).update(eq(targetGenreId), any(GenrePutRequest.class));
+        doNothing().when(service).update(eq(targetGenreId), any(GenreUpdateRequest.class));
 
         String request = fileUtils.readResourceFile("genre/post-request-genre.json");
 
@@ -225,7 +225,7 @@ class GenreControllerTest extends UnitTestConfig {
 
         String request = fileUtils.readResourceFile("genre/post-request-genre.json");
 
-        doThrow(new NotFoundException("Genre not found.")).when(service).update(eq(targetGenreId), any(GenrePutRequest.class));
+        doThrow(new NotFoundException("Genre not found.")).when(service).update(eq(targetGenreId), any(GenreUpdateRequest.class));
 
         mockMvc.perform(MockMvcRequestBuilders.put(URL + "/{id}", targetGenreId)
                         .content(request)

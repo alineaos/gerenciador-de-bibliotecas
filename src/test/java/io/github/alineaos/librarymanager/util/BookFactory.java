@@ -2,11 +2,11 @@ package io.github.alineaos.librarymanager.util;
 
 import io.github.alineaos.librarymanager.domain.entity.Book;
 import io.github.alineaos.librarymanager.domain.entity.Genre;
-import io.github.alineaos.librarymanager.dto.request.BookPatchRequest;
-import io.github.alineaos.librarymanager.dto.request.BookPostRequest;
-import io.github.alineaos.librarymanager.dto.response.BookGetResponse;
-import io.github.alineaos.librarymanager.dto.response.BookPostResponse;
-import io.github.alineaos.librarymanager.dto.response.GenreBasicResponse;
+import io.github.alineaos.librarymanager.dto.books.BookUpdateRequest;
+import io.github.alineaos.librarymanager.dto.books.BookCreateRequest;
+import io.github.alineaos.librarymanager.dto.books.BookInfoResponse;
+import io.github.alineaos.librarymanager.dto.books.BookCreateResponse;
+import io.github.alineaos.librarymanager.dto.genres.GenreBasicResponse;
 
 import java.time.LocalDateTime;
 import java.time.Year;
@@ -76,10 +76,10 @@ public class BookFactory {
                 .build();
     }
 
-    public BookGetResponse newBookGetResponse() {
+    public BookInfoResponse newBookInfoResponse() {
         Book book = newBookList().getFirst();
 
-        return new BookGetResponse(
+        return new BookInfoResponse(
                 book.getId(),
                 book.getTitle(),
                 book.getAuthor(),
@@ -92,13 +92,13 @@ public class BookFactory {
                 book.getUpdatedAt());
     }
 
-    public BookGetResponse newBookGetResponseById(Long id) {
+    public BookInfoResponse newBookInfoResponseById(Long id) {
         Book book = newBookList().stream()
                 .filter(b -> b.getId().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Invalid Test: Id Not Found in BookFactory: " + id));
 
-        return new BookGetResponse(
+        return new BookInfoResponse(
                 book.getId(),
                 book.getTitle(),
                 book.getAuthor(),
@@ -111,10 +111,10 @@ public class BookFactory {
                 book.getUpdatedAt());
     }
 
-    public BookPostRequest newBookPostRequest() {
+    public BookCreateRequest newBookCreateRequest() {
         Book book = newBookSaved();
 
-        return new BookPostRequest(
+        return new BookCreateRequest(
                 book.getTitle(),
                 book.getAuthor(),
                 book.getPublisher(),
@@ -124,10 +124,10 @@ public class BookFactory {
                 newGenreIdsList());
     }
 
-    public BookPostResponse newBookPostResponse() {
+    public BookCreateResponse newBookCreateResponse() {
         Book book = newBookSaved();
 
-        return new BookPostResponse(
+        return new BookCreateResponse(
                 book.getId(),
                 book.getTitle(),
                 book.getAuthor(),
@@ -136,10 +136,10 @@ public class BookFactory {
                 book.getCreatedAt());
     }
 
-    public BookPatchRequest newBookPatchRequest() {
+    public BookUpdateRequest newBookUpdateRequest() {
         Book book = newBookList().getFirst();
 
-        return new BookPatchRequest(
+        return new BookUpdateRequest(
                 "Mar morto",
                 book.getAuthor(),
                 book.getPublisher(),

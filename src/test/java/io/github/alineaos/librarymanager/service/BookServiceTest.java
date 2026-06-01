@@ -2,12 +2,12 @@ package io.github.alineaos.librarymanager.service;
 
 import io.github.alineaos.librarymanager.config.UnitTestConfig;
 import io.github.alineaos.librarymanager.domain.entity.Book;
-import io.github.alineaos.librarymanager.dto.BookFilter;
-import io.github.alineaos.librarymanager.dto.request.BookPatchRequest;
-import io.github.alineaos.librarymanager.dto.request.BookPostRequest;
-import io.github.alineaos.librarymanager.dto.response.BookGetResponse;
-import io.github.alineaos.librarymanager.dto.response.BookPostResponse;
-import io.github.alineaos.librarymanager.dto.response.GenreBasicResponse;
+import io.github.alineaos.librarymanager.dto.books.BookFilter;
+import io.github.alineaos.librarymanager.dto.books.BookUpdateRequest;
+import io.github.alineaos.librarymanager.dto.books.BookCreateRequest;
+import io.github.alineaos.librarymanager.dto.books.BookInfoResponse;
+import io.github.alineaos.librarymanager.dto.books.BookCreateResponse;
+import io.github.alineaos.librarymanager.dto.genres.GenreBasicResponse;
 import io.github.alineaos.librarymanager.exception.BusinessException;
 import io.github.alineaos.librarymanager.mapper.BookMapper;
 import io.github.alineaos.librarymanager.repository.BookRepository;
@@ -81,9 +81,9 @@ class BookServiceTest extends UnitTestConfig {
 
         when(bookGenreService.findGenresGroupedByBookIds(anyList())).thenReturn(expectedGenresByBook);
 
-        List<BookGetResponse> expectedDtos = expectedBooks.stream()
+        List<BookInfoResponse> expectedDtos = expectedBooks.stream()
                 .map(b ->
-                        new BookGetResponse(b.getId(),
+                        new BookInfoResponse(b.getId(),
                                 b.getTitle(),
                                 b.getAuthor(),
                                 b.getPublisher(),
@@ -96,7 +96,7 @@ class BookServiceTest extends UnitTestConfig {
                 )
                 .toList();
 
-        List<BookGetResponse> result = service.findAll(filter);
+        List<BookInfoResponse> result = service.findAll(filter);
 
         Assertions.assertThat(result).isNotNull().hasSize(expectedDtos.size());
         Assertions.assertThat(result).isNotNull().containsExactlyElementsOf(expectedDtos);
@@ -107,13 +107,13 @@ class BookServiceTest extends UnitTestConfig {
     @Order(2)
     void findById_ReturnsBookById_WhenSuccessful() {
         Book expectedBook = bookList.getFirst();
-        BookGetResponse expectedDto = bookFactory.newBookGetResponse();
+        BookInfoResponse expectedDto = bookFactory.newBookInfoResponse();
         Long bookId = expectedDto.id();
 
         when(repository.findById(bookId)).thenReturn(Optional.of(expectedBook));
         when(bookGenreService.findGenresByBookId(bookId)).thenReturn(bookFactory.getGenresForBook(bookId));
 
-        BookGetResponse result = service.findById(bookId);
+        BookInfoResponse result = service.findById(bookId);
 
         Assertions.assertThat(result).isEqualTo(expectedDto);
     }
@@ -142,7 +142,7 @@ class BookServiceTest extends UnitTestConfig {
         when(repository.save(any(Book.class))).thenReturn(bookSaved);
         when(bookGenreService.addGenresToBook(any(), anyList())).thenReturn(expectedGenres);
 
-        BookPostResponse result = service.save(bookFactory.newBookPostRequest());
+        BookCreateResponse result = service.save(bookFactory.newBookCreateRequest());
 
         Assertions.assertThat(result.id()).isEqualTo(bookSaved.getId());
         Assertions.assertThat(result.genres()).isEqualTo(expectedGenres);
@@ -153,7 +153,7 @@ class BookServiceTest extends UnitTestConfig {
     @Order(5)
     void save_ThrowsBusinessException_WhenIsbnAlreadyExists() {
         Book bookSaved = bookFactory.newBookSaved();
-        BookPostRequest expectedDto = bookFactory.newBookPostRequest();
+        BookCreateRequest expectedDto = bookFactory.newBookCreateRequest();
 
         when(repository.findByIsbn(expectedDto.isbn())).thenReturn(Optional.of(bookSaved));
 
@@ -167,7 +167,7 @@ class BookServiceTest extends UnitTestConfig {
     @Order(6)
     void update_UpdatesBook_WhenSuccessful() {
         Book bookToUpdate = bookList.getFirst();
-        BookPatchRequest expectedDto = bookFactory.newBookPatchRequest();
+        BookUpdateRequest expectedDto = bookFactory.newBookUpdateRequest();
 
         Long id = bookToUpdate.getId();
         String isbn = expectedDto.isbn();
@@ -188,7 +188,7 @@ class BookServiceTest extends UnitTestConfig {
     @Order(7)
     void update_ThrowsNotFoundException_WhenBookIsNotFound() {
         Book bookToUpdate = bookList.getFirst();
-        BookPatchRequest expectedDto = bookFactory.newBookPatchRequest();
+        BookUpdateRequest expectedDto = bookFactory.newBookUpdateRequest();
 
         Long id = bookToUpdate.getId();
 
@@ -204,7 +204,7 @@ class BookServiceTest extends UnitTestConfig {
     @Order(8)
     void update_ThrowsBusinessException_WhenIsbnAlreadyExists() {
         Book bookToUpdate = bookList.getFirst();
-        BookPatchRequest expectedDto = bookFactory.newBookPatchRequest();
+        BookUpdateRequest expectedDto = bookFactory.newBookUpdateRequest();
 
         Long id = bookToUpdate.getId();
         String isbn = expectedDto.isbn();

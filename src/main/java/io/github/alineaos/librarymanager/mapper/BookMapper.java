@@ -1,11 +1,11 @@
 package io.github.alineaos.librarymanager.mapper;
 
 import io.github.alineaos.librarymanager.domain.entity.Book;
-import io.github.alineaos.librarymanager.dto.request.BookPatchRequest;
-import io.github.alineaos.librarymanager.dto.request.BookPostRequest;
-import io.github.alineaos.librarymanager.dto.response.BookGetResponse;
-import io.github.alineaos.librarymanager.dto.response.BookPostResponse;
-import io.github.alineaos.librarymanager.dto.response.GenreBasicResponse;
+import io.github.alineaos.librarymanager.dto.books.BookUpdateRequest;
+import io.github.alineaos.librarymanager.dto.books.BookCreateRequest;
+import io.github.alineaos.librarymanager.dto.books.BookInfoResponse;
+import io.github.alineaos.librarymanager.dto.books.BookCreateResponse;
+import io.github.alineaos.librarymanager.dto.genres.GenreBasicResponse;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
@@ -23,23 +23,23 @@ public interface BookMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    Book toBook(BookPostRequest postRequest);
-
-    @Mapping(target = "genres", source = "genresByBookId")
-    BookGetResponse toBookGetResponse(Book book, List<GenreBasicResponse> genresByBookId);
-
-    @Mapping(target = "genres", expression = "java(genresByBookId.get(book.getId()))")
-    BookGetResponse toBookGetResponse(Book book, @Context Map<Long, List<GenreBasicResponse>> genresByBookId);
-
-    List<BookGetResponse> toBookGetResponseList(List<Book> books, @Context Map<Long, List<GenreBasicResponse>> genresByBookId);
+    Book toBook(BookCreateRequest request);
 
     @Mapping(target = "genres", source = "genreResponses")
-    BookPostResponse toBookPostResponse(Book book, List<GenreBasicResponse> genreResponses);
+    BookCreateResponse toBookCreateResponse(Book book, List<GenreBasicResponse> genreResponses);
+
+    @Mapping(target = "genres", source = "genresByBookId")
+    BookInfoResponse toBookInfoResponse(Book book, List<GenreBasicResponse> genresByBookId);
+
+    @Mapping(target = "genres", expression = "java(genresByBookId.get(book.getId()))")
+    BookInfoResponse toBookInfoResponse(Book book, @Context Map<Long, List<GenreBasicResponse>> genresByBookId);
+
+    List<BookInfoResponse> toBookInfoResponseList(List<Book> books, @Context Map<Long, List<GenreBasicResponse>> genresByBookId);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    void mergeRequestToBook(BookPatchRequest patchRequest, @MappingTarget Book book);
+    void mergeRequestToBook(BookUpdateRequest request, @MappingTarget Book book);
 
 }

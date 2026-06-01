@@ -1,10 +1,10 @@
 package io.github.alineaos.librarymanager.controller;
 
-import io.github.alineaos.librarymanager.dto.UserFilter;
-import io.github.alineaos.librarymanager.dto.request.UserPatchRequest;
-import io.github.alineaos.librarymanager.dto.request.UserPostRequest;
-import io.github.alineaos.librarymanager.dto.response.UserGetResponse;
-import io.github.alineaos.librarymanager.dto.response.UserPostResponse;
+import io.github.alineaos.librarymanager.dto.users.UserFilter;
+import io.github.alineaos.librarymanager.dto.users.UserUpdateRequest;
+import io.github.alineaos.librarymanager.dto.users.UserCreateRequest;
+import io.github.alineaos.librarymanager.dto.users.UserInfoResponse;
+import io.github.alineaos.librarymanager.dto.users.UserCreateResponse;
 import io.github.alineaos.librarymanager.security.annotation.IsAdmin;
 import io.github.alineaos.librarymanager.security.annotation.IsAdminOrOwner;
 import io.github.alineaos.librarymanager.service.UserService;
@@ -31,31 +31,31 @@ public class UserController {
 
     @GetMapping
     @IsAdmin
-    public ResponseEntity<List<UserGetResponse>> findAll(UserFilter filter) {
-        List<UserGetResponse> getResponseList = service.findAll(filter);
-        return ResponseEntity.ok(getResponseList);
+    public ResponseEntity<List<UserInfoResponse>> findAll(UserFilter filter) {
+        List<UserInfoResponse> responses = service.findAll(filter);
+        return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/{id}")
     @IsAdminOrOwner
-    public ResponseEntity<UserGetResponse> findById(@PathVariable Long id) {
-        UserGetResponse getResponse = service.findById(id);
+    public ResponseEntity<UserInfoResponse> findById(@PathVariable Long id) {
+        UserInfoResponse response = service.findById(id);
 
-        return ResponseEntity.ok(getResponse);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
     @IsAdmin
-    public ResponseEntity<UserPostResponse> save(@RequestBody @Valid UserPostRequest postRequest) {
-        UserPostResponse postResponse = service.save(postRequest);
+    public ResponseEntity<UserCreateResponse> save(@RequestBody @Valid UserCreateRequest request) {
+        UserCreateResponse response = service.save(request);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(postResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PatchMapping("/{id}")
     @IsAdminOrOwner
-    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody @Valid UserPatchRequest patchRequest) {
-        service.update(id, patchRequest);
+    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody @Valid UserUpdateRequest request) {
+        service.update(id, request);
 
         return ResponseEntity.noContent().build();
     }

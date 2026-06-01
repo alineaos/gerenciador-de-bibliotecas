@@ -2,11 +2,11 @@ package io.github.alineaos.librarymanager.service;
 
 import io.github.alineaos.librarymanager.domain.entity.User;
 import io.github.alineaos.librarymanager.domain.enums.UserRole;
-import io.github.alineaos.librarymanager.dto.UserFilter;
-import io.github.alineaos.librarymanager.dto.request.UserPatchRequest;
-import io.github.alineaos.librarymanager.dto.request.UserPostRequest;
-import io.github.alineaos.librarymanager.dto.response.UserGetResponse;
-import io.github.alineaos.librarymanager.dto.response.UserPostResponse;
+import io.github.alineaos.librarymanager.dto.users.UserFilter;
+import io.github.alineaos.librarymanager.dto.users.UserUpdateRequest;
+import io.github.alineaos.librarymanager.dto.users.UserCreateRequest;
+import io.github.alineaos.librarymanager.dto.users.UserInfoResponse;
+import io.github.alineaos.librarymanager.dto.users.UserCreateResponse;
 import io.github.alineaos.librarymanager.exception.AccessDeniedException;
 import io.github.alineaos.librarymanager.exception.BusinessException;
 import io.github.alineaos.librarymanager.exception.NotFoundException;
@@ -29,49 +29,49 @@ public class UserService {
     private final UserRepository repository;
     private final UserMapper mapper;
 
-    public List<UserGetResponse> findAll(UserFilter filter) {
+    public List<UserInfoResponse> findAll(UserFilter filter) {
         List<User> users = repository.findAll(
                 UserSpecification.hasName(filter.name())
                         .and(UserSpecification.hasUserRole(filter.role()))
         );
 
-        return mapper.toGetResponseList(users);
+        return mapper.toUserInfoResponseList(users);
     }
 
-    public UserGetResponse findById(Long id) {
+    public UserInfoResponse findById(Long id) {
         User user = findByIdOrThrowNotFound(id);
 
-        return mapper.toGetResponse(user);
+        return mapper.toUserInfoResponse(user);
     }
 
-    public UserPostResponse save(@Valid UserPostRequest userPostRequest) {
-        assertEmailDoesNotExists(userPostRequest.email());
-        assertCpfDoesNotExists(userPostRequest.cpf());
+    public UserCreateResponse save(@Valid UserCreateRequest request) {
+        assertEmailDoesNotExists(request.email());
+        assertCpfDoesNotExists(request.cpf());
 
-        String encodedPassword = passwordEncoder.encode(userPostRequest.password());
-        User userToSave = mapper.toUser(userPostRequest, encodedPassword);
+        String encodedPassword = passwordEncoder.encode(request.password());
+        User userToSave = mapper.toUser(request, encodedPassword);
 
         User savedUser = repository.save(userToSave);
 
-        return mapper.toPostResponse(savedUser);
+        return mapper.toUserCreateResponse(savedUser);
     }
 
-    public void update(Long id, @Valid UserPatchRequest userPatchRequest) {
+    public void update(Long id, @Valid UserUpdateRequest request) {
         User userToUpdate = findByIdOrThrowNotFound(id);
 
-        if (userPatchRequest.role() != null && userToUpdate.getRole() != UserRole.ADMIN){
+        if (request.role() != null && userToUpdate.getRole() != UserRole.ADMIN){
             throw new AccessDeniedException("Access Denied: Only Admins can update the user role.");
         }
 
-        if (userPatchRequest.email() != null) {
-            assertEmailDoesNotExists(userPatchRequest.email(), id);
+        if (request.email() != null) {
+            assertEmailDoesNotExists(request.email(), id);
         }
 
-        String encodedPassword = (userPatchRequest.password() != null && !userPatchRequest.password().isBlank())
-                ? passwordEncoder.encode(userPatchRequest.password())
+        String encodedPassword = (request.password() != null && !request.password().isBlank())
+                ? passwordEncoder.encode(request.password())
                 : userToUpdate.getPassword();
 
-        mapper.mergeRequestToUser(userPatchRequest, encodedPassword, userToUpdate);
+        mapper.mergeRequestToUser(request, encodedPassword, userToUpdate);
 
         repository.save(userToUpdate);
     }

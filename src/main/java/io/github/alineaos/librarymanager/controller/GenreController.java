@@ -1,10 +1,10 @@
 package io.github.alineaos.librarymanager.controller;
 
-import io.github.alineaos.librarymanager.dto.GenreFilter;
-import io.github.alineaos.librarymanager.dto.request.GenrePostRequest;
-import io.github.alineaos.librarymanager.dto.request.GenrePutRequest;
-import io.github.alineaos.librarymanager.dto.response.GenreGetResponse;
-import io.github.alineaos.librarymanager.dto.response.GenrePostResponse;
+import io.github.alineaos.librarymanager.dto.genres.GenreFilter;
+import io.github.alineaos.librarymanager.dto.genres.GenreCreateRequest;
+import io.github.alineaos.librarymanager.dto.genres.GenreUpdateRequest;
+import io.github.alineaos.librarymanager.dto.genres.GenreInfoResponse;
+import io.github.alineaos.librarymanager.dto.genres.GenreCreateResponse;
 import io.github.alineaos.librarymanager.security.annotation.IsAdmin;
 import io.github.alineaos.librarymanager.security.annotation.IsUser;
 import io.github.alineaos.librarymanager.service.GenreService;
@@ -32,30 +32,30 @@ public class GenreController {
 
     @IsUser
     @GetMapping
-    public ResponseEntity<List<GenreGetResponse>> findAll(GenreFilter filter){
-        List<GenreGetResponse> getResponseList = service.findAll(filter);
+    public ResponseEntity<List<GenreInfoResponse>> findAll(GenreFilter filter){
+        List<GenreInfoResponse> responses = service.findAll(filter);
 
-        return ResponseEntity.ok(getResponseList);
+        return ResponseEntity.ok(responses);
     }
 
     @IsUser
     @GetMapping("/{id}")
-    public ResponseEntity<GenreGetResponse> findById(@PathVariable Long id){
-        GenreGetResponse getResponse = service.findById(id);
+    public ResponseEntity<GenreInfoResponse> findById(@PathVariable Long id){
+        GenreInfoResponse response = service.findById(id);
 
-        return ResponseEntity.ok(getResponse);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    public ResponseEntity<GenrePostResponse> save(@RequestBody @Valid GenrePostRequest postRequest){
-        GenrePostResponse postResponse = service.save(postRequest);
+    public ResponseEntity<GenreCreateResponse> save(@RequestBody @Valid GenreCreateRequest request){
+        GenreCreateResponse response = service.save(request);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(postResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody @Valid GenrePutRequest putRequest){
-        service.update(id, putRequest);
+    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody @Valid GenreUpdateRequest request){
+        service.update(id, request);
 
         return ResponseEntity.noContent().build();
     }

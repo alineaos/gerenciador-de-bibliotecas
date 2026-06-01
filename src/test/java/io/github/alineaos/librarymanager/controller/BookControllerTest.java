@@ -2,12 +2,12 @@ package io.github.alineaos.librarymanager.controller;
 
 import io.github.alineaos.librarymanager.config.UnitTestConfig;
 import io.github.alineaos.librarymanager.domain.entity.Book;
-import io.github.alineaos.librarymanager.dto.BookFilter;
-import io.github.alineaos.librarymanager.dto.request.BookPatchRequest;
-import io.github.alineaos.librarymanager.dto.request.BookPostRequest;
-import io.github.alineaos.librarymanager.dto.response.BookGetResponse;
-import io.github.alineaos.librarymanager.dto.response.BookPostResponse;
-import io.github.alineaos.librarymanager.dto.response.GenreBasicResponse;
+import io.github.alineaos.librarymanager.dto.books.BookFilter;
+import io.github.alineaos.librarymanager.dto.books.BookUpdateRequest;
+import io.github.alineaos.librarymanager.dto.books.BookCreateRequest;
+import io.github.alineaos.librarymanager.dto.books.BookInfoResponse;
+import io.github.alineaos.librarymanager.dto.books.BookCreateResponse;
+import io.github.alineaos.librarymanager.dto.genres.GenreBasicResponse;
 import io.github.alineaos.librarymanager.exception.NotFoundException;
 import io.github.alineaos.librarymanager.security.config.SecurityConfig;
 import io.github.alineaos.librarymanager.service.BookService;
@@ -69,8 +69,8 @@ class BookControllerTest extends UnitTestConfig {
     void findAll_ReturnsOkAndFilteredBooks_WhenUserIsAuthenticatedAndFiltersAreValid(String fileName, BookFilter filter, List<Book> expectedBooks) throws Exception {
         String response = fileUtils.readResourceFile("book/%s".formatted(fileName));
 
-        List<BookGetResponse> expectedDtos = expectedBooks.stream()
-                .map(b -> new BookGetResponse(b.getId(),
+        List<BookInfoResponse> expectedDtos = expectedBooks.stream()
+                .map(b -> new BookInfoResponse(b.getId(),
                         b.getTitle(),
                         b.getAuthor(),
                         b.getPublisher(),
@@ -103,7 +103,7 @@ class BookControllerTest extends UnitTestConfig {
     @WithMockUser(authorities = "SCOPE_USER")
     void findById_ReturnsOkAndBookById_UserIsAuthenticated() throws Exception {
         Long targetBookId = 2L;
-        BookGetResponse foundBook = bookFactory.newBookGetResponseById(targetBookId);
+        BookInfoResponse foundBook = bookFactory.newBookInfoResponseById(targetBookId);
 
         when(service.findById(targetBookId)).thenReturn(foundBook);
 
@@ -141,9 +141,9 @@ class BookControllerTest extends UnitTestConfig {
         String request = fileUtils.readResourceFile("book/post-request-book.json");
         String response = fileUtils.readResourceFile("book/post-response-book.json");
 
-        BookPostResponse bookSavedResponse = bookFactory.newBookPostResponse();
+        BookCreateResponse bookSavedResponse = bookFactory.newBookCreateResponse();
 
-        when(service.save(any(BookPostRequest.class))).thenReturn(bookSavedResponse);
+        when(service.save(any(BookCreateRequest.class))).thenReturn(bookSavedResponse);
 
         mockMvc.perform(MockMvcRequestBuilders.post(URL)
                         .content(request)
@@ -197,7 +197,7 @@ class BookControllerTest extends UnitTestConfig {
     void update_ReturnsNoContentAndUpdatesBookById_WhenUserIsAdmin() throws Exception {
         Long targetBookId = 1L;
 
-        doNothing().when(service).update(eq(targetBookId), any(BookPatchRequest.class));
+        doNothing().when(service).update(eq(targetBookId), any(BookUpdateRequest.class));
 
         String request = fileUtils.readResourceFile("book/patch-request-book.json");
 
@@ -232,7 +232,7 @@ class BookControllerTest extends UnitTestConfig {
 
         String request = fileUtils.readResourceFile("book/patch-request-book-invalid-id.json");
 
-        doThrow(new NotFoundException("Book not found.")).when(service).update(eq(targetBookId), any(BookPatchRequest.class));
+        doThrow(new NotFoundException("Book not found.")).when(service).update(eq(targetBookId), any(BookUpdateRequest.class));
 
         mockMvc.perform(MockMvcRequestBuilders.patch(URL + "/{id}", targetBookId)
                         .content(request)

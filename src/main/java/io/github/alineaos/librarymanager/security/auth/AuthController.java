@@ -1,7 +1,7 @@
 package io.github.alineaos.librarymanager.security.auth;
 
-import io.github.alineaos.librarymanager.dto.request.UserLoginRequest;
-import io.github.alineaos.librarymanager.dto.response.UserLoginResponse;
+import io.github.alineaos.librarymanager.dto.users.UserLoginRequest;
+import io.github.alineaos.librarymanager.dto.users.UserLoginResponse;
 import io.github.alineaos.librarymanager.security.service.TokenService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,10 +25,10 @@ public class AuthController {
     private Long expiresIn;
 
     @PostMapping("/login")
-    public ResponseEntity<UserLoginResponse> login(@RequestBody @Valid UserLoginRequest loginRequest) {
+    public ResponseEntity<UserLoginResponse> login(@RequestBody @Valid UserLoginRequest request) {
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                loginRequest.email(),
-                loginRequest.password()
+                request.email(),
+                request.password()
         );
 
         Authentication authentication = authenticationManager.authenticate(authToken);

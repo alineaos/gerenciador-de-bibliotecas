@@ -1,11 +1,11 @@
 package io.github.alineaos.librarymanager.service;
 
 import io.github.alineaos.librarymanager.domain.entity.Genre;
-import io.github.alineaos.librarymanager.dto.GenreFilter;
-import io.github.alineaos.librarymanager.dto.request.GenrePostRequest;
-import io.github.alineaos.librarymanager.dto.request.GenrePutRequest;
-import io.github.alineaos.librarymanager.dto.response.GenreGetResponse;
-import io.github.alineaos.librarymanager.dto.response.GenrePostResponse;
+import io.github.alineaos.librarymanager.dto.genres.GenreFilter;
+import io.github.alineaos.librarymanager.dto.genres.GenreCreateRequest;
+import io.github.alineaos.librarymanager.dto.genres.GenreUpdateRequest;
+import io.github.alineaos.librarymanager.dto.genres.GenreInfoResponse;
+import io.github.alineaos.librarymanager.dto.genres.GenreCreateResponse;
 import io.github.alineaos.librarymanager.exception.BusinessException;
 import io.github.alineaos.librarymanager.exception.NotFoundException;
 import io.github.alineaos.librarymanager.mapper.GenreMapper;
@@ -34,35 +34,35 @@ public class GenreService {
         this.bookGenreService = bookGenreService;
     }
 
-    public List<GenreGetResponse> findAll(GenreFilter filter) {
+    public List<GenreInfoResponse> findAll(GenreFilter filter) {
         List<Genre> genres = repository.findAll(
                 GenreSpecification.hasName(filter.name())
         );
 
-        return mapper.toGetResponseList(genres);
+        return mapper.toGenreInfoResponseList(genres);
     }
 
-    public GenreGetResponse findById(Long id) {
+    public GenreInfoResponse findById(Long id) {
         Genre genre = findByIdOrThrowNotFound(id);
 
-        return mapper.toGetResponse(genre);
+        return mapper.toGenreInfoResponse(genre);
     }
 
-    public GenrePostResponse save(@Valid GenrePostRequest postRequest) {
-        assertNameNotExists(postRequest.name());
+    public GenreCreateResponse save(@Valid GenreCreateRequest request) {
+        assertNameNotExists(request.name());
 
-        Genre genreToSave = mapper.toGenre(postRequest);
+        Genre genreToSave = mapper.toGenre(request);
 
         Genre savedGenre = repository.save(genreToSave);
 
-        return mapper.toPostResponse(savedGenre);
+        return mapper.toGenreCreateResponse(savedGenre);
     }
 
-    public void update(Long id, @Valid GenrePutRequest putRequest) {
+    public void update(Long id, @Valid GenreUpdateRequest request) {
         Genre genreToUpdate = findByIdOrThrowNotFound(id);
-        assertNameNotExists(putRequest.name(), id);
+        assertNameNotExists(request.name(), id);
 
-        mapper.mergeRequestToGenre(putRequest, genreToUpdate);
+        mapper.mergeRequestToGenre(request, genreToUpdate);
 
         repository.save(genreToUpdate);
     }

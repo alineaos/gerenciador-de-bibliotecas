@@ -3,11 +3,11 @@ package io.github.alineaos.librarymanager.controller;
 import io.github.alineaos.librarymanager.config.UnitTestConfig;
 import io.github.alineaos.librarymanager.domain.entity.User;
 import io.github.alineaos.librarymanager.domain.enums.UserRole;
-import io.github.alineaos.librarymanager.dto.UserFilter;
-import io.github.alineaos.librarymanager.dto.request.UserPatchRequest;
-import io.github.alineaos.librarymanager.dto.request.UserPostRequest;
-import io.github.alineaos.librarymanager.dto.response.UserGetResponse;
-import io.github.alineaos.librarymanager.dto.response.UserPostResponse;
+import io.github.alineaos.librarymanager.dto.users.UserFilter;
+import io.github.alineaos.librarymanager.dto.users.UserUpdateRequest;
+import io.github.alineaos.librarymanager.dto.users.UserCreateRequest;
+import io.github.alineaos.librarymanager.dto.users.UserInfoResponse;
+import io.github.alineaos.librarymanager.dto.users.UserCreateResponse;
 import io.github.alineaos.librarymanager.exception.NotFoundException;
 import io.github.alineaos.librarymanager.security.config.SecurityConfig;
 import io.github.alineaos.librarymanager.service.UserService;
@@ -68,8 +68,8 @@ class UserControllerTest extends UnitTestConfig {
     @WithMockUser(authorities = "SCOPE_ADMIN")
     void findAll_ReturnsOkAndFilteredUsers_WhenUserIsAdminAndFiltersAreValid(String fileName, UserFilter filter, List<User> expectedUsers) throws Exception {
         String response = fileUtils.readResourceFile("user/%s".formatted(fileName));
-        List<UserGetResponse> expectedDtos = expectedUsers.stream()
-                .map(u -> new UserGetResponse(u.getId(),
+        List<UserInfoResponse> expectedDtos = expectedUsers.stream()
+                .map(u -> new UserInfoResponse(u.getId(),
                         u.getFullName(),
                         u.getEmail(),
                         u.getCpf(),
@@ -108,7 +108,7 @@ class UserControllerTest extends UnitTestConfig {
     @WithMockUser(authorities = "SCOPE_ADMIN")
     void findById_ReturnsOkAndUserById_WhenUserIsAdmin() throws Exception {
         Long targetUserId = 2L;
-        UserGetResponse foundUser = userFactory.newUserGetResponseById(targetUserId);
+        UserInfoResponse foundUser = userFactory.newUserInfoResponseById(targetUserId);
 
         when(service.findById(targetUserId)).thenReturn(foundUser);
 
@@ -126,7 +126,7 @@ class UserControllerTest extends UnitTestConfig {
     @WithMockUser(authorities = "SCOPE_USER")
     void findById_ReturnsOkAndUserById_WhenUserIsIdOwner() throws Exception {
         Long userId = 2L;
-        UserGetResponse foundUser = userFactory.newUserGetResponseById(userId);
+        UserInfoResponse foundUser = userFactory.newUserInfoResponseById(userId);
 
         when(service.findById(userId)).thenReturn(foundUser);
 
@@ -179,9 +179,9 @@ class UserControllerTest extends UnitTestConfig {
         String request = fileUtils.readResourceFile("user/post-request-user.json");
         String response = fileUtils.readResourceFile("user/post-response-user.json");
 
-        UserPostResponse userSavedResponse = userFactory.newUserPostResponse();
+        UserCreateResponse userSavedResponse = userFactory.newUserCreateResponse();
 
-        when(service.save(any(UserPostRequest.class))).thenReturn(userSavedResponse);
+        when(service.save(any(UserCreateRequest.class))).thenReturn(userSavedResponse);
 
         mockMvc.perform(MockMvcRequestBuilders.post(URL)
                         .content(request)
@@ -235,7 +235,7 @@ class UserControllerTest extends UnitTestConfig {
     void update_ReturnsNoContentAndUpdatesUserById_WhenUserIsAdmin() throws Exception {
         Long targetUserId = 1L;
 
-        doNothing().when(service).update(eq(targetUserId), any(UserPatchRequest.class));
+        doNothing().when(service).update(eq(targetUserId), any(UserUpdateRequest.class));
 
         String request = fileUtils.readResourceFile("user/patch-request-user.json");
 
@@ -253,7 +253,7 @@ class UserControllerTest extends UnitTestConfig {
     void update_ReturnsNoContentAndUpdatesUserById_WhenUserIsIdOwner() throws Exception {
         Long targetUserId = 2L;
 
-        doNothing().when(service).update(eq(targetUserId), any(UserPatchRequest.class));
+        doNothing().when(service).update(eq(targetUserId), any(UserUpdateRequest.class));
 
         String request = fileUtils.readResourceFile("user/patch-request-user-birth-date.json");
 
@@ -292,7 +292,7 @@ class UserControllerTest extends UnitTestConfig {
 
         String request = fileUtils.readResourceFile("user/patch-request-user-invalid-id.json");
 
-        doThrow(new NotFoundException("User not found.")).when(service).update(eq(targetUserId), any(UserPatchRequest.class));
+        doThrow(new NotFoundException("User not found.")).when(service).update(eq(targetUserId), any(UserUpdateRequest.class));
 
         mockMvc.perform(MockMvcRequestBuilders.patch(URL + "/{id}", targetUserId)
                         .content(request)

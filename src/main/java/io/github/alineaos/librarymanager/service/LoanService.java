@@ -4,14 +4,14 @@ import io.github.alineaos.librarymanager.domain.entity.Book;
 import io.github.alineaos.librarymanager.domain.entity.Loan;
 import io.github.alineaos.librarymanager.domain.entity.User;
 import io.github.alineaos.librarymanager.domain.enums.LoanStatus;
-import io.github.alineaos.librarymanager.dto.LoanFilter;
-import io.github.alineaos.librarymanager.dto.request.LoanPostRequest;
-import io.github.alineaos.librarymanager.dto.request.LoanReturnRequest;
-import io.github.alineaos.librarymanager.dto.response.BookBasicResponse;
-import io.github.alineaos.librarymanager.dto.response.LoanGetResponse;
-import io.github.alineaos.librarymanager.dto.response.LoanHistoryResponse;
-import io.github.alineaos.librarymanager.dto.response.LoanPostResponse;
-import io.github.alineaos.librarymanager.dto.response.UserBasicResponse;
+import io.github.alineaos.librarymanager.dto.loans.LoanFilter;
+import io.github.alineaos.librarymanager.dto.loans.LoanCreateRequest;
+import io.github.alineaos.librarymanager.dto.loans.LoanReturnRequest;
+import io.github.alineaos.librarymanager.dto.books.BookBasicResponse;
+import io.github.alineaos.librarymanager.dto.loans.LoanInfoResponse;
+import io.github.alineaos.librarymanager.dto.loans.LoanHistoryResponse;
+import io.github.alineaos.librarymanager.dto.loans.LoanCreateResponse;
+import io.github.alineaos.librarymanager.dto.users.UserBasicResponse;
 import io.github.alineaos.librarymanager.exception.BusinessException;
 import io.github.alineaos.librarymanager.exception.NotFoundException;
 import io.github.alineaos.librarymanager.mapper.LoanMapper;
@@ -37,25 +37,25 @@ public class LoanService {
 
     private static final Set<LoanStatus> ACTIVE_STATUS = LoanStatus.getActiveStatus();
 
-    public List<LoanGetResponse> findAll(LoanFilter loanFilter) {
+    public List<LoanInfoResponse> findAll(LoanFilter filter) {
         List<Loan> loans = repository.findAll(
                 LoanSpecification.fetchRelationships()
-                        .and(LoanSpecification.hasUserId(loanFilter.userId()))
-                        .and(LoanSpecification.hasBookId(loanFilter.bookId()))
-                        .and(LoanSpecification.hasLoanStatus(loanFilter.status()))
-                        .and(LoanSpecification.hasRenewed(loanFilter.renewed()))
-                        .and(LoanSpecification.hasBorrowedAt(loanFilter.borrowedAt()))
-                        .and(LoanSpecification.hasDueAt(loanFilter.dueAt()))
-                        .and(LoanSpecification.hasReturnedAt(loanFilter.returnedAt()))
+                        .and(LoanSpecification.hasUserId(filter.userId()))
+                        .and(LoanSpecification.hasBookId(filter.bookId()))
+                        .and(LoanSpecification.hasLoanStatus(filter.status()))
+                        .and(LoanSpecification.hasRenewed(filter.renewed()))
+                        .and(LoanSpecification.hasBorrowedAt(filter.borrowedAt()))
+                        .and(LoanSpecification.hasDueAt(filter.dueAt()))
+                        .and(LoanSpecification.hasReturnedAt(filter.returnedAt()))
         );
 
-        return mapper.toLoanGetResponseList(loans);
+        return mapper.toLoanInfoResponseList(loans);
     }
 
-    public LoanGetResponse findById(Long id) {
+    public LoanInfoResponse findById(Long id) {
         Loan loan = findByIdOrThrowNotFound(id);
 
-        return mapper.toLoanGetResponse(loan);
+        return mapper.toLoanInfoResponse(loan);
     }
 
     public List<LoanHistoryResponse> findMyHistory(Long id) {
@@ -64,16 +64,16 @@ public class LoanService {
         return mapper.toLoanHistoryResponse(loans);
     }
 
-    public LoanPostResponse save(@Valid LoanPostRequest postRequest) {
-        User user = userService.getUserByIdOrThrowNotFound(postRequest.userId());
-        Book book = bookService.getBookByIdOrThrowNotFound(postRequest.bookId());
+    public LoanCreateResponse save(@Valid LoanCreateRequest request) {
+        User user = userService.getUserByIdOrThrowNotFound(request.userId());
+        Book book = bookService.getBookByIdOrThrowNotFound(request.bookId());
 
-        assertUserDoesNotHaveActiveLoan(postRequest.userId());
-        assertBookIsNotInActiveLoan(postRequest.bookId());
+        assertUserDoesNotHaveActiveLoan(request.userId());
+        assertBookIsNotInActiveLoan(request.bookId());
 
-        LocalDate loanDate = postRequest.borrowedAt() == null ? LocalDate.now() : postRequest.borrowedAt();
+        LocalDate loanDate = request.borrowedAt() == null ? LocalDate.now() : request.borrowedAt();
 
-        Loan loan = mapper.toLoan(postRequest);
+        Loan loan = mapper.toLoan(request);
 
         loan.setUser(user);
         loan.setBook(book);
@@ -83,7 +83,7 @@ public class LoanService {
 
         Loan savedLoan = repository.save(loan);
 
-        return mapper.toLoanPostResponse(savedLoan, newUserBasicResponse(user), newBookBasicResponse(book));
+        return mapper.toLoanCreateResponse(savedLoan, newUserBasicResponse(user), newBookBasicResponse(book));
     }
 
     public void renew(Long id) {

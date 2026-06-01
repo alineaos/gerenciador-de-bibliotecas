@@ -4,13 +4,13 @@ import io.github.alineaos.librarymanager.domain.entity.Book;
 import io.github.alineaos.librarymanager.domain.entity.Loan;
 import io.github.alineaos.librarymanager.domain.entity.User;
 import io.github.alineaos.librarymanager.domain.enums.LoanStatus;
-import io.github.alineaos.librarymanager.dto.request.LoanPostRequest;
-import io.github.alineaos.librarymanager.dto.request.LoanReturnRequest;
-import io.github.alineaos.librarymanager.dto.response.BookBasicResponse;
-import io.github.alineaos.librarymanager.dto.response.LoanGetResponse;
-import io.github.alineaos.librarymanager.dto.response.LoanHistoryResponse;
-import io.github.alineaos.librarymanager.dto.response.LoanPostResponse;
-import io.github.alineaos.librarymanager.dto.response.UserBasicResponse;
+import io.github.alineaos.librarymanager.dto.loans.LoanCreateRequest;
+import io.github.alineaos.librarymanager.dto.loans.LoanReturnRequest;
+import io.github.alineaos.librarymanager.dto.books.BookBasicResponse;
+import io.github.alineaos.librarymanager.dto.loans.LoanInfoResponse;
+import io.github.alineaos.librarymanager.dto.loans.LoanHistoryResponse;
+import io.github.alineaos.librarymanager.dto.loans.LoanCreateResponse;
+import io.github.alineaos.librarymanager.dto.users.UserBasicResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -104,20 +104,20 @@ public class LoanFactory {
                 .build();
     }
 
-    public LoanPostRequest newLoanPostRequest(){
+    public LoanCreateRequest newLoanCreateRequest(){
         Loan loan = newLoanSaved();
 
-        return new LoanPostRequest(
+        return new LoanCreateRequest(
                 loan.getUser().getId(),
                 loan.getBook().getId(),
                 loan.getBorrowedAt()
         );
     }
 
-    public LoanPostResponse newLoanPostResponse(){
+    public LoanCreateResponse newLoanCreateResponse(){
         Loan loan = newLoanSaved();
 
-        return new LoanPostResponse(
+        return new LoanCreateResponse(
                 loan.getId(),
                 newUserBasicResponse(loan.getUser()),
                 newBookBasicResponse(loan.getBook()),
@@ -128,10 +128,10 @@ public class LoanFactory {
         );
     }
 
-    public LoanGetResponse newLoanGetResponse(){
+    public LoanInfoResponse newLoanInfoResponse(){
         Loan loan = newLoanList().getFirst();
 
-        return new LoanGetResponse(
+        return new LoanInfoResponse(
                 loan.getId(),
                 newUserBasicResponse(loan.getUser()),
                 newBookBasicResponse(loan.getBook()),

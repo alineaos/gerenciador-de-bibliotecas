@@ -1,10 +1,10 @@
 package io.github.alineaos.librarymanager.mapper;
 
 import io.github.alineaos.librarymanager.domain.entity.Genre;
-import io.github.alineaos.librarymanager.dto.request.GenrePostRequest;
-import io.github.alineaos.librarymanager.dto.request.GenrePutRequest;
-import io.github.alineaos.librarymanager.dto.response.GenreGetResponse;
-import io.github.alineaos.librarymanager.dto.response.GenrePostResponse;
+import io.github.alineaos.librarymanager.dto.genres.GenreCreateRequest;
+import io.github.alineaos.librarymanager.dto.genres.GenreUpdateRequest;
+import io.github.alineaos.librarymanager.dto.genres.GenreInfoResponse;
+import io.github.alineaos.librarymanager.dto.genres.GenreCreateResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
@@ -18,12 +18,12 @@ public interface GenreMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    Genre toGenre (GenrePostRequest postRequest);
+    Genre toGenre (GenreCreateRequest request);
 
-    List<GenreGetResponse> toGetResponseList(List<Genre> genreList);
-    GenreGetResponse toGetResponse(Genre genre);
+    GenreCreateResponse toGenreCreateResponse(Genre genre);
 
-    GenrePostResponse toPostResponse(Genre genre);
+    List<GenreInfoResponse> toGenreInfoResponseList(List<Genre> genres);
+    GenreInfoResponse toGenreInfoResponse(Genre genre);
 
-    void mergeRequestToGenre(GenrePutRequest putRequest, @MappingTarget Genre genre);
+    void mergeRequestToGenre(GenreUpdateRequest request, @MappingTarget Genre genre);
 }

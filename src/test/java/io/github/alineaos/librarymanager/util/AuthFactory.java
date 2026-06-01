@@ -1,7 +1,7 @@
 package io.github.alineaos.librarymanager.util;
 
 import io.github.alineaos.librarymanager.domain.entity.User;
-import io.github.alineaos.librarymanager.dto.request.UserLoginRequest;
+import io.github.alineaos.librarymanager.dto.users.UserLoginRequest;
 
 public class AuthFactory {
     private final UserFactory userFactory;

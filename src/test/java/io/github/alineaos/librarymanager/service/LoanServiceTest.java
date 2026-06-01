@@ -5,11 +5,11 @@ import io.github.alineaos.librarymanager.domain.entity.Book;
 import io.github.alineaos.librarymanager.domain.entity.Loan;
 import io.github.alineaos.librarymanager.domain.entity.User;
 import io.github.alineaos.librarymanager.domain.enums.LoanStatus;
-import io.github.alineaos.librarymanager.dto.LoanFilter;
-import io.github.alineaos.librarymanager.dto.request.LoanReturnRequest;
-import io.github.alineaos.librarymanager.dto.response.LoanGetResponse;
-import io.github.alineaos.librarymanager.dto.response.LoanHistoryResponse;
-import io.github.alineaos.librarymanager.dto.response.LoanPostResponse;
+import io.github.alineaos.librarymanager.dto.loans.LoanFilter;
+import io.github.alineaos.librarymanager.dto.loans.LoanReturnRequest;
+import io.github.alineaos.librarymanager.dto.loans.LoanInfoResponse;
+import io.github.alineaos.librarymanager.dto.loans.LoanHistoryResponse;
+import io.github.alineaos.librarymanager.dto.loans.LoanCreateResponse;
 import io.github.alineaos.librarymanager.exception.BusinessException;
 import io.github.alineaos.librarymanager.exception.NotFoundException;
 import io.github.alineaos.librarymanager.mapper.LoanMapper;
@@ -75,8 +75,8 @@ class LoanServiceTest extends UnitTestConfig {
     @Order(1)
     void findAll_ListWithFilteredLoans_WhenFilterIsValid(LoanFilter filter, List<Loan> expectedLoans) {
 
-        List<LoanGetResponse> expectedDtos = expectedLoans.stream()
-                .map(l -> new LoanGetResponse(l.getId(),
+        List<LoanInfoResponse> expectedDtos = expectedLoans.stream()
+                .map(l -> new LoanInfoResponse(l.getId(),
                         loanFactory.newUserBasicResponse(l.getUser()),
                         loanFactory.newBookBasicResponse(l.getBook()),
                         l.getStatus(),
@@ -90,7 +90,7 @@ class LoanServiceTest extends UnitTestConfig {
 
         when(repository.findAll(ArgumentMatchers.<Specification<Loan>>any())).thenReturn(expectedLoans);
 
-        List<LoanGetResponse> result = service.findAll(filter);
+        List<LoanInfoResponse> result = service.findAll(filter);
 
         Assertions.assertThat(result).isNotNull().containsExactlyElementsOf(expectedDtos);
     }
@@ -101,11 +101,11 @@ class LoanServiceTest extends UnitTestConfig {
     void findById_ReturnsLoanById_WhenSuccessful() {
         Loan expectedLoan = loanList.getFirst();
         Long loanId = expectedLoan.getId();
-        LoanGetResponse expectedDto = loanFactory.newLoanGetResponse();
+        LoanInfoResponse expectedDto = loanFactory.newLoanInfoResponse();
 
         when(repository.findByIdWithRelationships(loanId)).thenReturn(Optional.of(expectedLoan));
 
-        LoanGetResponse result = service.findById(loanId);
+        LoanInfoResponse result = service.findById(loanId);
 
         Assertions.assertThat(result).isEqualTo(expectedDto);
     }
@@ -154,7 +154,7 @@ class LoanServiceTest extends UnitTestConfig {
         when(repository.findByBookIdAndStatusIn(book.getId(), LoanStatus.getActiveStatus())).thenReturn(Optional.empty());
         when(repository.save(any(Loan.class))).thenReturn(loanSaved);
 
-        LoanPostResponse result = service.save(loanFactory.newLoanPostRequest());
+        LoanCreateResponse result = service.save(loanFactory.newLoanCreateRequest());
 
         Assertions.assertThat(result.id()).isEqualTo(loanSaved.getId());
         Assertions.assertThat(result.borrowedAt().plusDays(14)).isEqualTo(result.dueAt());
@@ -171,7 +171,7 @@ class LoanServiceTest extends UnitTestConfig {
         when(bookService.getBookByIdOrThrowNotFound(any())).thenThrow(new NotFoundException("Book not found."));
 
         Assertions.assertThatException()
-                .isThrownBy(() -> service.save(loanFactory.newLoanPostRequest()))
+                .isThrownBy(() -> service.save(loanFactory.newLoanCreateRequest()))
                 .isInstanceOf(ResponseStatusException.class)
                 .withMessageContaining("Book not found.");
     }
@@ -183,7 +183,7 @@ class LoanServiceTest extends UnitTestConfig {
         when(userService.getUserByIdOrThrowNotFound(any())).thenThrow(new NotFoundException("User not found."));
 
         Assertions.assertThatException()
-                .isThrownBy(() -> service.save(loanFactory.newLoanPostRequest()))
+                .isThrownBy(() -> service.save(loanFactory.newLoanCreateRequest()))
                 .isInstanceOf(ResponseStatusException.class)
                 .withMessageContaining("User not found.");
     }
@@ -202,7 +202,7 @@ class LoanServiceTest extends UnitTestConfig {
                 .thenThrow(new BusinessException("The user '%s' has an active loan.".formatted(user.getFullName())));
 
         Assertions.assertThatException()
-                .isThrownBy(() -> service.save(loanFactory.newLoanPostRequest()))
+                .isThrownBy(() -> service.save(loanFactory.newLoanCreateRequest()))
                 .isInstanceOf(BusinessException.class)
                 .withMessage("The user '%s' has an active loan.".formatted(user.getFullName()));
     }
@@ -222,7 +222,7 @@ class LoanServiceTest extends UnitTestConfig {
                 .thenThrow(new BusinessException("The book '%s' is not available.".formatted(book.getTitle())));
 
         Assertions.assertThatException()
-                .isThrownBy(() -> service.save(loanFactory.newLoanPostRequest()))
+                .isThrownBy(() -> service.save(loanFactory.newLoanCreateRequest()))
                 .isInstanceOf(BusinessException.class)
                 .withMessage("The book '%s' is not available.".formatted(book.getTitle()));
     }
@@ -281,14 +281,14 @@ class LoanServiceTest extends UnitTestConfig {
         Loan loanToReturn = loanList.getFirst();
         Long loanId = loanToReturn.getId();
 
-        LoanReturnRequest returnRequest = loanFactory.newLoanReturnRequest();
+        LoanReturnRequest expectedDto = loanFactory.newLoanReturnRequest();
 
         when(repository.findByIdWithRelationships(loanId)).thenReturn(Optional.of(loanToReturn));
 
-        service.finalize(loanId, returnRequest);
+        service.finalize(loanId, expectedDto);
 
         Assertions.assertThat(loanToReturn.getStatus()).isEqualTo(LoanStatus.RETURNED);
-        Assertions.assertThat(loanToReturn.getReturnedAt()).isNotNull().isEqualTo(returnRequest.returnedAt());
+        Assertions.assertThat(loanToReturn.getReturnedAt()).isNotNull().isEqualTo(expectedDto.returnedAt());
     }
 
     @ParameterizedTest
@@ -299,13 +299,13 @@ class LoanServiceTest extends UnitTestConfig {
         Loan loanToReturn = loanList.getFirst();
         Long loanId = loanToReturn.getId();
 
-        LoanReturnRequest returnRequest = new LoanReturnRequest(inputDate);
+        LoanReturnRequest expectedDto = new LoanReturnRequest(inputDate);
 
         when(repository.findByIdWithRelationships(loanId)).thenReturn(Optional.of(loanToReturn));
 
-        LocalDate returnedDate = returnRequest.returnedAt() == null ? LocalDate.now() : returnRequest.returnedAt();
+        LocalDate returnedDate = expectedDto.returnedAt() == null ? LocalDate.now() : expectedDto.returnedAt();
 
-        service.finalize(loanId, returnRequest);
+        service.finalize(loanId, expectedDto);
 
         Assertions.assertThat(loanToReturn.getReturnedAt()).isNotNull().isEqualTo(returnedDate);
     }
@@ -317,12 +317,12 @@ class LoanServiceTest extends UnitTestConfig {
         Loan loanToReturn = loanList.getFirst();
         Long loanId = loanToReturn.getId();
 
-        LoanReturnRequest returnRequest = loanFactory.newLoanReturnRequest();
+        LoanReturnRequest expectedDto = loanFactory.newLoanReturnRequest();
 
         when(repository.findByIdWithRelationships(loanId)).thenReturn(Optional.empty());
 
         Assertions.assertThatException()
-                .isThrownBy(() -> service.finalize(loanId, returnRequest))
+                .isThrownBy(() -> service.finalize(loanId, expectedDto))
                 .isInstanceOf(NotFoundException.class)
                 .withMessageContaining("Loan not found.");
     }
@@ -337,12 +337,12 @@ class LoanServiceTest extends UnitTestConfig {
 
         loanToReturn.setStatus(finalizedStatus);
 
-        LoanReturnRequest returnRequest = loanFactory.newLoanReturnRequest();
+        LoanReturnRequest expectedDto = loanFactory.newLoanReturnRequest();
 
         when(repository.findByIdWithRelationships(loanId)).thenReturn(Optional.of(loanToReturn));
 
         Assertions.assertThatException()
-                .isThrownBy(() -> service.finalize(loanId, returnRequest))
+                .isThrownBy(() -> service.finalize(loanId, expectedDto))
                 .isInstanceOf(BusinessException.class)
                 .withMessage("The Loan has already been finalized");
     }
@@ -355,12 +355,12 @@ class LoanServiceTest extends UnitTestConfig {
         Long loanId = loanToReturn.getId();
 
         LocalDate wrongReturnDate = loanToReturn.getBorrowedAt().minusDays(1);
-        LoanReturnRequest returnRequest = new LoanReturnRequest(wrongReturnDate);
+        LoanReturnRequest expectedDto = new LoanReturnRequest(wrongReturnDate);
 
         when(repository.findByIdWithRelationships(loanId)).thenReturn(Optional.of(loanToReturn));
 
         Assertions.assertThatException()
-                .isThrownBy(() -> service.finalize(loanId, returnRequest))
+                .isThrownBy(() -> service.finalize(loanId, expectedDto))
                 .isInstanceOf(BusinessException.class)
                 .withMessage("The return date cannot be before the loan date");
     }

@@ -1,12 +1,12 @@
 package io.github.alineaos.librarymanager.service;
 
 import io.github.alineaos.librarymanager.domain.entity.Book;
-import io.github.alineaos.librarymanager.dto.BookFilter;
-import io.github.alineaos.librarymanager.dto.request.BookPatchRequest;
-import io.github.alineaos.librarymanager.dto.request.BookPostRequest;
-import io.github.alineaos.librarymanager.dto.response.BookGetResponse;
-import io.github.alineaos.librarymanager.dto.response.BookPostResponse;
-import io.github.alineaos.librarymanager.dto.response.GenreBasicResponse;
+import io.github.alineaos.librarymanager.dto.books.BookCreateRequest;
+import io.github.alineaos.librarymanager.dto.books.BookFilter;
+import io.github.alineaos.librarymanager.dto.books.BookUpdateRequest;
+import io.github.alineaos.librarymanager.dto.books.BookInfoResponse;
+import io.github.alineaos.librarymanager.dto.books.BookCreateResponse;
+import io.github.alineaos.librarymanager.dto.genres.GenreBasicResponse;
 import io.github.alineaos.librarymanager.exception.BusinessException;
 import io.github.alineaos.librarymanager.exception.NotFoundException;
 import io.github.alineaos.librarymanager.mapper.BookMapper;
@@ -30,7 +30,7 @@ public class BookService {
     private final GenreService genreService;
     private final BookMapper mapper;
 
-    public List<BookGetResponse> findAll(BookFilter bookFilter) {
+    public List<BookInfoResponse> findAll(BookFilter bookFilter) {
         List<Book> books = repository.findAll(
                 BookSpecification.hasTitle(bookFilter.title())
                         .and(BookSpecification.hasAuthor(bookFilter.author()))
@@ -45,42 +45,42 @@ public class BookService {
 
         Map<Long, List<GenreBasicResponse>> genresByBookId = bookGenreService.findGenresGroupedByBookIds(bookIds);
 
-        return mapper.toBookGetResponseList(books, genresByBookId);
+        return mapper.toBookInfoResponseList(books, genresByBookId);
     }
 
-    public BookGetResponse findById(Long id) {
+    public BookInfoResponse findById(Long id) {
         Book book = findByIdOrThrowNotFound(id);
         List<GenreBasicResponse> genresByBookId = bookGenreService.findGenresByBookId(id);
-        return mapper.toBookGetResponse(book, genresByBookId);
+        return mapper.toBookInfoResponse(book, genresByBookId);
     }
 
-    public BookPostResponse save(@Valid BookPostRequest postRequest) {
-        List<Long> genresById = postRequest.genreIds();
-        assertIsbnDoesNotExists(postRequest.isbn());
+    public BookCreateResponse save(@Valid BookCreateRequest request) {
+        List<Long> genresById = request.genreIds();
+        assertIsbnDoesNotExists(request.isbn());
         genreService.assertGenreByIdExists(genresById);
 
-        Book bookToSave = mapper.toBook(postRequest);
+        Book bookToSave = mapper.toBook(request);
 
         Book bookSaved = repository.save(bookToSave);
 
         List<GenreBasicResponse> genreResponses = bookGenreService.addGenresToBook(bookSaved, genresById);
 
-        return mapper.toBookPostResponse(bookSaved, genreResponses);
+        return mapper.toBookCreateResponse(bookSaved, genreResponses);
     }
 
     @Transactional
-    public void update(Long id, @Valid BookPatchRequest patchRequest) {
+    public void update(Long id, @Valid BookUpdateRequest request) {
         Book bookToUpdate = findByIdOrThrowNotFound(id);
 
-        if (patchRequest.isbn() != null) {
-            assertIsbnDoesNotExists(patchRequest.isbn(), id);
+        if (request.isbn() != null) {
+            assertIsbnDoesNotExists(request.isbn(), id);
         }
 
-        if (patchRequest.genreIds() != null && !patchRequest.genreIds().isEmpty()){
-            bookGenreService.updateGenresByBook(bookToUpdate, patchRequest.genreIds());
+        if (request.genreIds() != null && !request.genreIds().isEmpty()){
+            bookGenreService.updateGenresByBook(bookToUpdate, request.genreIds());
         }
 
-        mapper.mergeRequestToBook(patchRequest, bookToUpdate);
+        mapper.mergeRequestToBook(request, bookToUpdate);
 
         repository.save(bookToUpdate);
     }

@@ -1,11 +1,11 @@
 package io.github.alineaos.librarymanager.controller;
 
-import io.github.alineaos.librarymanager.dto.LoanFilter;
-import io.github.alineaos.librarymanager.dto.request.LoanPostRequest;
-import io.github.alineaos.librarymanager.dto.request.LoanReturnRequest;
-import io.github.alineaos.librarymanager.dto.response.LoanGetResponse;
-import io.github.alineaos.librarymanager.dto.response.LoanHistoryResponse;
-import io.github.alineaos.librarymanager.dto.response.LoanPostResponse;
+import io.github.alineaos.librarymanager.dto.loans.LoanFilter;
+import io.github.alineaos.librarymanager.dto.loans.LoanCreateRequest;
+import io.github.alineaos.librarymanager.dto.loans.LoanReturnRequest;
+import io.github.alineaos.librarymanager.dto.loans.LoanInfoResponse;
+import io.github.alineaos.librarymanager.dto.loans.LoanHistoryResponse;
+import io.github.alineaos.librarymanager.dto.loans.LoanCreateResponse;
 import io.github.alineaos.librarymanager.security.annotation.IsAdmin;
 import io.github.alineaos.librarymanager.security.annotation.IsAuthenticatedUser;
 import io.github.alineaos.librarymanager.service.LoanService;
@@ -33,17 +33,17 @@ public class LoanController {
     private final LoanService service;
 
     @GetMapping
-    public ResponseEntity<List<LoanGetResponse>> findAll(LoanFilter loanFilter) {
-        List<LoanGetResponse> getResponseList = service.findAll(loanFilter);
+    public ResponseEntity<List<LoanInfoResponse>> findAll(LoanFilter filter) {
+        List<LoanInfoResponse> responses = service.findAll(filter);
 
-        return ResponseEntity.ok(getResponseList);
+        return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LoanGetResponse> findById(@PathVariable Long id) {
-        LoanGetResponse getResponse = service.findById(id);
+    public ResponseEntity<LoanInfoResponse> findById(@PathVariable Long id) {
+        LoanInfoResponse response = service.findById(id);
 
-        return ResponseEntity.ok(getResponse);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/my-history")
@@ -51,16 +51,16 @@ public class LoanController {
     public ResponseEntity<List<LoanHistoryResponse>> findMyHistory(@AuthenticationPrincipal Jwt jwt) {
         Long loggedUserId = jwt.getClaim("userId");
 
-        List<LoanHistoryResponse> historyResponseList = service.findMyHistory(loggedUserId);
+        List<LoanHistoryResponse> responses = service.findMyHistory(loggedUserId);
 
-        return ResponseEntity.ok(historyResponseList);
+        return ResponseEntity.ok(responses);
     }
 
     @PostMapping
-    public ResponseEntity<LoanPostResponse> save(@RequestBody @Valid LoanPostRequest postRequest) {
-        LoanPostResponse postResponse = service.save(postRequest);
+    public ResponseEntity<LoanCreateResponse> save(@RequestBody @Valid LoanCreateRequest request) {
+        LoanCreateResponse response = service.save(request);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(postResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PatchMapping("/{id}/renew")
@@ -71,8 +71,8 @@ public class LoanController {
     }
 
     @PatchMapping("/{id}/return")
-    public ResponseEntity<Void> finalize(@PathVariable Long id, @RequestBody @Valid LoanReturnRequest returnRequest){
-        service.finalize(id, returnRequest);
+    public ResponseEntity<Void> finalize(@PathVariable Long id, @RequestBody @Valid LoanReturnRequest request){
+        service.finalize(id, request);
 
         return ResponseEntity.noContent().build();
     }

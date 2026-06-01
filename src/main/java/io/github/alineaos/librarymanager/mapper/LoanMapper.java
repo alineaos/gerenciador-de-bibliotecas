@@ -1,12 +1,12 @@
 package io.github.alineaos.librarymanager.mapper;
 
 import io.github.alineaos.librarymanager.domain.entity.Loan;
-import io.github.alineaos.librarymanager.dto.request.LoanPostRequest;
-import io.github.alineaos.librarymanager.dto.response.BookBasicResponse;
-import io.github.alineaos.librarymanager.dto.response.LoanGetResponse;
-import io.github.alineaos.librarymanager.dto.response.LoanHistoryResponse;
-import io.github.alineaos.librarymanager.dto.response.LoanPostResponse;
-import io.github.alineaos.librarymanager.dto.response.UserBasicResponse;
+import io.github.alineaos.librarymanager.dto.loans.LoanCreateRequest;
+import io.github.alineaos.librarymanager.dto.books.BookBasicResponse;
+import io.github.alineaos.librarymanager.dto.loans.LoanInfoResponse;
+import io.github.alineaos.librarymanager.dto.loans.LoanHistoryResponse;
+import io.github.alineaos.librarymanager.dto.loans.LoanCreateResponse;
+import io.github.alineaos.librarymanager.dto.users.UserBasicResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
@@ -23,14 +23,13 @@ public interface LoanMapper {
     @Mapping(target = "returnedAt", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    Loan toLoan(LoanPostRequest postRequest);
+    Loan toLoan(LoanCreateRequest request);
 
     @Mapping(target = "id", source = "loan.id")
-    LoanPostResponse toLoanPostResponse(Loan loan, UserBasicResponse user, BookBasicResponse book);
+    LoanCreateResponse toLoanCreateResponse(Loan loan, UserBasicResponse user, BookBasicResponse book);
 
-    LoanGetResponse toLoanGetResponse(Loan loan);
-
-    List<LoanGetResponse> toLoanGetResponseList(List<Loan> loans);
+    LoanInfoResponse toLoanInfoResponse(Loan loan);
+    List<LoanInfoResponse> toLoanInfoResponseList(List<Loan> loans);
 
     List<LoanHistoryResponse> toLoanHistoryResponse(List<Loan> loans);
 }

@@ -2,10 +2,10 @@ package io.github.alineaos.librarymanager.util;
 
 import io.github.alineaos.librarymanager.domain.entity.User;
 import io.github.alineaos.librarymanager.domain.enums.UserRole;
-import io.github.alineaos.librarymanager.dto.request.UserPatchRequest;
-import io.github.alineaos.librarymanager.dto.request.UserPostRequest;
-import io.github.alineaos.librarymanager.dto.response.UserGetResponse;
-import io.github.alineaos.librarymanager.dto.response.UserPostResponse;
+import io.github.alineaos.librarymanager.dto.users.UserUpdateRequest;
+import io.github.alineaos.librarymanager.dto.users.UserCreateRequest;
+import io.github.alineaos.librarymanager.dto.users.UserInfoResponse;
+import io.github.alineaos.librarymanager.dto.users.UserCreateResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -68,10 +68,10 @@ public class UserFactory {
                 .build();
     }
 
-    public UserGetResponse newUserGetResponse() {
+    public UserInfoResponse newUserInfoResponse() {
         User user = newUserList().getFirst();
 
-        return new UserGetResponse(
+        return new UserInfoResponse(
                 user.getId(),
                 user.getFullName(),
                 user.getEmail(),
@@ -82,13 +82,13 @@ public class UserFactory {
                 user.getUpdatedAt());
     }
 
-    public UserGetResponse newUserGetResponseById(Long id) {
+    public UserInfoResponse newUserInfoResponseById(Long id) {
         User user = newUserList().stream()
                 .filter(u -> u.getId().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Invalid Test: Id Not Found in UserFactory: " + id));
 
-        return new UserGetResponse(
+        return new UserInfoResponse(
                 user.getId(),
                 user.getFullName(),
                 user.getEmail(),
@@ -99,10 +99,10 @@ public class UserFactory {
                 user.getUpdatedAt());
     }
 
-    public UserPostRequest newUserPostRequest() {
+    public UserCreateRequest newUserCreateRequest() {
         User user = newUserSaved();
 
-        return new UserPostRequest(
+        return new UserCreateRequest(
                 user.getFullName(),
                 user.getEmail(),
                 user.getCpf(),
@@ -111,10 +111,10 @@ public class UserFactory {
                 user.getPassword());
     }
 
-    public UserPostResponse newUserPostResponse() {
+    public UserCreateResponse newUserCreateResponse() {
         User user = newUserSaved();
 
-        return new UserPostResponse(
+        return new UserCreateResponse(
                 user.getId(),
                 user.getFullName(),
                 user.getEmail(),
@@ -122,10 +122,10 @@ public class UserFactory {
                 user.getCreatedAt());
     }
 
-    public UserPatchRequest newUserPatchRequest() {
+    public UserUpdateRequest newUserUpdateRequest() {
         User user = newUserList().getFirst();
 
-        return new UserPatchRequest(
+        return new UserUpdateRequest(
                 "Marta Silva",
                 "marta.silva@testes.com",
                 user.getBirthDate(),
@@ -133,10 +133,10 @@ public class UserFactory {
                 user.getPassword());
     }
 
-    public UserPatchRequest newUserPatchRequestUpdateRole() {
+    public UserUpdateRequest newUserUpdateRequestUpdateRole() {
         User user = newUserList().getLast();
 
-        return new UserPatchRequest(
+        return new UserUpdateRequest(
                 user.getFullName(),
                 user.getEmail(),
                 user.getBirthDate(),

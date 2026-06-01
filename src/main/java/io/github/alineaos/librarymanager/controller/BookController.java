@@ -1,10 +1,10 @@
 package io.github.alineaos.librarymanager.controller;
 
-import io.github.alineaos.librarymanager.dto.BookFilter;
-import io.github.alineaos.librarymanager.dto.request.BookPatchRequest;
-import io.github.alineaos.librarymanager.dto.request.BookPostRequest;
-import io.github.alineaos.librarymanager.dto.response.BookGetResponse;
-import io.github.alineaos.librarymanager.dto.response.BookPostResponse;
+import io.github.alineaos.librarymanager.dto.books.BookFilter;
+import io.github.alineaos.librarymanager.dto.books.BookUpdateRequest;
+import io.github.alineaos.librarymanager.dto.books.BookCreateRequest;
+import io.github.alineaos.librarymanager.dto.books.BookInfoResponse;
+import io.github.alineaos.librarymanager.dto.books.BookCreateResponse;
 import io.github.alineaos.librarymanager.security.annotation.IsAdmin;
 import io.github.alineaos.librarymanager.security.annotation.IsUser;
 import io.github.alineaos.librarymanager.service.BookService;
@@ -31,32 +31,32 @@ public class BookController {
 
     @GetMapping
     @IsUser
-    public ResponseEntity<List<BookGetResponse>> findAll(BookFilter bookFilter){
-       List<BookGetResponse> getResponseList =  service.findAll(bookFilter);
+    public ResponseEntity<List<BookInfoResponse>> findAll(BookFilter filter){
+       List<BookInfoResponse> responses =  service.findAll(filter);
 
-        return ResponseEntity.ok(getResponseList);
+        return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/{id}")
     @IsUser
-    public ResponseEntity<BookGetResponse> findById(@PathVariable Long id){
-        BookGetResponse getResponse =  service.findById(id);
+    public ResponseEntity<BookInfoResponse> findById(@PathVariable Long id){
+        BookInfoResponse response =  service.findById(id);
 
-        return ResponseEntity.ok(getResponse);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
     @IsAdmin
-    public ResponseEntity<BookPostResponse> save(@RequestBody @Valid BookPostRequest postRequest){
-        BookPostResponse postResponse =  service.save(postRequest);
+    public ResponseEntity<BookCreateResponse> save(@RequestBody @Valid BookCreateRequest request){
+        BookCreateResponse response =  service.save(request);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(postResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PatchMapping("/{id}")
     @IsAdmin
-    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody @Valid BookPatchRequest patchRequest){
-        service.update(id, patchRequest);
+    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody @Valid BookUpdateRequest request){
+        service.update(id, request);
 
         return ResponseEntity.noContent().build();
     }
