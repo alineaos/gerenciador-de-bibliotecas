@@ -12,7 +12,7 @@ import io.github.alineaos.librarymanager.exception.AccessDeniedException;
 import io.github.alineaos.librarymanager.exception.BusinessException;
 import io.github.alineaos.librarymanager.mapper.UserMapper;
 import io.github.alineaos.librarymanager.repository.UserRepository;
-import io.github.alineaos.librarymanager.util.UserFactory;
+import io.github.alineaos.librarymanager.util.factories.UserFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

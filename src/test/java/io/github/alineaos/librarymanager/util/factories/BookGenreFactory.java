@@ -1,4 +1,4 @@
-package io.github.alineaos.librarymanager.util;
+package io.github.alineaos.librarymanager.util.factories;
 
 import io.github.alineaos.librarymanager.domain.entity.Book;
 import io.github.alineaos.librarymanager.domain.entity.BookGenre;
@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BookGenreFactory {
-    private final BookFactory bookFactory;
+    private final AuthFactory.BookFactory bookFactory;
     private final GenreFactory genreFactory;
 
-    public BookGenreFactory(BookFactory bookFactory, GenreFactory genreFactory) {
+    public BookGenreFactory(AuthFactory.BookFactory bookFactory, GenreFactory genreFactory) {
         this.bookFactory = bookFactory;
         this.genreFactory = genreFactory;
     }

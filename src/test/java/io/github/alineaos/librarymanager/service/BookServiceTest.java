@@ -11,8 +11,8 @@ import io.github.alineaos.librarymanager.dto.genres.GenreBasicResponse;
 import io.github.alineaos.librarymanager.exception.BusinessException;
 import io.github.alineaos.librarymanager.mapper.BookMapper;
 import io.github.alineaos.librarymanager.repository.BookRepository;
-import io.github.alineaos.librarymanager.util.BookFactory;
-import io.github.alineaos.librarymanager.util.GenreFactory;
+import io.github.alineaos.librarymanager.util.factories.GenreFactory;
+import io.github.alineaos.librarymanager.util.factories.AuthFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -57,7 +57,7 @@ class BookServiceTest extends UnitTestConfig {
     private BookMapper mapper = Mappers.getMapper(BookMapper.class);
 
     private final GenreFactory genreFactory = new GenreFactory();
-    private final BookFactory bookFactory = new BookFactory(genreFactory);
+    private final AuthFactory.BookFactory bookFactory = new AuthFactory.BookFactory(genreFactory);
 
     private List<Book> bookList;
 
@@ -246,7 +246,7 @@ class BookServiceTest extends UnitTestConfig {
 
     private static Stream<Arguments> bookFilterSource() {
         GenreFactory filterGenreFactory = new GenreFactory();
-        BookFactory filterBookFactory = new BookFactory(filterGenreFactory);
+        AuthFactory.BookFactory filterBookFactory = new AuthFactory.BookFactory(filterGenreFactory);
 
         List<Book> filteredList = filterBookFactory.newBookList();
         String title = "estrela";

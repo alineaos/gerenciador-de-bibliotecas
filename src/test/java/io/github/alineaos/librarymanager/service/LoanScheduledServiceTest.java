@@ -4,10 +4,10 @@ import io.github.alineaos.librarymanager.config.UnitTestConfig;
 import io.github.alineaos.librarymanager.domain.entity.Loan;
 import io.github.alineaos.librarymanager.domain.enums.LoanStatus;
 import io.github.alineaos.librarymanager.repository.LoanRepository;
-import io.github.alineaos.librarymanager.util.BookFactory;
-import io.github.alineaos.librarymanager.util.GenreFactory;
-import io.github.alineaos.librarymanager.util.LoanFactory;
-import io.github.alineaos.librarymanager.util.UserFactory;
+import io.github.alineaos.librarymanager.util.factories.GenreFactory;
+import io.github.alineaos.librarymanager.util.factories.LoanFactory;
+import io.github.alineaos.librarymanager.util.factories.UserFactory;
+import io.github.alineaos.librarymanager.util.factories.AuthFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,7 +33,7 @@ class LoanScheduledServiceTest extends UnitTestConfig {
 
     private final UserFactory userFactory = new UserFactory();
     private final GenreFactory genreFactory = new GenreFactory();
-    private final BookFactory bookFactory = new BookFactory(genreFactory);
+    private final AuthFactory.BookFactory bookFactory = new AuthFactory.BookFactory(genreFactory);
     private final LoanFactory loanFactory = new LoanFactory(userFactory, bookFactory);
 
     private List<Loan> loanList;

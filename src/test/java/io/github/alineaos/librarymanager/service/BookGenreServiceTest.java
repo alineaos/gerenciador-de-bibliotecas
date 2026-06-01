@@ -7,9 +7,9 @@ import io.github.alineaos.librarymanager.domain.entity.Genre;
 import io.github.alineaos.librarymanager.dto.genres.GenreBasicResponse;
 import io.github.alineaos.librarymanager.mapper.GenreMapper;
 import io.github.alineaos.librarymanager.repository.BookGenreRepository;
-import io.github.alineaos.librarymanager.util.BookFactory;
-import io.github.alineaos.librarymanager.util.BookGenreFactory;
-import io.github.alineaos.librarymanager.util.GenreFactory;
+import io.github.alineaos.librarymanager.util.factories.BookGenreFactory;
+import io.github.alineaos.librarymanager.util.factories.GenreFactory;
+import io.github.alineaos.librarymanager.util.factories.AuthFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -47,7 +47,7 @@ class BookGenreServiceTest extends UnitTestConfig {
     private GenreMapper genreMapper = Mappers.getMapper(GenreMapper.class);
 
     private final GenreFactory genreFactory = new GenreFactory();
-    private final BookFactory bookFactory = new BookFactory(genreFactory);
+    private final AuthFactory.BookFactory bookFactory = new AuthFactory.BookFactory(genreFactory);
     private final BookGenreFactory bookGenreFactory = new BookGenreFactory(bookFactory, genreFactory);
 
     private List<BookGenre> bookGenreList;

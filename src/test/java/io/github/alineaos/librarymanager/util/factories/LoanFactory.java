@@ -1,4 +1,4 @@
-package io.github.alineaos.librarymanager.util;
+package io.github.alineaos.librarymanager.util.factories;
 
 import io.github.alineaos.librarymanager.domain.entity.Book;
 import io.github.alineaos.librarymanager.domain.entity.Loan;
@@ -19,9 +19,9 @@ import java.util.List;
 
 public class LoanFactory {
     private final UserFactory userFactory;
-    private final BookFactory bookFactory;
+    private final AuthFactory.BookFactory bookFactory;
 
-    public LoanFactory(UserFactory userFactory, BookFactory bookFactory) {
+    public LoanFactory(UserFactory userFactory, AuthFactory.BookFactory bookFactory) {
         this.userFactory = userFactory;
         this.bookFactory = bookFactory;
     }

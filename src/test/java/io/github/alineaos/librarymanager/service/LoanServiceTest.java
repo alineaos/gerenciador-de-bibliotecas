@@ -16,10 +16,10 @@ import io.github.alineaos.librarymanager.mapper.BookMapper;
 import io.github.alineaos.librarymanager.mapper.LoanMapper;
 import io.github.alineaos.librarymanager.mapper.UserMapper;
 import io.github.alineaos.librarymanager.repository.LoanRepository;
-import io.github.alineaos.librarymanager.util.BookFactory;
-import io.github.alineaos.librarymanager.util.GenreFactory;
-import io.github.alineaos.librarymanager.util.LoanFactory;
-import io.github.alineaos.librarymanager.util.UserFactory;
+import io.github.alineaos.librarymanager.util.factories.GenreFactory;
+import io.github.alineaos.librarymanager.util.factories.LoanFactory;
+import io.github.alineaos.librarymanager.util.factories.UserFactory;
+import io.github.alineaos.librarymanager.util.factories.AuthFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -65,7 +65,7 @@ class LoanServiceTest extends UnitTestConfig {
 
     private final UserFactory userFactory = new UserFactory();
     private final GenreFactory genreFactory = new GenreFactory();
-    private final BookFactory bookFactory = new BookFactory(genreFactory);
+    private final AuthFactory.BookFactory bookFactory = new AuthFactory.BookFactory(genreFactory);
     private final LoanFactory loanFactory = new LoanFactory(userFactory, bookFactory);
 
     private List<Loan> loanList;
@@ -468,7 +468,7 @@ class LoanServiceTest extends UnitTestConfig {
     private static Stream<Arguments> loanFilterSource() {
         UserFactory filterUserFactory = new UserFactory();
         GenreFactory filterGenreFactory = new GenreFactory();
-        BookFactory filterBookFactory = new BookFactory(filterGenreFactory);
+        AuthFactory.BookFactory filterBookFactory = new AuthFactory.BookFactory(filterGenreFactory);
         LoanFactory filterLoanFactory = new LoanFactory(filterUserFactory, filterBookFactory);
 
         List<Loan> filteredList = filterLoanFactory.newLoanList();

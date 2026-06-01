@@ -11,10 +11,10 @@ import io.github.alineaos.librarymanager.dto.genres.GenreBasicResponse;
 import io.github.alineaos.librarymanager.exception.NotFoundException;
 import io.github.alineaos.librarymanager.security.config.SecurityConfig;
 import io.github.alineaos.librarymanager.service.BookService;
-import io.github.alineaos.librarymanager.util.BookErrorFactory;
-import io.github.alineaos.librarymanager.util.BookFactory;
+import io.github.alineaos.librarymanager.util.factories.AuthFactory;
+import io.github.alineaos.librarymanager.util.factories.error.BookErrorFactory;
 import io.github.alineaos.librarymanager.util.FileUtils;
-import io.github.alineaos.librarymanager.util.GenreFactory;
+import io.github.alineaos.librarymanager.util.factories.GenreFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
@@ -49,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = BookController.class)
 @WithMockUser
-@Import({FileUtils.class, BookFactory.class, SecurityConfig.class, GenreFactory.class})
+@Import({FileUtils.class, AuthFactory.BookFactory.class, SecurityConfig.class, GenreFactory.class})
 class BookControllerTest extends UnitTestConfig {
     private static final String URL = "/v1/books";
     @Autowired
@@ -57,7 +57,7 @@ class BookControllerTest extends UnitTestConfig {
     @MockitoBean
     private BookService service;
     @Autowired
-    private BookFactory bookFactory;
+    private AuthFactory.BookFactory bookFactory;
     @Autowired
     private FileUtils fileUtils;
 
@@ -298,7 +298,7 @@ class BookControllerTest extends UnitTestConfig {
 
     private static Stream<Arguments> bookFilterParamsSource() {
         GenreFactory filterGenreFactory = new GenreFactory();
-        BookFactory filterBookFactory = new BookFactory(filterGenreFactory);
+        AuthFactory.BookFactory filterBookFactory = new AuthFactory.BookFactory(filterGenreFactory);
 
         List<Book> filteredList = filterBookFactory.newBookList();
         String title = "estrela";
@@ -353,10 +353,10 @@ class BookControllerTest extends UnitTestConfig {
 
     private static Stream<Arguments> postBadRequestSource() {
         List<String> allRequiredAndIsbnNotValidErrors = BookErrorFactory.allRequiredErrors();
-        allRequiredAndIsbnNotValidErrors.add(BookErrorFactory.isbnNotValidError);
+        allRequiredAndIsbnNotValidErrors.add(BookErrorFactory.ISBN_NOT_VALID_ERROR);
 
         List<String> invalidFieldAndGenreIdRequiredErrors = BookErrorFactory.allInvalidFieldsErrors();
-        invalidFieldAndGenreIdRequiredErrors.add(BookErrorFactory.genreIdsRequiredError);
+        invalidFieldAndGenreIdRequiredErrors.add(BookErrorFactory.GENRE_IDS_REQUIRED_ERROR);
 
         return Stream.of(
                 Arguments.of("post-request-book-empty-fields.json", allRequiredAndIsbnNotValidErrors),

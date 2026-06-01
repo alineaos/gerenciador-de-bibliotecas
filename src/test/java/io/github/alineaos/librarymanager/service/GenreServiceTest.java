@@ -10,7 +10,7 @@ import io.github.alineaos.librarymanager.dto.genres.GenreCreateResponse;
 import io.github.alineaos.librarymanager.exception.BusinessException;
 import io.github.alineaos.librarymanager.mapper.GenreMapper;
 import io.github.alineaos.librarymanager.repository.GenreRepository;
-import io.github.alineaos.librarymanager.util.GenreFactory;
+import io.github.alineaos.librarymanager.util.factories.GenreFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -13,12 +13,12 @@ import io.github.alineaos.librarymanager.exception.BusinessException;
 import io.github.alineaos.librarymanager.exception.NotFoundException;
 import io.github.alineaos.librarymanager.security.config.SecurityConfig;
 import io.github.alineaos.librarymanager.service.LoanService;
-import io.github.alineaos.librarymanager.util.BookFactory;
 import io.github.alineaos.librarymanager.util.FileUtils;
-import io.github.alineaos.librarymanager.util.GenreFactory;
-import io.github.alineaos.librarymanager.util.LoanErrorFactory;
-import io.github.alineaos.librarymanager.util.LoanFactory;
-import io.github.alineaos.librarymanager.util.UserFactory;
+import io.github.alineaos.librarymanager.util.factories.GenreFactory;
+import io.github.alineaos.librarymanager.util.factories.error.LoanErrorFactory;
+import io.github.alineaos.librarymanager.util.factories.LoanFactory;
+import io.github.alineaos.librarymanager.util.factories.UserFactory;
+import io.github.alineaos.librarymanager.util.factories.AuthFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
@@ -55,7 +55,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = LoanController.class)
 @WithMockUser
-@Import({FileUtils.class, UserFactory.class, BookFactory.class, GenreFactory.class, LoanFactory.class, SecurityConfig.class})
+@Import({FileUtils.class, UserFactory.class, AuthFactory.BookFactory.class, GenreFactory.class, LoanFactory.class, SecurityConfig.class})
 class LoanControllerTest extends UnitTestConfig {
     private static final String URL = "/v1/loans";
     @Autowired
@@ -597,7 +597,7 @@ class LoanControllerTest extends UnitTestConfig {
     private static Stream<Arguments> loanFilterSource() {
         UserFactory filterUserFactory = new UserFactory();
         GenreFactory filterGenreFactory = new GenreFactory();
-        BookFactory filterBookFactory = new BookFactory(filterGenreFactory);
+        AuthFactory.BookFactory filterBookFactory = new AuthFactory.BookFactory(filterGenreFactory);
         LoanFactory filterLoanFactory = new LoanFactory(filterUserFactory, filterBookFactory);
 
         List<Loan> filteredList = filterLoanFactory.newLoanList();

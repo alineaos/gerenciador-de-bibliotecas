@@ -1,4 +1,4 @@
-package io.github.alineaos.librarymanager.util;
+package io.github.alineaos.librarymanager.util.factories;
 
 import io.github.alineaos.librarymanager.domain.entity.User;
 import io.github.alineaos.librarymanager.domain.enums.UserRole;

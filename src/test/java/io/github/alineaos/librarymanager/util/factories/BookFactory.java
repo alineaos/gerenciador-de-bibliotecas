@@ -1,4 +1,4 @@
-package io.github.alineaos.librarymanager.util;
+package io.github.alineaos.librarymanager.util.factories;
 
 import io.github.alineaos.librarymanager.domain.entity.Book;
 import io.github.alineaos.librarymanager.domain.entity.Genre;

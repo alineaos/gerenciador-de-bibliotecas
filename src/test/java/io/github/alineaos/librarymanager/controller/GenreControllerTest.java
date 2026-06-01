@@ -11,7 +11,7 @@ import io.github.alineaos.librarymanager.exception.NotFoundException;
 import io.github.alineaos.librarymanager.security.config.SecurityConfig;
 import io.github.alineaos.librarymanager.service.GenreService;
 import io.github.alineaos.librarymanager.util.FileUtils;
-import io.github.alineaos.librarymanager.util.GenreFactory;
+import io.github.alineaos.librarymanager.util.factories.GenreFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
