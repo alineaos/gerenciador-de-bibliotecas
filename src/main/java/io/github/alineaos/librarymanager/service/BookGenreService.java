@@ -4,6 +4,7 @@ import io.github.alineaos.librarymanager.domain.entity.Book;
 import io.github.alineaos.librarymanager.domain.entity.BookGenre;
 import io.github.alineaos.librarymanager.domain.entity.Genre;
 import io.github.alineaos.librarymanager.dto.genres.GenreBasicResponse;
+import io.github.alineaos.librarymanager.mapper.GenreMapper;
 import io.github.alineaos.librarymanager.repository.BookGenreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 public class BookGenreService {
     private final BookGenreRepository repository;
     private final GenreService genreService;
+    private final GenreMapper genreMapper;
 
     public Map<Long, List<GenreBasicResponse>> findGenresGroupedByBookIds(List<Long> bookIds) {
         if (bookIds == null || bookIds.isEmpty()) return Collections.emptyMap();
@@ -29,7 +31,7 @@ public class BookGenreService {
                 .collect(Collectors.groupingBy(
                         bg -> bg.getBook().getId(),
                         Collectors.mapping(
-                                bg -> newGenreBasicResponse(bg.getGenre()),
+                                bg -> genreMapper.toGenreBasicResponse(bg.getGenre()),
                                 Collectors.toList()
                         )
                 ));
@@ -41,7 +43,7 @@ public class BookGenreService {
 
         return bookGenres.stream()
                 .map(BookGenre::getGenre)
-                .map(this::newGenreBasicResponse)
+                .map(genreMapper::toGenreBasicResponse)
                 .toList();
     }
 
@@ -62,7 +64,7 @@ public class BookGenreService {
 
         return savedBookGenres.stream()
                 .map(BookGenre::getGenre)
-                .map(this::newGenreBasicResponse)
+                .map(genreMapper::toGenreBasicResponse)
                 .toList();
     }
 
@@ -106,11 +108,5 @@ public class BookGenreService {
 
     public void deleteBookGenreByGenre(Genre genre){
         repository.deleteByGenre(genre);
-    }
-    private GenreBasicResponse newGenreBasicResponse(Genre genre) {
-        return new GenreBasicResponse(
-                genre.getId(),
-                genre.getName()
-        );
     }
 }

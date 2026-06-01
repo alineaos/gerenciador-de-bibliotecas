@@ -1,6 +1,7 @@
 package io.github.alineaos.librarymanager.mapper;
 
 import io.github.alineaos.librarymanager.domain.entity.Genre;
+import io.github.alineaos.librarymanager.dto.genres.GenreBasicResponse;
 import io.github.alineaos.librarymanager.dto.genres.GenreCreateRequest;
 import io.github.alineaos.librarymanager.dto.genres.GenreUpdateRequest;
 import io.github.alineaos.librarymanager.dto.genres.GenreInfoResponse;
@@ -24,6 +25,8 @@ public interface GenreMapper {
 
     List<GenreInfoResponse> toGenreInfoResponseList(List<Genre> genres);
     GenreInfoResponse toGenreInfoResponse(Genre genre);
+
+    GenreBasicResponse toGenreBasicResponse(Genre genre);
 
     void mergeRequestToGenre(GenreUpdateRequest request, @MappingTarget Genre genre);
 }

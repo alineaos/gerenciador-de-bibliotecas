@@ -1,6 +1,7 @@
 package io.github.alineaos.librarymanager.mapper;
 
 import io.github.alineaos.librarymanager.domain.entity.User;
+import io.github.alineaos.librarymanager.dto.users.UserBasicResponse;
 import io.github.alineaos.librarymanager.dto.users.UserUpdateRequest;
 import io.github.alineaos.librarymanager.dto.users.UserCreateRequest;
 import io.github.alineaos.librarymanager.dto.users.UserInfoResponse;
@@ -28,6 +29,8 @@ public interface UserMapper {
 
     UserInfoResponse toUserInfoResponse(User user);
     List<UserInfoResponse> toUserInfoResponseList(List<User> users);
+
+    UserBasicResponse toUserBasicResponse(User user);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "password", source = "encodedPassword")

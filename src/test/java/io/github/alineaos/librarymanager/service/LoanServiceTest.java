@@ -12,7 +12,9 @@ import io.github.alineaos.librarymanager.dto.loans.LoanHistoryResponse;
 import io.github.alineaos.librarymanager.dto.loans.LoanCreateResponse;
 import io.github.alineaos.librarymanager.exception.BusinessException;
 import io.github.alineaos.librarymanager.exception.NotFoundException;
+import io.github.alineaos.librarymanager.mapper.BookMapper;
 import io.github.alineaos.librarymanager.mapper.LoanMapper;
+import io.github.alineaos.librarymanager.mapper.UserMapper;
 import io.github.alineaos.librarymanager.repository.LoanRepository;
 import io.github.alineaos.librarymanager.util.BookFactory;
 import io.github.alineaos.librarymanager.util.GenreFactory;
@@ -56,6 +58,10 @@ class LoanServiceTest extends UnitTestConfig {
     private BookService bookService;
     @Spy
     private LoanMapper mapper = Mappers.getMapper(LoanMapper.class);
+    @Spy
+    private UserMapper userMapper = Mappers.getMapper(UserMapper.class);
+    @Spy
+    private BookMapper bookMapper = Mappers.getMapper(BookMapper.class);
 
     private final UserFactory userFactory = new UserFactory();
     private final GenreFactory genreFactory = new GenreFactory();

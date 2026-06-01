@@ -14,7 +14,9 @@ import io.github.alineaos.librarymanager.dto.loans.LoanCreateResponse;
 import io.github.alineaos.librarymanager.dto.users.UserBasicResponse;
 import io.github.alineaos.librarymanager.exception.BusinessException;
 import io.github.alineaos.librarymanager.exception.NotFoundException;
+import io.github.alineaos.librarymanager.mapper.BookMapper;
 import io.github.alineaos.librarymanager.mapper.LoanMapper;
+import io.github.alineaos.librarymanager.mapper.UserMapper;
 import io.github.alineaos.librarymanager.repository.LoanRepository;
 import io.github.alineaos.librarymanager.repository.specification.LoanSpecification;
 import jakarta.validation.Valid;
@@ -31,9 +33,11 @@ import java.util.Set;
 @Service
 public class LoanService {
     private final LoanRepository repository;
+    private final LoanMapper mapper;
     private final UserService userService;
     private final BookService bookService;
-    private final LoanMapper mapper;
+    private final UserMapper userMapper;
+    private final BookMapper bookMapper;
 
     private static final Set<LoanStatus> ACTIVE_STATUS = LoanStatus.getActiveStatus();
 
@@ -83,7 +87,10 @@ public class LoanService {
 
         Loan savedLoan = repository.save(loan);
 
-        return mapper.toLoanCreateResponse(savedLoan, newUserBasicResponse(user), newBookBasicResponse(book));
+        UserBasicResponse userResponse = userMapper.toUserBasicResponse(user);
+        BookBasicResponse bookResponse = bookMapper.toBookBasicResponse(book);
+
+        return mapper.toLoanCreateResponse(savedLoan, userResponse, bookResponse);
     }
 
     public void renew(Long id) {
@@ -135,22 +142,6 @@ public class LoanService {
         loan.setStatus(LoanStatus.CANCELLED);
 
         repository.save(loan);
-    }
-
-    private UserBasicResponse newUserBasicResponse(User user) {
-        return new UserBasicResponse(
-                user.getId(),
-                user.getFullName(),
-                user.getEmail()
-        );
-    }
-
-    private BookBasicResponse newBookBasicResponse(Book book) {
-        return new BookBasicResponse(
-                book.getId(),
-                book.getTitle(),
-                book.getAuthor()
-        );
     }
 
     private void assertUserDoesNotHaveActiveLoan(Long userId) {

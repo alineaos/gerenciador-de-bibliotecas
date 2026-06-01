@@ -5,6 +5,7 @@ import io.github.alineaos.librarymanager.domain.entity.Book;
 import io.github.alineaos.librarymanager.domain.entity.BookGenre;
 import io.github.alineaos.librarymanager.domain.entity.Genre;
 import io.github.alineaos.librarymanager.dto.genres.GenreBasicResponse;
+import io.github.alineaos.librarymanager.mapper.GenreMapper;
 import io.github.alineaos.librarymanager.repository.BookGenreRepository;
 import io.github.alineaos.librarymanager.util.BookFactory;
 import io.github.alineaos.librarymanager.util.BookGenreFactory;
@@ -17,8 +18,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
@@ -40,6 +43,8 @@ class BookGenreServiceTest extends UnitTestConfig {
     private BookGenreRepository repository;
     @Mock
     private GenreService genreService;
+    @Spy
+    private GenreMapper genreMapper = Mappers.getMapper(GenreMapper.class);
 
     private final GenreFactory genreFactory = new GenreFactory();
     private final BookFactory bookFactory = new BookFactory(genreFactory);
