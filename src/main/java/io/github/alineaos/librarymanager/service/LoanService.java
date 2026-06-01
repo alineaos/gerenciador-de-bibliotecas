@@ -73,7 +73,7 @@ public class LoanService {
         Book book = bookService.getBookByIdOrThrowNotFound(request.bookId());
 
         assertUserDoesNotHaveActiveLoan(request.userId());
-        assertBookIsNotInActiveLoan(request.bookId());
+        assertBookIsAvailable(request.bookId());
 
         LocalDate loanDate = request.borrowedAt() == null ? LocalDate.now() : request.borrowedAt();
 
@@ -113,7 +113,7 @@ public class LoanService {
         assertLoanIsNotFinalized(loan);
 
         if (returnRequest.returnedAt() != null){
-            assertReturnDateIsAfterLoanDate(loan, returnRequest.returnedAt());
+            assertReturnDateIsValid(loan, returnRequest.returnedAt());
         }
 
         LocalDate returnedDate = returnRequest.returnedAt() == null ? LocalDate.now() : returnRequest.returnedAt();
@@ -149,7 +149,7 @@ public class LoanService {
                 .ifPresent(loan -> throwUserHasActiveLoan(loan.getUser()));
     }
 
-    private void assertBookIsNotInActiveLoan(Long bookId) {
+    private void assertBookIsAvailable(Long bookId) {
         repository.findByBookIdAndStatusIn(bookId, ACTIVE_STATUS)
                 .ifPresent(loan -> throwBookIsNotAvailable(loan.getBook()));
     }
@@ -180,7 +180,7 @@ public class LoanService {
         }
     }
 
-    private void assertReturnDateIsAfterLoanDate(Loan loan, LocalDate returnDate){
+    private void assertReturnDateIsValid(Loan loan, LocalDate returnDate){
         if (returnDate.isBefore(loan.getBorrowedAt())) {
             throw new BusinessException("The return date cannot be before the loan date");
         }

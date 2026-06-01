@@ -45,8 +45,8 @@ public class UserService {
     }
 
     public UserCreateResponse save(@Valid UserCreateRequest request) {
-        assertEmailDoesNotExists(request.email());
-        assertCpfDoesNotExists(request.cpf());
+        assertEmailDoesNotExist(request.email());
+        assertCpfDoesNotExist(request.cpf());
 
         String encodedPassword = passwordEncoder.encode(request.password());
         User userToSave = mapper.toUser(request, encodedPassword);
@@ -64,7 +64,7 @@ public class UserService {
         }
 
         if (request.email() != null) {
-            assertEmailDoesNotExists(request.email(), id);
+            assertEmailDoesNotExist(request.email(), id);
         }
 
         String encodedPassword = (request.password() != null && !request.password().isBlank())
@@ -85,15 +85,15 @@ public class UserService {
     public User getUserByIdOrThrowNotFound(Long id){
         return findByIdOrThrowNotFound(id);
     }
-    private void assertEmailDoesNotExists(String email) {
+    private void assertEmailDoesNotExist(String email) {
         repository.findByEmail(email).ifPresent(this::throwEmailExistsException);
     }
 
-    private void assertCpfDoesNotExists(String cpf) {
+    private void assertCpfDoesNotExist(String cpf) {
         repository.findByCpf(cpf).ifPresent(this::throwCpfExistsException);
     }
 
-    private void assertEmailDoesNotExists(String email, Long id) {
+    private void assertEmailDoesNotExist(String email, Long id) {
         repository.findByEmailAndIdNot(email, id).ifPresent(this::throwEmailExistsException);
     }
 

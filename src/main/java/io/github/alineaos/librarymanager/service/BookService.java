@@ -56,7 +56,7 @@ public class BookService {
 
     public BookCreateResponse save(@Valid BookCreateRequest request) {
         List<Long> genresById = request.genreIds();
-        assertIsbnDoesNotExists(request.isbn());
+        assertIsbnDoesNotExist(request.isbn());
         genreService.assertGenreByIdExists(genresById);
 
         Book bookToSave = mapper.toBook(request);
@@ -73,7 +73,7 @@ public class BookService {
         Book bookToUpdate = findByIdOrThrowNotFound(id);
 
         if (request.isbn() != null) {
-            assertIsbnDoesNotExists(request.isbn(), id);
+            assertIsbnDoesNotExist(request.isbn(), id);
         }
 
         if (request.genreIds() != null && !request.genreIds().isEmpty()){
@@ -97,11 +97,11 @@ public class BookService {
         return findByIdOrThrowNotFound(id);
     }
 
-    private void assertIsbnDoesNotExists(String isbn) {
+    private void assertIsbnDoesNotExist(String isbn) {
         repository.findByIsbn(isbn).ifPresent(this::throwIsbnAlreadyExists);
     }
 
-    private void assertIsbnDoesNotExists(String isbn, Long id) {
+    private void assertIsbnDoesNotExist(String isbn, Long id) {
         repository.findByIsbnAndIdNot(isbn, id).ifPresent(this::throwIsbnAlreadyExists);
     }
 
