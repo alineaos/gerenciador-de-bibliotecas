@@ -15,12 +15,14 @@ import io.github.alineaos.librarymanager.repository.UserRepository;
 import io.github.alineaos.librarymanager.repository.specification.UserSpecification;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @Validated
 @Service
@@ -60,6 +62,7 @@ public class UserService {
         User userToUpdate = findByIdOrThrowNotFound(id);
 
         if (request.role() != null && userToUpdate.getRole() != UserRole.ADMIN){
+            log.warn("Security Warning: User with id {} tried to update a role without ADMIN privileges", id);
             throw new AccessDeniedException("Access Denied: Only Admins can update the user role.");
         }
 
@@ -98,10 +101,12 @@ public class UserService {
     }
 
     private void throwEmailExistsException(User user) {
+        log.warn("Validation failed: E-mail '{}' already exists in the database for the user id {}", user.getEmail(), user.getId());
         throw new BusinessException("E-mail '%s' already exists".formatted(user.getEmail()));
     }
 
     private void throwCpfExistsException(User user) {
+        log.warn("Validation failed: CPF already exists in the database for the user id {}", user.getId());
         throw new BusinessException("CPF '%s' already exists".formatted(user.getCpf()));
     }
 

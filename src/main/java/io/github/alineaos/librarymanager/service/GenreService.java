@@ -13,6 +13,7 @@ import io.github.alineaos.librarymanager.repository.GenreRepository;
 import io.github.alineaos.librarymanager.repository.specification.GenreSpecification;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @Validated
 @Service
@@ -97,6 +99,7 @@ public class GenreService {
     }
 
     private void throwNameAlreadyExistsException(Genre genre) {
+        log.warn("Validation failed: Name '{}' already exists in the database for the genre id {}", genre.getName(), genre.getId());
         throw new BusinessException("Genre with name '%s' already exists".formatted(genre.getName()));
     }
 }

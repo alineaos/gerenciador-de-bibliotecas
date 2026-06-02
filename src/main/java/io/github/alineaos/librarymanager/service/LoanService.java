@@ -21,6 +21,7 @@ import io.github.alineaos.librarymanager.repository.LoanRepository;
 import io.github.alineaos.librarymanager.repository.specification.LoanSpecification;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -28,6 +29,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
+@Slf4j
 @RequiredArgsConstructor
 @Validated
 @Service
@@ -155,10 +157,12 @@ public class LoanService {
     }
 
     private void throwUserHasActiveLoan(User user) {
+        log.warn("Validation failed: User with id {} already has an active loan", user.getId());
         throw new BusinessException("The user '%s' has an active loan.".formatted(user.getFullName()));
     }
 
     private void throwBookIsNotAvailable(Book book) {
+        log.warn("Validation failed: Book with id {} is not available", book.getId());
         throw new BusinessException("The book '%s' is not available.".formatted(book.getTitle()));
     }
 
@@ -169,19 +173,25 @@ public class LoanService {
     }
 
     private void assertLoanHasNeverBeenRenewed(Loan loan) {
-        if (loan.isRenewed()) throw new BusinessException("A Loan can be renewed only once.");
+        if (loan.isRenewed()) {
+            log.warn("Validation failed: Loan with id {} already been renewed once", loan.getId());
+            throw new BusinessException("A Loan can be renewed only once.");
+        }
     }
 
     private void assertLoanIsNotFinalized(Loan loan) {
         LoanStatus status = loan.getStatus();
 
         if (status == LoanStatus.RETURNED || status == LoanStatus.CANCELLED) {
+            log.warn("Validation failed: Loan with id {} has already been finalized", loan.getId());
             throw new BusinessException("The Loan has already been finalized");
         }
     }
 
     private void assertReturnDateIsValid(Loan loan, LocalDate returnDate){
         if (returnDate.isBefore(loan.getBorrowedAt())) {
+            log.warn("Validation failed: the return date '{}' is before the loan date '{}' for the loan with id {}",
+                    returnDate, loan.getBorrowedAt(), loan.getId());
             throw new BusinessException("The return date cannot be before the loan date");
         }
     }

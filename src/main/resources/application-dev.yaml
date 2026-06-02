@@ -4,7 +4,7 @@ spring:
     username: ${DB_ROOT_USER:root}
     password: ${DB_ROOT_PASSWORD:root}
   jpa:
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: update
   logging:

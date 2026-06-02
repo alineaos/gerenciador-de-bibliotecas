@@ -14,6 +14,7 @@ import io.github.alineaos.librarymanager.repository.BookRepository;
 import io.github.alineaos.librarymanager.repository.specification.BookSpecification;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -21,6 +22,7 @@ import org.springframework.validation.annotation.Validated;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RequiredArgsConstructor
 @Validated
 @Service
@@ -106,6 +108,7 @@ public class BookService {
     }
 
     private void throwIsbnAlreadyExists(Book book) {
+        log.warn("Validation failed: ISBN '{}' already exists in the database for the book id {}", book.getIsbn(), book.getId());
         throw new BusinessException("Isbn '%s' already exists".formatted(book.getIsbn()));
     }
 

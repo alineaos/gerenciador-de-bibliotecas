@@ -7,6 +7,7 @@ import io.github.alineaos.librarymanager.dto.genres.GenreBasicResponse;
 import io.github.alineaos.librarymanager.mapper.GenreMapper;
 import io.github.alineaos.librarymanager.repository.BookGenreRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -16,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookGenreService {
@@ -48,6 +50,8 @@ public class BookGenreService {
     }
 
     public List<GenreBasicResponse> addGenresToBook(Book book, List<Long> genreIds) {
+        log.debug("Associating {} genres to book id {}", genreIds.size(), book.getId());
+
         List<BookGenre> bookGenres = genreIds.stream()
                 .map(genreId -> {
                             Genre genre = genreService.getReferenceById(genreId);
@@ -81,6 +85,9 @@ public class BookGenreService {
 
         Set<Long> genresToDelete = new HashSet<>(savedGenresIds);
         newGenresId.forEach(genresToDelete::remove);
+
+        log.debug("Updating genres for book id {}. Existing: {}, genres to delete {}, genres to save {}",
+                book.getId(), savedGenresIds, genresToDelete, genresToUpdate);
 
         if (!genresToDelete.isEmpty()) {
             repository.deleteByBookIdAndGenreIdIn(bookId, genresToDelete);

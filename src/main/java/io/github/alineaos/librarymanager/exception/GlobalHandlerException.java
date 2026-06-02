@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import io.github.alineaos.librarymanager.dto.errors.DefaultMessageError;
 import io.github.alineaos.librarymanager.dto.errors.ValidationMessageError;
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalHandlerException {
 
@@ -33,6 +35,8 @@ public class GlobalHandlerException {
             message = "Duplicated entry for e-mail field";
         }
 
+        log.warn("Database conflict: {}", message);
+
         DefaultMessageError error = new DefaultMessageError(
                 HttpStatus.CONFLICT.value(),
                 message,
@@ -45,6 +49,8 @@ public class GlobalHandlerException {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ValidationMessageError> handleConstraintViolationException(ConstraintViolationException e) {
         String message = "Some fields could not be validated in controller layer.";
+
+        log.warn("Validation failed: Constraint violation on request parameters");
 
         List<ValidationMessageError.FieldError> errors = e.getConstraintViolations().stream()
                 .map(violation -> new ValidationMessageError.FieldError(
@@ -59,6 +65,8 @@ public class GlobalHandlerException {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ValidationMessageError> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         String message = "Some fields could not be validated in service layer.";
+
+        log.warn("Validation failed: Invalid argument fields in DTO");
 
         List<ValidationMessageError.FieldError> errors = e.getBindingResult().getFieldErrors().stream()
                 .map(fieldError -> new ValidationMessageError.FieldError(
@@ -80,6 +88,8 @@ public class GlobalHandlerException {
             message = "The value '%s' is invalid for the field '%s'.".formatted(invalidValue, fieldName);
         }
 
+        log.warn("Malformed JSON request: {}", message);
+
         DefaultMessageError error = new DefaultMessageError(HttpStatus.BAD_REQUEST.value(), message, LocalDateTime.now());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
@@ -88,6 +98,8 @@ public class GlobalHandlerException {
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<DefaultMessageError> handleBussinessException(BusinessException e){
         String message = e.getMessage();
+
+        log.warn("Business exception thrown: {}", message);
 
         DefaultMessageError error = new DefaultMessageError(HttpStatus.BAD_REQUEST.value(), message, LocalDateTime.now());
 
@@ -98,6 +110,8 @@ public class GlobalHandlerException {
     public ResponseEntity<DefaultMessageError> handleAccessDeniedException(AccessDeniedException e){
         String message = e.getReason();
 
+        log.warn("Acess Denied: {}", message);
+
         DefaultMessageError error = new DefaultMessageError(HttpStatus.FORBIDDEN.value(), message, LocalDateTime.now());
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
@@ -107,6 +121,8 @@ public class GlobalHandlerException {
     public ResponseEntity<DefaultMessageError> handleNotFoundException(NotFoundException e){
         String message = e.getReason();
 
+        log.info("Resource not found exception: {}", message);
+
         DefaultMessageError error = new DefaultMessageError(HttpStatus.NOT_FOUND.value(), message, LocalDateTime.now());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
@@ -115,6 +131,8 @@ public class GlobalHandlerException {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<DefaultMessageError> handleBadCredentialsException(BadCredentialsException e){
         String message = "Invalid credentials";
+
+        log.warn("Authentication failed: Bad credentials provided");
 
         DefaultMessageError error = new DefaultMessageError(HttpStatus.UNAUTHORIZED.value(), message, LocalDateTime.now());
 

@@ -5,6 +5,7 @@ import io.github.alineaos.librarymanager.dto.users.UserLoginResponse;
 import io.github.alineaos.librarymanager.security.service.TokenService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("v1/auth")
@@ -26,6 +28,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<UserLoginResponse> login(@RequestBody @Valid UserLoginRequest request) {
+        log.info("Authentication: Processing login request");
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                 request.email(),
                 request.password()
@@ -34,6 +37,8 @@ public class AuthController {
         Authentication authentication = authenticationManager.authenticate(authToken);
 
         String tokenValue = tokenService.generateToken(authentication);
+
+        log.debug("Authentication: User authenticated successfully. JWT Token generated.");
 
         return ResponseEntity.ok(new UserLoginResponse(tokenValue, "Bearer", expiresIn));
     }

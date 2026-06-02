@@ -34,3 +34,6 @@ build/
 /.env
 
 *.key
+
+logs/
+*.log
