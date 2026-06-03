@@ -288,6 +288,24 @@ class GenreControllerTest extends UnitTestConfig {
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
+    @Test
+    @DisplayName("DELETE v1/genres/999 returns 404 (not found) when the user is not found")
+    @Order(13)
+    @WithMockUser(authorities = "SCOPE_ADMIN")
+    void delete_ReturnsNotFound_WhenGenreIsNotFound() throws Exception {
+        Long targetGenreId = 999L;
+
+        doThrow(new NotFoundException("Genre not found.")).when(service).delete(targetGenreId);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete(URL + "/{id}", targetGenreId))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(jsonPath("$.status").value(HttpStatus.NOT_FOUND.value()))
+                .andExpect(jsonPath("$.message").value("Genre not found."))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.timestamp").value(matchesPattern("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*$")));
+    }
+
     private static Stream<Arguments> genreFilterParamsSource() {
         GenreFactory factory = new GenreFactory();
         List<Genre> filteredList = factory.newGenreList();

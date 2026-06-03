@@ -296,6 +296,24 @@ class BookControllerTest extends UnitTestConfig {
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
+    @Test
+    @DisplayName("DELETE v1/books/999 returns 404 (not found) when the user is not found")
+    @Order(13)
+    @WithMockUser(authorities = "SCOPE_ADMIN")
+    void delete_ReturnsNotFound_WhenBookIsNotFound() throws Exception {
+        Long targetBookId = 999L;
+
+        doThrow(new NotFoundException("Book not found.")).when(service).delete(targetBookId);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete(URL + "/{id}", targetBookId))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(jsonPath("$.status").value(HttpStatus.NOT_FOUND.value()))
+                .andExpect(jsonPath("$.message").value("Book not found."))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.timestamp").value(matchesPattern("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*$")));
+    }
+
     private static Stream<Arguments> bookFilterParamsSource() {
         GenreFactory filterGenreFactory = new GenreFactory();
         AuthFactory.BookFactory filterBookFactory = new AuthFactory.BookFactory(filterGenreFactory);

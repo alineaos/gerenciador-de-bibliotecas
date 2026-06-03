@@ -356,6 +356,24 @@ class UserControllerTest extends UnitTestConfig {
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
+    @Test
+    @DisplayName("DELETE v1/users/999 returns 404 (not found) when the user is not found")
+    @Order(17)
+    @WithMockUser(authorities = "SCOPE_ADMIN")
+    void delete_ReturnsNotFound_WhenUserIsNotFound() throws Exception {
+        Long targetUserId = 999L;
+
+        doThrow(new NotFoundException("User not found.")).when(service).delete(targetUserId);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete(URL + "/{id}", targetUserId))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(jsonPath("$.status").value(HttpStatus.NOT_FOUND.value()))
+                .andExpect(jsonPath("$.message").value("User not found."))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.timestamp").value(matchesPattern("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*$")));
+    }
+
     private static Stream<Arguments> userFilterParamsSource() {
         UserFactory factory = new UserFactory();
         List<User> filteredList = factory.newUserList();
