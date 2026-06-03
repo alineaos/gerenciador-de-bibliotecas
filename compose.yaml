@@ -3,20 +3,21 @@ services:
     image: mysql:8.0
     container_name: mysql
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
       MYSQL_DATABASE: library_manager
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USER:-Admin}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-Admin@123}
     ports:
       - "3306:3306"
     healthcheck:
-      test: [ "CMD-SHELL", "mysqladmin ping -h localhost -u root -p${DB_ROOT_PASSWORD}" ]
+      test: [ "CMD-SHELL", "mysqladmin ping -h localhost -u root -p${DB_ROOT_PASSWORD:-root}" ]
       interval: 2s
       timeout: 2s
       retries: 10
       start_period: 10s
     volumes:
       - library-db:/var/lib/mysql
+      - "./init/init.sql:/docker-entrypoint-initdb.d/init.sql:ro"
 
   library-manager:
     build: .
@@ -27,10 +28,11 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - TZ=America/Sao_Paulo
-      - DB_HOST=mysql
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
+      SPRING_PROFILES_ACTIVE: prod
+      TZ: America/Sao_Paulo
+      DB_HOST: mysql
+      DB_USER: ${DB_USER:-Admin}
+      DB_PASSWORD: ${DB_PASSWORD:-Admin@123}
 
 volumes:
   library-db:
