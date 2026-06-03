@@ -103,7 +103,7 @@ class UserControllerTest extends UnitTestConfig {
     }
 
     @Test
-    @DisplayName("GET v1/users/2 returns 200 (ok) and an user with given id when the user is an admin")
+    @DisplayName("GET v1/users/2 returns 200 (ok) and a user with given id when the user is an admin")
     @Order(3)
     @WithMockUser(authorities = "SCOPE_ADMIN")
     void findById_ReturnsOkAndUserById_WhenUserIsAdmin() throws Exception {
@@ -121,7 +121,7 @@ class UserControllerTest extends UnitTestConfig {
     }
 
     @Test
-    @DisplayName("GET v1/users/2 returns 200 (ok) and an user with given id when the user is the id owner")
+    @DisplayName("GET v1/users/2 returns 200 (ok) and a user with given id when the user is the id owner")
     @Order(4)
     @WithMockUser(authorities = "SCOPE_USER")
     void findById_ReturnsOkAndUserById_WhenUserIsIdOwner() throws Exception {
@@ -229,7 +229,7 @@ class UserControllerTest extends UnitTestConfig {
     }
 
     @Test
-    @DisplayName("PATCH v1/users/1 returns 204 (no content) and updates an user with given id when the user is an admin")
+    @DisplayName("PATCH v1/users/1 returns 204 (no content) and updates a user with given id when the user is an admin")
     @Order(10)
     @WithMockUser(authorities = "SCOPE_ADMIN")
     void update_ReturnsNoContentAndUpdatesUserById_WhenUserIsAdmin() throws Exception {
@@ -247,7 +247,7 @@ class UserControllerTest extends UnitTestConfig {
     }
 
     @Test
-    @DisplayName("PATCH v1/users/2 returns 204 (no content) and updates an user with given id when the user is the id owner")
+    @DisplayName("PATCH v1/users/2 returns 204 (no content) and updates a user with given id when the user is the id owner")
     @Order(11)
     @WithMockUser(authorities = "SCOPE_USER")
     void update_ReturnsNoContentAndUpdatesUserById_WhenUserIsIdOwner() throws Exception {
@@ -331,7 +331,7 @@ class UserControllerTest extends UnitTestConfig {
     }
 
     @Test
-    @DisplayName("DELETE v1/users/2 returns 204 (no content) and deletes an user with given id when the user is an admin")
+    @DisplayName("DELETE v1/users/2 returns 204 (no content) and deletes a user with given id when the user is an admin")
     @Order(15)
     @WithMockUser(authorities = "SCOPE_ADMIN")
     void delete_ReturnsNoContentAndDeletesUserById_WhenUserIsAdmin() throws Exception {

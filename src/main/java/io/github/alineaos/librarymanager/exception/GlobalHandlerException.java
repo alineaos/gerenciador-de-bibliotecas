@@ -48,7 +48,7 @@ public class GlobalHandlerException {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ValidationMessageError> handleConstraintViolationException(ConstraintViolationException e) {
-        String message = "Some fields could not be validated in controller layer.";
+        String message = "Some fields could not be validated in service layer.";
 
         log.warn("Validation failed: Constraint violation on request parameters");
 
@@ -64,7 +64,7 @@ public class GlobalHandlerException {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ValidationMessageError> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        String message = "Some fields could not be validated in service layer.";
+        String message = "Some fields could not be validated in controller layer.";
 
         log.warn("Validation failed: Invalid argument fields in DTO");
 
@@ -96,7 +96,7 @@ public class GlobalHandlerException {
     }
 
     @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<DefaultMessageError> handleBussinessException(BusinessException e){
+    public ResponseEntity<DefaultMessageError> handleBusinessException(BusinessException e){
         String message = e.getMessage();
 
         log.warn("Business exception thrown: {}", message);
@@ -110,7 +110,7 @@ public class GlobalHandlerException {
     public ResponseEntity<DefaultMessageError> handleAccessDeniedException(AccessDeniedException e){
         String message = e.getReason();
 
-        log.warn("Acess Denied: {}", message);
+        log.warn("Access Denied: {}", message);
 
         DefaultMessageError error = new DefaultMessageError(HttpStatus.FORBIDDEN.value(), message, LocalDateTime.now());
 
