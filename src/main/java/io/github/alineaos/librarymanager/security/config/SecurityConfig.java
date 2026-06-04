@@ -38,11 +38,14 @@ public class SecurityConfig {
     @Value("${jwt.private.key}")
     private RSAPrivateKey privateKey;
 
+    private static final String[] WHITE_LIST = {"/swagger-ui.html", "/v3/api-docs/**", "/swagger-ui/**"};
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(
                         auth -> auth
+                                .requestMatchers(WHITE_LIST).permitAll()
                                 .requestMatchers(HttpMethod.POST, "/v1/auth/**").permitAll()
                                 .requestMatchers("/v1/users/**").authenticated()
                                 .requestMatchers("/v1/genres/**").authenticated()

@@ -17,3 +17,11 @@ jwt:
 scheduling:
   initial-delay: 10000
   fixed-delay: 3600000
+springdoc:
+  remove-broken-extensions: true
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter: method
+    filter: true
+    show-common-extensions: false
+    override-with-generic-response: false
