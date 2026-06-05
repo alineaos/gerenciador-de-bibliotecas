@@ -34,6 +34,6 @@ build/
 /.env
 
 *.key
-
-logs/
+/logs/*
+!/logs/.gitkeep
 *.log
