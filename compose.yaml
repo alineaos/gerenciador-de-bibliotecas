@@ -33,6 +33,8 @@ services:
       DB_HOST: mysql
       DB_USER: ${DB_USER:-Admin}
       DB_PASSWORD: ${DB_PASSWORD:-Admin@123}
+    volumes:
+      - "./logs:/app/logs"
 
 volumes:
   library-db:
