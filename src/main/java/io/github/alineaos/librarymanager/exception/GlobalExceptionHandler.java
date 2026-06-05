@@ -19,7 +19,7 @@ import java.util.List;
 
 @Slf4j
 @RestControllerAdvice
-public class GlobalHandlerException {
+public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<DefaultMessageError> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
